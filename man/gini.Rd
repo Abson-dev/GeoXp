@@ -1,0 +1,34 @@
+\name{gini}
+\alias{gini}
+\title{Calculates a Gini Index }
+\description{
+The function `gini' calculates the Gini Index associated to the variable `var'.
+}
+\usage{
+gini(var)
+}
+\arguments{
+  \item{var}{a vector of numerical values of size n}
+}
+\details{
+Let $x_k$, $k=1,..,K$ be the distinct values taken by $Var$.
+For each site, Gini.r returns two pairs of frequencies. The pair $(f,g)$ where f represents 
+\deqn{f_k=\frac{1}{n}\sum_i 1(Var_i=x_k)} ($n$ is the length of `var') and g represents
+\deqn{g_k=\frac{x_k}{\bar{x}}f_k} The pair $(F,G)$ represents the corresponding cumulative frequencies. \cr
+The Gini Index is calculated as :
+\deqn{I_G=\frac{1}{2\bar{x}}\sum_{i=1}^K\sum_{j=1}^K|x_i-x_j|}
+}
+
+\note{
+This function is used in ginimap.R but it is not an interactive function. }
+
+\value{
+(f, F, g, G, gini) where f, F, g and G are vectors of size K and gini a numeric value.
+}
+
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2006), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas''}
+
+\author{Thomas-Agnan C., Aragon Y., Ruiz-Gazen A., Laurent T., Robidou L.}
+
+\seealso{\code{\link{ginimap}}}
+\keyword{spatial}

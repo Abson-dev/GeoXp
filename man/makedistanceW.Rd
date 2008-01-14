@@ -1,6 +1,5 @@
 \name{makedistanceW}
 \alias{makedistanceW}
-
 \title{Spatial weight matrix based on distance threshold}
 \description{
 The function `makedistanceW' creates a spatial weight matrix
@@ -10,15 +9,12 @@ is lower or equal to a given threshold and 0 otherwise.}
 \usage{
 makedistanceW(x, y, distance)
 }
-
+%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{a vector $x$ of size $n$ }
-  \item{}{}
   \item{y}{a vector $y$ of size $n$ }
-  \item{}{}
   \item{distance}{threshold point}
 }
-
 \details{
 If site $i$ is seperated from $j$ by a distance lower
 or equal to a given threshold : 
@@ -31,7 +27,7 @@ else
 A matrix W of size $n \times n$ containing 0 and 1.
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2006), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas''}
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2008), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas''}
 
 \author{Thomas-Agnan C., Aragon Y., Ruiz-Gazen A., Laurent T., Robidou L.}
 

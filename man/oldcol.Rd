@@ -8,9 +8,9 @@ analysis: 49 neighbourhoods in Columbus, OH, 1980 data.
 }
 \usage{data(oldcol)}
 \format{
-  A data frame with 49 observations on the following 22 variables.
+  A data frame with 49 observations on the following 21 variables.
   \describe{
-    \item{\code{PERIMETER}}{Computed by ArcView}
+     \item{\code{PERIMETER}}{Computed by ArcView}
     \item{\code{COLUMBUS.}}{internal polygon ID}
     \item{\code{COLUMBUS.I}}{another internal polygon ID}
     \item{\code{POLYID}}{yet another internal polygon ID}
@@ -23,7 +23,7 @@ analysis: 49 neighbourhoods in Columbus, OH, 1980 data.
     \item{\code{DISCBD}}{distance to CBD}
     \item{\code{X}}{x coordinate}
     \item{\code{Y}}{y coordinate}
-    \item{\code{AREA}}{neighborhood area}
+     \item{\code{AREA}}{neighborhood area}
     \item{\code{NSA}}{north south dummy (North=1)}
     \item{\code{NSB}}{north south dummy (North=1)}
     \item{\code{EW}}{east west dummy (East=1)}
@@ -33,14 +33,13 @@ analysis: 49 neighbourhoods in Columbus, OH, 1980 data.
     \item{\code{PERIM}}{polygon perimeter}
   }
 }
-
-\note{
+\details{
 This data file prepared by Luc Anselin, Spatial Analysis Laboratory, Department of Agriculture and Consumer 
-Economics, University of Illinois, Urbana-Champaign.
-}
+Economics, University of Illinois, Urbana-Champaign.}
 \source{
 Anselin, Luc (1988). ``Spatial econometrics: methods and models''. Dordrecht: Kluwer Academic, Table 12.1 p 189. \cr \cr
-Bivand R. (2006), `The spdep package', \url{http://cran.r-project.org/doc/packages/spdep.pdf} }
+Bivand R. (2008), `The spdep package', \url{http://cran.r-project.org/doc/packages/spdep.pdf} }
+
 \examples{
 data(oldcol)
 }

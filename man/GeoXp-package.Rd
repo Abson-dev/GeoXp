@@ -23,8 +23,8 @@ some dimension reduction techniques such as PCA.
 \tabular{ll}{
 Package: \tab GeoXp\cr
 Type: \tab Package\cr
-Version: \tab 1.0\cr
-Date: \tab 2006-10-20\cr
+Version: \tab 1.1\cr
+Date: \tab 2008-01-14\cr
 License: \tab GPL Vesion 2 or later \cr
 }
 GeoXp don't use classes yet. The coordinates of sites are represented by 
@@ -66,12 +66,12 @@ $symbol$ (with 1 for different symbols, 0 otherwise).
 }
 
 
-}
 \author{
 Christine Thomas-Agnan, Yves Aragon, Anne Ruiz-Gazen, Thibault Laurent, Laurianne Robidou
-
 Maintainer: Christine Thomas-Agnan <cthomas@cict.fr>
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2006), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas''}
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2008), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas''}
+
 \keyword{spatial}
+

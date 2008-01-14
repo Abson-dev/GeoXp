@@ -1,4 +1,4 @@
-"slider2" <-
+`slider2` <-
 function(fenetre,refresh.code,names,minima,maxima,resolutions,starts,no=0)
 {
 
@@ -15,7 +15,7 @@ function(fenetre,refresh.code,names,minima,maxima,resolutions,starts,no=0)
 
     if (!exists("slider.env"))
     {
-        slider.env<<-new.env()
+        slider.env<-new.env()
     }
 
     for(i in seq(names))

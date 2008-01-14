@@ -1,4 +1,4 @@
-"makeneighborsw" <-
+`makeneighborsw` <-
 function(xc,yc,m,cum=TRUE)
 {
 

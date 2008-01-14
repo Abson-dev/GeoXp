@@ -1,4 +1,4 @@
-"pcamap" <-
+`pcamap` <-
 function(long,lat,dataset,direct=c(1,2),weight=rep(1/nrow(dataset),length=nrow(dataset)), metric=diag(1,ncol(dataset),ncol(dataset)), center=TRUE, reduce=TRUE,namedata=NULL,qualproj=0,listvar=NULL, listnomvar=NULL,criteria=NULL,carte=NULL,label="",symbol=0,color=1,axis=FALSE,lablong="", lablat="")
 {
 
@@ -23,6 +23,8 @@ fin <- tclVar(FALSE);
 
 graphChoice <- "";
 varChoice1 <- "";
+varChoice2 <- "";
+choix="";
 listgraph <- c("Histogram","Barplot","Scatterplot")
 
 # transformation data.frame en matrix

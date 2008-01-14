@@ -1,4 +1,4 @@
-"findneighbors" <-
+`findneighbors` <-
 function (xc,yc,m)
 {
 # initialisation

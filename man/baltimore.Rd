@@ -33,7 +33,7 @@ House sales price and characteristics for a spatial hedonic regression, Baltimor
 Prepared by Luc Anselin. Original  data made available by Rodin Dubin, Weatherhead School of Management, Case Western Research University, Cleveland, OH.
 }
 \references{
-Bivand R. (2006), `The spdep package', \url{http://cran.r-project.org/doc/packages/spdep.pdf} \cr \cr
+Bivand R. (2008), `The spdep package', \url{http://cran.r-project.org/doc/packages/spdep.pdf} \cr \cr
 Dubin, Robin A. (1992). Spatial autocorrelation and neighbourhood quality. Regional Science and Urban Economics 22(3), 433-452.}
 \examples{
 data(baltimore)

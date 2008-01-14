@@ -1,25 +1,19 @@
 \name{nonormmoran}
 \alias{nonormmoran}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{Detection of spatial autocorrelation}
 \description{
 The function `nonnormmoran' is used to detect spatial autocorrelation in
 the residuals $u$ from the least squares model $Y=\beta \times X+u$. 
-It calculates Moran's $I$ statistic of the residuals based on the gaussian asymptotic distribution 
-and give a p-value associated to the test of spatial autocorrelation (gaussian version).}
-
+It calculates Moran's $I$ statistic of the residuals based on the gaussian asymptotic distribution and give a p-value associated to the test of spatial autocorrelation (gaussian version).}
 \usage{
 nonormmoran(y, x, W)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{y}{vector of size $n$ of dependent variable}
-  \item{}{}
   \item{x}{matrix $n \times p$ containing explanatory variables}
-  \item{}{}
   \item{W}{spatial weight matrix}
 }
-
 \details{
 W is supposed standartized :
 \deqn{I=\frac{u'Wu}{u'u}}
@@ -36,9 +30,9 @@ let \eqn{M=(I-X(X'X)^{-1}X')}
 `imean' is $E(I)$, ivar is $var(I)$, `istat' is the normalized Moran's $I$ statistic
 (corresponding to $Z_I$), and `prob' the associated p-value.}
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2006), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas''}
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2008), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas''}
 
-\author{Translated into R from Jim Lessage's  ``Spatial Econometrics Toolbox'', \url{http://www.spatial-econometrics.com/} }
+\author{Translated into R from Jim Lessage's ``Spatial Econometrics Toolbox'', \url{http://www.spatial-econometrics.com/} }
 
 \keyword{spatial}
 

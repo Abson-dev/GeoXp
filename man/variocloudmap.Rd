@@ -1,6 +1,5 @@
 \name{variocloudmap}
 \alias{variocloudmap}
-
 \title{Interactive variocloud and map}
 
 \description{
@@ -10,43 +9,28 @@ and a robust empirical semi-variogram.}
 
 \usage{
 variocloudmap(long, lat, var, bin = NULL, quantiles = NULL, 
-              listvar = NULL, listnomvar = NULL, criteria = NULL, 
-              carte = NULL, label = "", symbol = 0, labvar = "", 
-              axis = FALSE, lablong = "", lablat = "")
+listvar = NULL, listnomvar = NULL, criteria = NULL, carte = NULL,
+label = "", symbol = 0,labvar = "", axis = FALSE, 
+lablong = "", lablat = "")
 }
-
+%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{long}{a vector $x$ of size $n$}
-  \item{}{}
   \item{lat}{a vector $y$ of size $n$}
-  \item{}{}
   \item{var}{a vector of numeric values of size $n$}
-  \item{}{}
   \item{bin}{list of values where empirical variogram is evaluated}
-  \item{}{}
   \item{quantiles}{list of values of quantile orders (the regression quantile is obtained by spline smoothing)}
-  \item{}{}
   \item{listvar}{matrix of variables}
-  \item{}{}
   \item{listnomvar}{names of variables $listvar$}
-  \item{}{}
   \item{criteria}{a vector of size $n$ of boolean with TRUE on specific sites (these for non interactive selection)}
-  \item{}{}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : $x$ and $y$ coordinates of the vertices of the polygon}
-  \item{}{}
   \item{label}{vector of character of size $n$ with names of sites}
-  \item{}{}
   \item{symbol}{0 (by default) or 1, choice of representation of selected points. If 0, selected points are circles, if 1, selected points are stars}
-  \item{}{}
   \item{labvar}{name of $var$}
-  \item{}{}
-  \item{lablong}{name of the x-axis that will be printed on the map}
-  \item{}{}
-  \item{lablat}{name of the y-axis that will be printed on the map}
-  \item{}{}
   \item{axis}{a boolean with TRUE for drawing axes on the map}
+  \item{lablong}{name of the x-axis that will be printed on the map}
+  \item{lablat}{name of the y-axis that will be printed on the map}
 }
-
 \details{
 For some couple of sites $(s_i,s_j)$, the graph represents on the $y-axis$ the semi squared difference
 between $var_i$ and $var_j$ : 
@@ -73,7 +57,7 @@ case the points below this quantile curve are not drawn). }
 A matrix of boolean of size $n \times n$. TRUE if the couple of site was in the last selection of points.
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2006), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas'' \cr \cr
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2008), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas'' \cr \cr
 
 Cressie N. and Hawkins D. (1980), ``Robust estimation of the variogram'', in Journal of the international association for mathematical geology, 13, 115-125.}
 

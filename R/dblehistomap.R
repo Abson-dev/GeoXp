@@ -1,4 +1,4 @@
-"dblehistomap" <-
+`dblehistomap` <-
 function(long, lat, var1, var2,listvar=NULL, listnomvar=NULL,nbcol1 = 10, nbcol2 = 10, carte = NULL,criteria=NULL, symbol = 0, color=1, labvar = c("",""),label = "",axis=FALSE,lablong="", lablat="")
 {
 
@@ -32,6 +32,8 @@ get(getOption("device"))()
 
 graphChoice <- "";
 varChoice1 <- "";
+varChoice2 <- "";
+choix="";
 listgraph <- c("Histogram","Barplot","Scatterplot")
 
 ####################################################

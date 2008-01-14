@@ -1,4 +1,4 @@
-"densitymap" <-
+`densitymap` <-
 function (long, lat, var,kernel='triweight',listvar=NULL, listnomvar=NULL, carte=NULL, criteria=NULL,label="", symbol=0,color=1, labvar="",axis=FALSE,lablong="", lablat="")
 {
 
@@ -12,6 +12,7 @@ buble<-FALSE
 legends<-list(FALSE,FALSE,"","")
 z<-NULL
 legmap<-NULL
+interv<-NULL
 
 # transformation data.frame en matrix
 
@@ -150,7 +151,7 @@ if (length(polyX)>0)
   }
 
 ####################################################
-# sélection d'un intervalle sous la courbe de densité
+# sélection d'un alle sous la courbe de densité
 ####################################################
 
 interfunc<-function()

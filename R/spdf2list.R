@@ -1,4 +1,4 @@
-"spdf2list" <-
+`spdf2list` <-
 function(data)
 {
 

@@ -4,6 +4,7 @@
 \title{Normalize a spatial weight matrix}
 \description{
 The function `normw' normalizes a spatial weight matrix}
+
 \usage{
 normw(w)
 }
@@ -11,7 +12,6 @@ normw(w)
 \arguments{
   \item{w}{A spatial weight matrix of size $n \times n$}
 }
-
 \details{
  \deqn{W_{ij}=\frac{W_{ij}}{\sum_kW_{ik}}}
 }
@@ -20,7 +20,7 @@ normw(w)
 A matrix of size $n \times n$
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2006), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas'' }
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2008), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas'' }
 
 \author{Aragon Y., Thomas-Agnan C., Ruiz-Gazen A., Robidou L.}
 

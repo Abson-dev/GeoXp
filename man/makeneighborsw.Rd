@@ -1,26 +1,20 @@
 \name{makeneighborsw}
 \alias{makeneighborsw}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{Spatial weight matrix based on nearest neighbors}
 \description{
 The function `makeneighborsw' creates a spatial weight matrix
 based on a given number of nearest neighbors.  }
-
 \usage{
 makeneighborsw(xc, yc, m, cum = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{xc}{a vector $x$ of size $n$}
-  \item{}{}
   \item{yc}{a vector $y$ of size $n$}
-  \item{}{}
   \item{m}{ number of nearest neighbors}
-  \item{}{}
   \item{cum}{if cum=TRUE, $W$ is the sum of spatial weight matrix based on $k$ nearest neighbours (for $k \leq m$; 
 if FALSE $W$ is the spatial weight matrix based only on $m^{th}$ nearest neighbours}
 }
-
 \details{
 For each site, we order the other sites by their distance from this
 site. If cum=TRUE, for $i$, if $j$ is among the $m^{th}$
@@ -38,7 +32,7 @@ In case of ties, the nearest neighbour is randomly chosen.}
 \value{
 A spatial weight matrix of size $n \times n$}
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2006), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas'' }
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2008), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas'' }
 
 \author{Aragon Y., Thomas-Agnan C., Ruiz-Gazen A., Laurent T., Robidou L.}
 

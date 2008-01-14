@@ -1,4 +1,4 @@
-"distchi2" <-
+`distchi2` <-
 function(mat)
 {
 n<-dim(mat)[1]

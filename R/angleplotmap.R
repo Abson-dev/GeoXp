@@ -1,4 +1,4 @@
-"angleplotmap" <-
+`angleplotmap` <-
 function (long, lat, var, quantiles=NULL,listvar=NULL, listnomvar=NULL, criteria=NULL,carte = NULL, label = "",symbol = 0, labvar = "",lablong = "", lablat = "", axis=FALSE) 
 {
 # initialisation
@@ -9,6 +9,7 @@ function (long, lat, var, quantiles=NULL,listvar=NULL, listnomvar=NULL, criteria
     legends<-list(FALSE,FALSE,"","")
     z<-NULL
     legmap<-NULL
+    inout=NULL
     obs <- matrix(FALSE, nrow = length(long), ncol = length(long))
     graphics.off()
     

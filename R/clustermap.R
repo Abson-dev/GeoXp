@@ -1,4 +1,4 @@
-"clustermap" <-
+`clustermap` <-
 function(long,lat,dataset,clustnum,method="kmeans",type=NULL,centers=NULL,scale=FALSE,listvar=NULL, listnomvar=NULL,carte=NULL,criteria=NULL,labvar="Cluster",label="",symbol=0,color=1,labmod="",axis=FALSE,lablong="", lablat="")
 {
 
@@ -55,6 +55,8 @@ fin <- tclVar(FALSE);
 
 graphChoice <- "";
 varChoice1 <- "";
+varChoice2 <- "";
+choix="";
 listgraph <- c("Histogram","Barplot","Scatterplot")
 
 # classification

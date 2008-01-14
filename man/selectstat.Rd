@@ -1,47 +1,31 @@
 \name{selectstat}
 \alias{selectstat}
 %- Also NEED an '\alias' for EACH other topic documented here.
-
 \title{Selection of values on a graphic }
-\description{
-The function `selectstat' is used to select sites on a graphic such as Histogram, Barplot, Boxplot, 
-Polyboxplot, Scatterplot, Densityplot, Neighbourplot, Lorentz, Moran, Angleplot, Variocloud, Cluster, or PCA.    
-Most of the GeoXp functions call selectstat.r. 
+\description{The function `selectstat' is used to select sites on a graphic such as Histogram, Barplot, Boxplot, Polyboxplot, Scatterplot, Densityplot, Neighbourplot, Lorentz, Moran, Angleplot, Variocloud, Cluster, or PCA. Most of the GeoXp functions call selectstat.r. 
 }
 \usage{
-selectstat(var1, var2, obs, Xpoly, Ypoly, method, nbcol, W, F, long, lat)
+selectstat(var1, var2, obs, Xpoly, Ypoly, method,
+nbcol, W, F, long, lat)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{var1}{1st variable of size $n$ }
-  \item{}{}
   \item{var2}{2nd variable of size $n$ }
-  \item{}{}
   \item{obs}{a boolean vector of size $n$ : TRUE if a site is already selectioned, FALSE otherwise. }
-  \item{}{}
   \item{Xpoly}{X-coordinates of the vertices of selected polygon}
-  \item{}{}
   \item{Ypoly}{Y-coordinates of the vertices of selected polygon}
-  \item{}{}
-  \item{method}{name of the graph wich must be drawn among Histogram, Barplot, Boxplot, Polyboxplot, 
-              Densityplot, Neighbourplot, Lorentz, Anglepoint, Variopoint}
-  \item{}{}
+  \item{method}{name of the graph wich must be drawn among Histogram, Barplot, Boxplot, Polyboxplot, Densityplot, Neighbourplot, Lorentz, Anglepoint, Variopoint}
   \item{nbcol}{nbcol : number of cells for the histogram (10 by default)}
-  \item{}{}
   \item{W}{A spatial weight matrix of size $n \times n$}
-  \item{}{}
   \item{F}{a numerical vector}
-  \item{}{}
   \item{long}{a vector of x-axis of size $n$}
-  \item{}{}
   \item{lat}{a vector of y-axis of size $n$}
 }
-
 \details{This function is not an interactive function.}
-
 \value{Return a vector of boolean of size $n$ with TRUE if sites have been selected on a graph}
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2006), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas''}
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2008), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas''}
 
 \author{Thomas-Agnan C., Aragon Y., Ruiz-Gazen A., Laurent T., Robidou L.}
 

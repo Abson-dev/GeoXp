@@ -1,4 +1,4 @@
-"gini" <-
+`gini` <-
 function (var)
 {
 n <- length(var);

@@ -1,4 +1,4 @@
-"dbledensitymap" <-
+`dbledensitymap` <-
 function (long, lat, var1,var2,kernel='triweight',listvar=NULL, listnomvar=NULL,carte=NULL, criteria=NULL, label="", symbol=0,color=1, labvar=c("var1","var2"),axis=FALSE,lablong="", lablat="")
 {
 # initialisation
@@ -21,6 +21,7 @@ nointer<-FALSE
 nocart<-FALSE
 z<-NULL
 legmap<-NULL
+interv=NULL
 buble<-FALSE
 legends<-list(FALSE,FALSE,"","")
 
@@ -38,6 +39,9 @@ alpha21=20;
 
 graphChoice <- "";
 varChoice1 <- "";
+varChoice2 <- "";
+choix=""
+
 #choixvalue1<- "";
 #choixvalue2<- "";
 listgraph <- c("Histogram","Barplot","Scatterplot")

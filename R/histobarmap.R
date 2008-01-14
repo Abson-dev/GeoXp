@@ -1,4 +1,4 @@
-"histobarmap" <-
+`histobarmap` <-
 function(long,lat,var1,var2,criteria=NULL,carte=NULL,label = "",symbol = 0,color=1,nbcol = 10,labvar = c("", ""),labmod="", listvar=NULL, listnomvar=NULL,axis=FALSE,lablong="", lablat="")
 {
 
@@ -22,6 +22,8 @@ get(getOption("device"))()
     fin <- tclVar(FALSE)
     graphChoice <- "";
     varChoice1 <- "";
+    varChoice2 <- "";
+    choix<-"";
     listgraph <- c("Histogram","Barplot","Scatterplot")
 
 #transformation data.frame en matrice
@@ -158,7 +160,7 @@ if (length(polyX)>0)
 
 
 ####################################################
-# choix d'un autre graphique
+#  d'un autre graphique
 ####################################################
 
 graphfunc <- function()

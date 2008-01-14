@@ -1,4 +1,4 @@
-"variocloudmap" <-
+`variocloudmap` <-
 function (long, lat, var,bin=NULL,quantiles=NULL,listvar=NULL, listnomvar=NULL,criteria=NULL,carte = NULL, label = "",symbol = 0, labvar = "",axis=FALSE,lablong = "", lablat = "") 
 {
 # initialisation
@@ -9,6 +9,7 @@ function (long, lat, var,bin=NULL,quantiles=NULL,listvar=NULL, listnomvar=NULL,c
     legends<-list(FALSE,FALSE,"","")
     z<-NULL 
     legmap<-NULL
+    inout<-NULL
 
     opt1<-1
     opt2<-1

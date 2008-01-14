@@ -22,10 +22,9 @@ The `eire' data frame has 26 rows and 11 columns.
     \item{\code{INCOME}}{total personal income £000}
   }
 }
-
 \details{This data provides from spdep package.}
 \source{
-Bivand R. (2006), `The spdep package', \url{http://cran.r-project.org/doc/packages/spdep.pdf} \cr \cr 
+Bivand R. (2008), `The spdep package', \url{http://cran.r-project.org/doc/packages/spdep.pdf} \cr \cr 
 
 Upton and Fingleton 1985, Bailey and Gatrell 1995, ch. 1 for
 blood  group data, Cliff and Ord (1973), p. 107 for remaining

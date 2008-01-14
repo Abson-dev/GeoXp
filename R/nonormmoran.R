@@ -1,4 +1,4 @@
-"nonormmoran" <-
+`nonormmoran` <-
 function(y,x,W)
 {
 # initialisation

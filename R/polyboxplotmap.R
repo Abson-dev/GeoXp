@@ -1,4 +1,4 @@
-"polyboxplotmap" <-
+`polyboxplotmap` <-
 function(long, lat, var2, var1,listvar=NULL,listnomvar=NULL, carte=NULL,criteria=NULL, label="",labmod="", labvar="", symbol=0,color=1,axis=FALSE, lablong="", lablat="")
 {
 
@@ -28,6 +28,8 @@ graphics.off();
 
 graphChoice <- "";
 varChoice1 <- "";
+varChoice2 <- "";
+choix="";
 listgraph <- c("Histogram","Barplot","Scatterplot")
 
 #transformation data.frame en matrix

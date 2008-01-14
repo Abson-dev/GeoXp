@@ -1,4 +1,4 @@
-"selectmap" <-
+`selectmap` <-
 function(var1,var2,obs,Xpoly,Ypoly,method="")
 {
 

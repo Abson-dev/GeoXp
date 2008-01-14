@@ -2,60 +2,39 @@
 \alias{clustermap}
 \title{Classification of dataset using kmeans.r or hclust.r and representation of clusters on a map.}
 \description{
-The function `clustermap' performs a classification of the sites from the variables included in $dataset$
-and computes a bar plot of the clusters calculated.
-Classification methods comes from hclust.R (hierarchical cluster analysis) and kmeans.R (k-means clustering)
-and number of class is chosen with $clustnum$.
+The function `clustermap' performs a classification of the sites from the variables included in $dataset$ and computes a bar plot of the clusters calculated.
+Classification methods comes from hclust.R (hierarchical cluster analysis) and kmeans.R (k-means clustering) and number of class is chosen with $clustnum$.
 }
 \usage{
-clustermap(long,lat,dataset,clustnum,method="kmeans",
-           type=NULL,centers=NULL,scale=FALSE,listvar=NULL, listnomvar=NULL,
-           carte=NULL,criteria=NULL,labvar="Cluster",
-           label="",symbol=0,color=1,labmod="",
-           axis=FALSE,lablong="", lablat="")
-
+clustermap(long, lat, dataset, clustnum, method = "kmeans",
+type = NULL, centers = NULL, scale = FALSE, listvar = NULL,
+listnomvar = NULL, carte = NULL, criteria = NULL, labvar = "Cluster",
+label = "", symbol = 0, color = 1, labmod = "", axis = FALSE,
+lablong = "", lablat = "")
 }
+
 \arguments{
   \item{long}{a vector $x$ of size $n$}
-  \item{}{}
   \item{lat}{a vector $y$ of size $n$}
-  \item{}{}
   \item{dataset}{matrix of variables of numeric values}
-  \item{}{}
   \item{clustnum}{Number of clusters}
-  \item{}{}
   \item{method}{two methos : `kmeans' by default or `hclust'}
-  \item{}{}
   \item{type}{If method=`hclust'', type=``complete'' by default  (the possibilities are given in help(hclust)
   as `ward', `single', etc). If method=`kmeans', type="Hartigan-Wong" by default (the possibilities are given in help(kmeans)
   as `Forgy', etc)}
-  \item{}{}
   \item{centers}{If method='kmeans', user can give a matrix with initial cluster centers.}
-  \item{}{}
   \item{scale}{If scale=TRUE, the dataset is reducted.}
-  \item{}{}
   \item{listvar}{matrix of variables}
-  \item{}{}
   \item{listnomvar}{names of variables $listvar$}
-  \item{}{}
-  \item{criteria}{a vector of size $n$ of boolean with TRUE on specific sites (these for non interactive selection)}
-  \item{}{}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : $x$ and $y$ coordinates of the vertices of the polygon}
-  \item{}{}
+  \item{criteria}{a vector of size $n$ of boolean with TRUE on specific sites (these for non interactive selection)}
   \item{labvar}{name of variable $var$}
-  \item{}{}
   \item{label}{vector of size $n$ with names of each site}
-  \item{}{}
-  \item{color}{0 or 1 (by default), choice of representation of selected points. If 0, sites are represented in blue, if 1, sites are represented with different colors for each cluster}
-  \item{}{}
   \item{symbol}{0 (by default) or 1, choice of representation of selected points. If 0, selected points are circles, if 1, selected points are stars}
-  \item{}{}
+  \item{color}{0 or 1 (by default), choice of representation of selected points. If 0, sites are represented in blue, if 1, sites are represented with different colors for each cluster}
   \item{labmod}{names of Clusters}
-  \item{}{}
   \item{axis}{a boolean with TRUE for drawing axes on the map}
-  \item{}{}
   \item{lablong}{name of the x-axis that will be printed on the map}
-  \item{}{}
   \item{lablat}{name of the y-axis that will be printed on the map}
 }
 \details{
@@ -67,7 +46,7 @@ In option, possibility to choose the classification method.
 \value{
 A vector of boolean of size $n$ (TRUE if the site was in the last selection) and a vector of size $n$ whith the number of cluster for each site
 }
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2006), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas'' \cr \cr
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2008), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas'' \cr \cr
 
 Murtagh, F (1985). ``Multidimensional Clustering Algorithms''. \cr \cr
 

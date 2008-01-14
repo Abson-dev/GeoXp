@@ -1,4 +1,4 @@
-"map2list" <-
+`map2list` <-
 function(data)
 {
 if(class(data)[1]=="Map")

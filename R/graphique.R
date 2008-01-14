@@ -1,4 +1,4 @@
-"graphique" <-
+`graphique` <-
 function(var1, var2, var3, obs,num, graph="",couleurs="", symbol=0,col=0, labvar="", nbcol=10, alpha1, W, Xpoly, Ypoly, F, G, opt1=1,opt2=1, quantiles=0.5, labmod="", direct,inertie,label=0,kernel, obsq, locmoran=0,bin=NULL)
 {
 
@@ -677,7 +677,7 @@ if (graph == "Variocloud")
 {fitmax <- qsreg(vect[z, 1], vect[z, 2],lam=alpha1,alpha = max(quantiles))}
       
 
-etendue<<-max(vect[z, 1])-min(vect[z, 1]);
+etendue<-max(vect[z, 1])-min(vect[z, 1]);
 n<-length(x);
 d<-max(x[2:length(x)]-x[1:(length(x)-1)]);
 xg <- seq(min(vect[z, 1]), max(vect[z, 1]), length = 100)
@@ -1154,3 +1154,4 @@ else
 
 
   }
+

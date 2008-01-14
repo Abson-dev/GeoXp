@@ -1,4 +1,4 @@
-"scattermap" <-
+`scattermap` <-
 function(long,lat,var1,var2,listvar=NULL, listnomvar=NULL,opt=1,quantiles=0.5,criteria=NULL,carte=NULL,label="",symbol=0, labvar=c("",""), color=1,axis=FALSE, lablong="", lablat="")
 {
 # initialisation
@@ -35,6 +35,8 @@ long=as.matrix(long)
 
 graphChoice <- "";
 varChoice1 <- "";
+varChoice2 <- "";
+choix<-"";
 listgraph <- c("Histogram","Barplot","Scatterplot")
 
 get(getOption("device"))()

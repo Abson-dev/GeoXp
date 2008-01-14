@@ -1,4 +1,4 @@
-"neighbourmap" <-
+`neighbourmap` <-
 function(long, lat, var, W,listvar=NULL, listnomvar=NULL, carte=NULL,criteria=NULL,label="",symbol=0, labvar=c("",""),opt1=0,axis=FALSE, lablong="", lablat="") 
 {
 #initialisation
@@ -11,6 +11,7 @@ obs2 <- matrix(FALSE, nrow=length(long), ncol=length(long));
     legends<-list(FALSE,FALSE,"","")
     z<-NULL
     legmap<-NULL
+    inout<-NULL
     graf<-"Neighbourplot1"
 
 # Transformation data.frame en matrix

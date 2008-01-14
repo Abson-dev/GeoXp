@@ -40,7 +40,7 @@ USD 50,000 are set to USD 50,000.
 \details{This data provides from spdep package.}
 
 \references{
-Bivand R. (2006), `The spdep package', \url{http://cran.r-project.org/doc/packages/spdep.pdf} \cr \cr
+Bivand R. (2008), `The spdep package', \url{http://cran.r-project.org/doc/packages/spdep.pdf} \cr \cr
 Harrison, David, and Daniel L. Rubinfeld, ``Hedonic Housing Prices and the Demand for Clean Air'', Journal of 
 Environmental Economics and Management, Volume 5, (1978), 81-102. Original data. \cr \cr
 

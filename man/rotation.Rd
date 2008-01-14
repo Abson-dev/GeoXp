@@ -1,6 +1,5 @@
 \name{rotation}
 \alias{rotation}
-
 \title{Transform coordinates of sites using a rotation}
 
 \description{
@@ -10,10 +9,9 @@ with an angle equal to $angle$.}
 \usage{
 rotation(coords, angle)
 }
-
+%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{coords}{matrix $n\times2$ of coordinates }
-  \item{}{}
   \item{angle}{value of angle to use in rotation in degree }
 }
 \details{
@@ -24,10 +22,10 @@ Let:
 }
 
 \value{
-matrix $n\times2$ of new coordinates. 
+matrix $n\times 2$ of new coordinates. 
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2006), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas''}
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2008), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas''}
 
 \author{Thomas-Agnan C., Aragon Y., Ruiz-Gazen A., Laurent T., Robidou L.}
 

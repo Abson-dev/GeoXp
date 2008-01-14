@@ -1,4 +1,4 @@
-"carte" <-
+`carte` <-
 function (long, lat, obs,criteria=NULL,buble=FALSE,cbuble=NULL,nointer=FALSE, carte=NULL,nocart=FALSE, label="",symbol=0,col=0, lablong="", lablat="", method="", W=NULL,couleurs="", classe=NULL, obsq,legmap=NULL,legends=list(FALSE,FALSE),labmod="",axis=FALSE)
 {
 

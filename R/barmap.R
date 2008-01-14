@@ -1,4 +1,4 @@
-"barmap" <-
+`barmap` <-
 function(long,lat,var,listvar=NULL,listnomvar=NULL,criteria=NULL,carte=NULL,label="",color=1,symbol=0, labvar="",labmod="",axis=FALSE,lablong="", lablat="")
 {
 #initialisation

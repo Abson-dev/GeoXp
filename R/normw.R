@@ -1,4 +1,4 @@
-"normw" <-
+`normw` <-
 function(w)
 {
 # initialisation
@@ -23,4 +23,5 @@ for(i in 1:ncol(w))
   }
 }
 return(W)
-} 
+}
+

@@ -1,4 +1,4 @@
-"histomap" <-
+`histomap` <-
 function(long,lat,var,nbcol=10, listvar=NULL, listnomvar=NULL, criteria=NULL, carte=NULL, label="", symbol=0, color=1, labvar="",axis=FALSE,lablong="",lablat="")
 {
 ####################################################

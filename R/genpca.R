@@ -1,4 +1,4 @@
-"genpca" <-
+`genpca` <-
 function(data, w=rep(1/nrow(data),length=nrow(data)), m=diag(1,ncol(data),ncol(data)), center=TRUE, reduc=TRUE)
 {
 #initialisation

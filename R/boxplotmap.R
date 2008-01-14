@@ -1,4 +1,4 @@
-"boxplotmap" <-
+`boxplotmap` <-
 function(long,lat,var,listvar=NULL, listnomvar=NULL,carte=NULL,criteria=NULL,label="",symbol=0,color=1,labvar="",axis=FALSE, lablong="", lablat="")
 {
 # initialisation
@@ -38,6 +38,8 @@ fin <- tclVar(FALSE);
 
 graphChoice <- "";
 varChoice1 <- "";
+varChoice2 <- "";
+choix<-""
 listgraph <- c("Histogram","Barplot","Scatterplot")
 
 ####################################################

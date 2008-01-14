@@ -1,4 +1,4 @@
-"selectstat" <-
+`selectstat` <-
 function(var1, var2,obs,Xpoly,Ypoly,method,nbcol, W, F, long, lat)
 {
 

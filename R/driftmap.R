@@ -1,4 +1,4 @@
-"driftmap" <-
+`driftmap` <-
 function(long,lat,var,interpol=1,nuage=0,carte=NULL,lablong="",lablat="",labvar="")
 {
 
@@ -447,6 +447,4 @@ tkwait.variable(fin)
 }
 
 }
-
-
 

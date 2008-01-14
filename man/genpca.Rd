@@ -1,6 +1,5 @@
 \name{genpca}
 \alias{genpca}
-
 \title{Generalized Principal Component Analysis (PCA)}
 \description{
 The function `genpca' computes a generalized Principal Component Analysis (PCA). 
@@ -8,22 +7,17 @@ It calculates the principal components, the coordinates of the variables and
 in these principals components axes and the inertia of these principal components. 
 }
 \usage{
-genpca(data, w=rep(1/nrow(data),length=nrow(data)), m=diag(1,ncol(data),ncol(data)),
-       center=TRUE, reduc=TRUE)
+genpca(data, w = rep(1/nrow(data), length = nrow(data)),
+m = diag(1, ncol(data), ncol(data)), center = TRUE, reduc = TRUE)
 }
-
+%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{data}{ matrix $n \times p$ }
-  \item{}{}
   \item{w}{vector of size n of weight (by default : $weight=t(1/n,...,1/n)$)}
-  \item{}{}
   \item{m}{ matrix $p \times p$ (by default : metric=Identity matrix)}
-  \item{}{}
   \item{center}{boolean. if TRUE, centered PCA (by default : center=TRUE)}
-  \item{}{}
   \item{reduc}{boolean. if TRUE, reduced PCA (by default : reduce=TRUE)}
 }
-
 \details{
 Let \deqn{W=diag(w)} 
 \deqn{x=data=(x_1',...,x_n')'} with \deqn{x_i=(x_i^1,...,x_i^p)} \cr
@@ -55,7 +49,7 @@ Returns `inertia' vector of size $p$ with percent of inertia of each component (
 `casecoord' matrix $n \times p$ (corresponding to matrix $CC$),  
 `varcoord' matrix $p \times p$ (corresponding to matrix $VC$).}
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2006), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas'' \cr \cr
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2008), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas'' \cr \cr
 
 Caussinus H., Fekri M., Hakam S., Ruiz-Gazen A. (2003) , ``A monitoring display of Multivariate Outliers'', Computational Statistics and Data Analysis, vol. 44, 1-2, 237-252.}
 
@@ -64,6 +58,4 @@ Caussinus H., Fekri M., Hakam S., Ruiz-Gazen A. (2003) , ``A monitoring display 
 \keyword{spatial}
 \keyword{multivariate}
 \seealso{\code{\link{clustermap}},\code{\link{pcamap}}}
-
-
 

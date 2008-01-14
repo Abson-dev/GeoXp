@@ -20,7 +20,7 @@ The Auckland data frame has 167 rows (census area units - CAU) and 4 columns.
 \source{
 Bailey T, Gatrell A (1995) Interactive Spatial Data Analysis, Harlow: Longman - INFOMAP data set used with permission. \cr \cr 
 
-Bivand R. (2006), `The spdep package', \url{http://cran.r-project.org/doc/packages/spdep.pdf}. \cr \cr 
+Bivand R. (2008), `The spdep package', \url{http://cran.r-project.org/doc/packages/spdep.pdf}. \cr \cr 
 
 Marshall R M (1991) Mapping disease and mortality rates using Empirical Bayes Estimators, Applied Statistics, 40, 283-294; 
 }

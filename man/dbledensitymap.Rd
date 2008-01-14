@@ -2,65 +2,41 @@
 \alias{dbledensitymap}
 \title{Double Kernel density estimates and map}
 \description{
-The function `dbledensitymap' plots two kernel density estimates from $var1$ and $var2$,
-computed with `bkde.R', and a map with sites of coordinates $(long,lat)$. Each site is associated to a value of 
-$var1$ and $var2$ and the two windows are interactive. }
+The function `dbledensitymap' plots two kernel density estimates from $var1$ and $var2$, computed with `bkde.R', and a map with sites of coordinates $(long,lat)$. Each site is associated to a value of $var1$ and $var2$ and the two windows are interactive. }
 \usage{
-dbledensitymap(long, lat, var1, var2,kernel='triweight', listvar = NULL, 
-               listnomvar = NULL, carte = NULL, criteria = NULL, label = "", 
-               symbol = 0, color = 1, labvar = c("var1", "var2"), axis = FALSE, 
-               lablong = "", lablat = "")
-
+dbledensitymap(long, lat, var1, var2, kernel = "triweight",
+listvar = NULL, listnomvar = NULL, carte = NULL, criteria = NULL,
+label = "", symbol = 0, color = 1, labvar = c("var1", "var2"),
+axis = FALSE, lablong = "", lablat = "")
 }
-
+%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{long}{a vector $x$ of size $n$}
-  \item{}{}
   \item{lat}{a vector $y$ of size $n$}
-  \item{}{}
   \item{var1}{a vector of numeric values of size $n$}
-  \item{}{}
   \item{var2}{a vector of numeric values of size $n$}
-  \item{}{}
   \item{kernel}{Smoothing kernel (see help(bkde) for list of options)}
-  \item{}{}
   \item{listvar}{matrix of variables}
-  \item{}{}
   \item{listnomvar}{names of variables $listvar$}
-  \item{}{}
-  \item{criteria}{a vector of size $n$ of boolean with TRUE on specific sites (these for non interactive selection)}
-  \item{}{}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : $x$ and $y$ coordinates of the vertices of the polygon}
-  \item{}{}
+  \item{criteria}{a vector of size $n$ of boolean with TRUE on specific sites (these for non interactive selection)}
   \item{label}{vector of character of size $n$ with names of sites}
-  \item{}{}
-  \item{color}{0 or 1, choice of representation of selected points (if user has selected a barplot as an additionnal graph). If 0, sites are represented in blue, if 1, sites are represented with different colors for each factor}
-  \item{}{}
   \item{symbol}{0 or 1, choice of representation of selected points. If 0, selected points are circles, if 1, selected points are stars}
-  \item{}{}
+  \item{color}{0 or 1, choice of representation of selected points (if user has selected a barplot as an additionnal graph). If 0, sites are represented in blue, if 1, sites are represented with different colors for each factor}
   \item{labvar}{list of character with names of variables $var1$ and $var2$}
-  \item{}{}
   \item{axis}{a boolean with True for drawing axes on the map}
-  \item{}{}
   \item{lablong}{name of the x-axis that will be printed on the map}
-  \item{}{}
   \item{lablat}{name of the y-axis that will be printed on the map}
 }
 \details{
-The user can choose an interval on the density curve by mouse clicking on the lower and upper boundaries of
-the interval or by giving directly these values.
+The user can choose an interval on the density curve by mouse clicking on the lower and upper boundaries of the interval or by giving directly these values.
 The selected sites are then represented on the map in red.
-A selection by `points' or `polygon' on the map results in the drawing of the density of the corresponding 
-sub-distribution on the density plot. Finally, the user can modify the bandwith parameter with a cursor in the tcltk 
-window (parameter $\alpha$). $\alpha$ is the smoothing parameter for the kernel smooth : it represents the mean 
-percentage of sample points involved in the local averaging (example : $\alpha=20$ means that on average, 
-$n \times 0.2$ points are in any interval of length $2h$ where h is the usual bandwidth).}
+A selection by `points' or `polygon' on the map results in the drawing of the density of the corresponding sub-distribution on the density plot. Finally, the user can modify the bandwith parameter with a cursor in the tcltk window (parameter $\alpha$). $\alpha$ is the smoothing parameter for the kernel smooth : it represents the mean percentage of sample points involved in the local averaging (example : $\alpha=20$ means that on average, $n \times 0.2$ points are in any interval of length $2h$ where h is the usual bandwidth).}
 
 
 \value{A vector of boolean of size $n$. TRUE if the site was in the last selection.}
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2006), ``Statistique et Econométrie 
-pour données géoréférencées : modèles et études de cas'' \cr \cr
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2008), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas'' \cr \cr
 
 Venables, W. N. and Ripley, B. D. (2002) ``Modern Applied Statistics with S''. New York: Springer. \cr \cr
 

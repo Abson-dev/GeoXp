@@ -1,4 +1,4 @@
-"polylist2list" <-
+`polylist2list` <-
 function(data)
 {
 if(class(data)[1]=="polylist")

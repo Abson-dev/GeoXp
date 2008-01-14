@@ -1,4 +1,4 @@
-"moranplotmap" <-
+`moranplotmap` <-
 function (long, lat, var, W, flower=0,opt1=1, locmoran=0,listvar=NULL, listnomvar=NULL,carte=NULL,criteria=NULL, label="", symbol=0, labvar="",axis=FALSE,lablong="", lablat="")
 {
 
@@ -16,9 +16,12 @@ maptest<-FALSE
 legends<-list(FALSE,FALSE,"","")
 z<-NULL
 legmap<-NULL
+num<-NULL
 
 graphChoice <- "";
 varChoice1 <- "";
+varChoice2 <- "";
+choix<-""
 listgraph <- c("Histogram","Barplot","Scatterplot")
 
 graphics.off();

@@ -33,8 +33,14 @@ It returns two vectors of middle coordinates for x-axis and y-axis cooresponding
 Bivand R. (2008), `The rgdal package', \url{http://cran.r-project.org/doc/packages/rgdal.pdf}.
 }
 
-\author{Thomas-Agnan C., Aragon Y., Ruiz-Gazen A., Laurent T., Robidou L.}
+\author{Thibault Laurent}
 
 \seealso{\code{\link{polylist2list}},\code{\link{map2list}}}
+
+\examples{
+midiP <- readOGR(system.file("vectors/region.mif", package = "GeoXp")[1], 
+"region")
+cont_midiP<-spdf2list(midiP)$poly
+}
 
 \keyword{manip}

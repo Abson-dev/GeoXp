@@ -1,13 +1,13 @@
-\name{makedistanceW}
-\alias{makedistanceW}
+\name{makedistancew}
+\alias{makedistancew}
 \title{Spatial weight matrix based on distance threshold}
 \description{
-The function `makedistanceW' creates a spatial weight matrix
+The function `makedistancew' creates a spatial weight matrix
 based on a threshold distance, assigny 1 if the distance between the two sites
 is lower or equal to a given threshold and 0 otherwise.}
 
 \usage{
-makedistanceW(x, y, distance)
+makedistancew(x, y, distance)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -38,5 +38,5 @@ A matrix W of size $n \times n$ containing 0 and 1.
 \examples{
 # data auckland
 data(auckland)
-W<-makedistanceW(auckland$Easting,auckland$Northing,5)
+W<-makedistancew(auckland$Easting,auckland$Northing,5)
 } 

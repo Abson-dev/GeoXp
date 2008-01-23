@@ -29,7 +29,7 @@ It returns a $dist$ object (see help(dist)). .
 \references{Besse Philippe, ``Data mining 2 : Modélisation
 statistique et apprentissage'', Publication du LSP, \url{http://www.lsp.ups-tlse.fr/Besse/}}
 
-\author{Laurent Thibault}
+\author{Thibault LAURENT}
 
 \seealso{\code{\link{clustermap}}}
 

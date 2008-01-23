@@ -973,23 +973,14 @@ slider1(tt,refresh1.code,c("Alpha (1st graph)"),c(3),c(100),c(1),c(alpha11))
 
 slider2(tt,refresh2.code,c("Alpha (2nd graph)"),c(3),c(100),c(1),c(alpha21))
 
-labelText7 <- tclVar("Non interactive selection")
-label7 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText7))
+
+labelText7 <- tclVar("Non interactive selection / Draw Spatial Contours")
+label7 <- tklabel(tt, text=tclvalue(labelText7))
 tkconfigure(label7, textvariable=labelText7)
 tkgrid(label7,columnspan=2)
-
 noint1.but <- tkbutton(tt, text="  On/Off  ", command=fnointer);
-tkgrid(noint1.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-
-labelText6 <- tclVar("Draw spatial contours")
-label6 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText6))
-tkconfigure(label6, textvariable=labelText6)
-tkgrid(label6,columnspan=2)
-
 nocou1.but <- tkbutton(tt, text="  On/Off  ", command=cartfunc);
-tkgrid(nocou1.but,columnspan=2)
+tkgrid(noint1.but, nocou1.but)
 tkgrid(tklabel(tt,text="    "))
 
 

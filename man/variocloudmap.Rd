@@ -65,19 +65,6 @@ Cressie N. and Hawkins D. (1980), ``Robust estimation of the variogram'', in Jou
 
 \keyword{spatial}
 \examples{
-# data afcon
-data(afcon)
-obs<-variocloudmap(afcon$x,afcon$y,afcon$totcon,listvar=afcon,listnomvar=names(afcon),
-label=afcon$name,criteria=(afcon$totcon>mean(afcon$totcon)))
-
-# Data Colombus
-#x <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
-#colombus.contours<-map2list(x)
-#colombus<-x$att.data
-#obs<-variocloudmap(colombus.contours$X,colombus.contours$Y,
-#colombus$HOVAL,label=colombus$NEIGNO, carte=colombus.contours$poly,
-#listvar=colombus,listnomvar=names(colombus),quantiles=0.95)
-
 # data meuse
 data(meuse.all)
 data(meuse.riv)

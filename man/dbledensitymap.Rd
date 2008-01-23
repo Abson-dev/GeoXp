@@ -60,12 +60,11 @@ labvar=c("Deaths.1977.85","Under.5.1981"),
 criteria=(auckland$Deaths.1977.85>mean(auckland$Deaths.1977.85)))
 
 # data columbus
-#x <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
-#colombus.contours<-map2list(x)
-#colombus<-x$att.data
-#obs<-dbledensitymap(colombus.contours$X,colombus.contours$Y,
-#colombus$HOVAL,colombus$CRIME,label=colombus$NEIGNO, carte=colombus.contours$poly,
-#listvar=colombus,listnomvar=names(colombus))
+x <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
+colombus.contours<-map2list(x)
+colombus<-x$att.data
+obs<-dbledensitymap(colombus.contours$X,colombus.contours$Y,colombus$HOVAL,
+colombus$CRIME,label=colombus$NEIGNO,carte=colombus.contours$poly)
 
 # data eire
 data(eire)

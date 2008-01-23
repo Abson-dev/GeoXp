@@ -42,6 +42,14 @@ A vector of boolean of size $n$. TRUE if the site was in the last selection.
 
 \seealso{\code{\link{histomap}}, \code{\link{histobarmap}}, \code{\link{scattermap}}, \code{\link{densitymap}}}
 \examples{
+# data on price indices of real estate in France
+data(immob)
+midiP <- readOGR(system.file("vectors/region.mif", package = "GeoXp")[1], "region")
+cont_midiP<-spdf2list(midiP)$poly
+histomap(immob$longitude,immob$latitude,immob$prix.vente,
+carte= cont_midiP,listvar=immob,
+listnomvar=names(immob),label=immob$Nom)
+
 # data oldcol
 data(oldcol)
 data(oldcol.polys)

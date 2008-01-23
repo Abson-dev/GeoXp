@@ -39,17 +39,21 @@ No values returned, only drawing of a graphic.
 \seealso{\code{\link{angleplotmap}},\code{\link{variocloudmap}},{\link{rotation}}}
 
 \examples{
-# data auckland
-data(auckland)
-data(auck.polys)
-contours.auckland<-polylist2list(auck.polys)
-driftmap(auckland$Easting,auckland$Northing,auckland$Deaths.1977.85,
-interpol=0,nuage=1,lablong="X",lablat="Y",labvar="Deaths.1977.85")
+# data on price indices of real estate in France
+data(immob)
+midiP <- readOGR(system.file("vectors/region.mif", package = "GeoXp")[1], "region")
+cont_midiP<-spdf2list(midiP)$poly
+driftmap(immob$longitude,immob$latitude,immob$prix.vente,
+carte= cont_midiP)
 
-# data afcon
+
+# Data on conflicts in Africa
 data(afcon)
-driftmap(afcon$x,afcon$y,afcon$totcon,interpol=0,
-nuage=1,lablong="X",lablat="Y",labvar="Number of conflicts")
+africa <- readOGR(system.file("vectors/Africa.MIF", package = "GeoXp")[1], "Africa")
+africa.contour<-spdf2list(africa)$poly
+driftmap(afcon$x,afcon$y,afcon$totcon,interpol=0,nuage=1,
+lablong="X",lablat="Y",labvar="Number of conflicts",
+carte=africa.contour)
 
 # data meuse
 data(meuse.all)

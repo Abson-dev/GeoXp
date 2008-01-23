@@ -38,7 +38,7 @@ A spatial weight matrix of size $n \times n$}
 
 \keyword{spatial}
 
-\seealso{\code{\link{moranplotmap}},\code{\link{findneighbors}},\code{\link{makedistanceW}},\code{\link{normw}}}
+\seealso{\code{\link{moranplotmap}},\code{\link{findneighbors}},\code{\link{makedistancew}},\code{\link{normw}}}
 
 \examples{
 # data auckland

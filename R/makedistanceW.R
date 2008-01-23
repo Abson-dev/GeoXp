@@ -1,4 +1,4 @@
-`makedistanceW` <-
+`makedistancew` <-
 function(x,y,distance)
 {
 # initialisation

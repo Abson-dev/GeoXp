@@ -2,10 +2,6 @@
 function(fenetre,refresh.code,names,minima,maxima,resolutions,starts,no=0)
 {
 
-    if (no != 0)
-    {
-        return(as.numeric(tclvalue(get(paste("slider",no,sep=""),env=slider.env))))
-    }
 
 #    if (set.no.value[1] != 0)
 #    {
@@ -15,9 +11,14 @@ function(fenetre,refresh.code,names,minima,maxima,resolutions,starts,no=0)
 
     if (!exists("slider.env"))
     {
-        slider.env<-new.env()
+        slider.env<<-new.env()
     }
 
+        if (no != 0)
+    {
+        return(as.numeric(tclvalue(get(paste("slider",no,sep=""),env=slider.env))))
+    }
+    
     for(i in seq(names))
     {
         eval(parse(text=paste("assign(\"slider",i,"\",tclVar(starts[i]),env=slider.env)",sep="")))

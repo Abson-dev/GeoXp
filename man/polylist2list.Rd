@@ -27,7 +27,7 @@ of the vertices of the polygons) where polygons are seperated from each other by
 Bivand R. (2008), `The spdep package', \url{http://cran.r-project.org/doc/packages/spdep.pdf}.
 }
 
-\author{Thomas-Agnan C., Aragon Y., Ruiz-Gazen A., Laurent T., Robidou L.}
+\author{Thibault Laurent}
 
 \seealso{\code{\link{spdf2list}},\code{\link{map2list}}}
 

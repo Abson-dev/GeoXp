@@ -68,7 +68,7 @@ $symbol$ (with 1 for different symbols, 0 otherwise).
 
 \author{
 Christine Thomas-Agnan, Yves Aragon, Anne Ruiz-Gazen, Thibault Laurent, Laurianne Robidou
-Maintainer: Christine Thomas-Agnan <cthomas@cict.fr>
+Maintainer: Thibault Laurent <thibault.laurent@univ-tlse1.fr>
 }
 
 \references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2008), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas''}

@@ -50,12 +50,12 @@ There is interactivity between the three windows created : the sites selected by
 
 \examples{
 # Data Colombus
-#x <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
-#colombus.contours<-map2list(x)
-#colombus<-x$att.data
-#obs<-histobarmap(colombus.contours$X,colombus.contours$Y,colombus$CP,
-#colombus$HOVAL,label=colombus$NEIGNO, carte=colombus.contours$poly,
-#listvar=colombus,listnomvar=names(colombus))
+x <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
+colombus.contours<-map2list(x)
+colombus<-x$att.data
+obs<-histobarmap(colombus.contours$X,colombus.contours$Y,colombus$CP,
+colombus$HOVAL,label=colombus$NEIGNO, carte=colombus.contours$poly,
+listvar=colombus,listnomvar=names(colombus))
 
 # Data eire
 data(eire)

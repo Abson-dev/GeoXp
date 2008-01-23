@@ -50,8 +50,14 @@ If that case, only the pair of sites $(s_i,s_j)$ verifying :
 \examples{
 # Data  afcon
 data(afcon)
-obs<-angleplotmap(afcon$x,afcon$y,afcon$totcon,listvar=afcon,listnomvar=names(afcon),
-label=afcon$name,criteria=(afcon$totcon>mean(afcon$totcon)),symbol=1)
+africa <- readOGR(system.file("vectors/Africa.MIF", package = "GeoXp")[1],
+"Africa")
+
+africa.contour<-spdf2list(africa)$poly
+
+obs<-angleplotmap(afcon$x,afcon$y,afcon$totcon,listvar=afcon,
+listnomvar=names(afcon),label=afcon$name,
+criteria=(afcon$totcon>mean(afcon$totcon)),carte=africa.contour)
 
 # Data Meuse
 data(meuse.all)

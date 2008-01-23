@@ -50,7 +50,14 @@ Wand M.P. et Jones M.C. (1995), ``Kernel Smoothing'', Chapman \& Hall.}
 \seealso{\code{\link{histomap}}, \code{\link{histobarmap}}, \code{\link{scattermap}}, \code{\link{densitymap}}}
 
 \examples{
-# library tcltk and KernSmooth
+# data on price indices of real estate in France
+data(immob)
+midiP <- readOGR(system.file("vectors/region.mif", package = "GeoXp")[1], "region")
+cont_midiP<-spdf2list(midiP)$poly
+densitymap(immob$longitude,immob$latitude,immob$prix.vente,
+carte=cont_midiP,listvar=immob,listnomvar=names(immob),
+labvar="Prix de vente moyen par m2")
+
 # data olcol
 data(oldcol)
 data(oldcol.polys)
@@ -58,15 +65,6 @@ contours.OLD<-polylist2list(oldcol.polys)
 densitymap(oldcol$X,oldcol$Y,oldcol$CRIME,listvar=oldcol,
 carte=contours.OLD, listnomvar=names(oldcol),
 criteria=(oldcol$CRIME>mean(oldcol$CRIME)))
-
-
-# data columbus
-#x <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
-#colombus.contours<-map2list(x)
-#colombus<-x$att.data
-#densitymap(colombus.contours$X,colombus.contours$Y,
-#colombus$CRIME,label=colombus$NEIGNO, carte=colombus.contours$poly,
-#listvar=colombus,listnomvar=names(colombus))
 
 # data eire
 data(eire)

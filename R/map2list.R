@@ -1,12 +1,16 @@
 `map2list` <-
 function(data)
 {
+
 if(class(data)[1]=="Map")
  { n<-length(data[1][[1]])
 
  if(length(data[1][[1]][1][[1]]$verts)==2)
-  {tkmessageBox(message="Return spatial points pattern only",icon="warning",type="ok")
-
+  {
+  if(interactive())
+{
+  tkmessageBox(message="Return spatial points pattern only",icon="warning",type="ok")
+}
    X<- (data[1][[1]][1][[1]]$bbox[1]+data[1][[1]][1][[1]]$bbox[3])/2
    Y<- (data[1][[1]][1][[1]]$bbox[2]+data[1][[1]][1][[1]]$bbox[4])/2
 
@@ -19,8 +23,10 @@ if(class(data)[1]=="Map")
    return(list(X=X,Y=Y))
   }
  else
- { tkmessageBox(message="Return spatial points patterns and polygons pattern",icon="warning",type="ok")
-  
+ { 
+ if(interactive())
+{tkmessageBox(message="Return spatial points patterns and polygons pattern",icon="warning",type="ok")
+}  
    contours<-rbind(NA,NA,NA,data[1][[1]][1][[1]]$verts)
    X<- (data[1][[1]][1][[1]]$bbox[1]+data[1][[1]][1][[1]]$bbox[3])/2
    Y<- (data[1][[1]][1][[1]]$bbox[2]+data[1][[1]][1][[1]]$bbox[4])/2
@@ -38,9 +44,12 @@ if(class(data)[1]=="Map")
 }
 else
  {
+ if(interactive())
+{
   tkmessageBox(message="Must be a Map object",icon="warning",type="ok")
+  }
  }
- 
+
 
 }
 

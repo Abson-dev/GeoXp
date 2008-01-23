@@ -43,4 +43,4 @@ W <- makeneighborsw(baltimore$X,baltimore$Y,4)
 nonormmoran(baltimore$PRICE,baltimore[,14:15],W)
 }
 
-\seealso{\code{\link{moranplotmap}},\code{\link{neighbourmap}},\code{\link{makeneighborsw}},\code{\link{makedistanceW}},\code{\link{normw}} }
+\seealso{\code{\link{moranplotmap}},\code{\link{neighbourmap}},\code{\link{makeneighborsw}},\code{\link{makedistancew}},\code{\link{normw}} }

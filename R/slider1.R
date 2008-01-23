@@ -1,10 +1,7 @@
 `slider1` <-
 function(fenetre,refresh.code,names,minima,maxima,resolutions,starts,no=0)
 {
-    if (no != 0) 
-    {
-        return(as.numeric(tclvalue(get(paste("slider",no,sep=""),env=slidenv))))
-    }
+
 
 #    if (set.no.value[1] != 0)
 #    { 
@@ -14,8 +11,14 @@ function(fenetre,refresh.code,names,minima,maxima,resolutions,starts,no=0)
 
     if (!exists("slidenv"))
     { 
-        slidenv<-new.env()
+        slidenv<<-new.env()
     }
+
+        if (no != 0) 
+    {
+        return(as.numeric(tclvalue(get(paste("slider",no,sep=""),env=slidenv))))
+    }
+
 
     for(i in seq(names))
     {

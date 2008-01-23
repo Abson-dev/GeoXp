@@ -69,4 +69,4 @@ listnomvar=names(baltimore),axis=TRUE,lablong="X",lablat="Y",flower=1,locmoran=1
 
 }
 
-\seealso{\code{\link{neighbourmap}},\code{\link{makeneighborsw}},\code{\link{makedistanceW}},\code{\link{normw}},\code{\link{nonormmoran}} }
+\seealso{\code{\link{neighbourmap}},\code{\link{makeneighborsw}},\code{\link{makedistancew}},\code{\link{normw}},\code{\link{nonormmoran}} }

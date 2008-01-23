@@ -42,6 +42,14 @@ drawing of the red histograms of the subdistributions corresponding to this subs
 \seealso{\code{\link{dblehistomap}}, \code{\link{histobarmap}}, \code{\link{scattermap}}, \code{\link{densitymap}}}
 
 \examples{
+# data on price indices of real estate in France
+data(immob)
+midiP <- readOGR(system.file("vectors/region.mif", package = "GeoXp")[1], "region")
+cont_midiP<-spdf2list(midiP)$poly
+dblehistomap(immob$longitude,immob$latitude,immob$prix.vente,
+immob$prix.location,carte= cont_midiP,listvar=immob,
+listnomvar=names(immob),label=immob$Nom)
+
 # data auckland
 data(auckland)
 data(auck.polys)
@@ -54,13 +62,13 @@ labvar=c("Deaths.1977.85","Under.5.1981"),
 criteria=(auckland$Deaths.1977.85>mean(auckland$Deaths.1977.85)))
 
 # data colombus
-#x <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
-#colombus.contours<-map2list(x)
-#colombus<-x$att.data
-#dblehistomap(colombus.contours$X,colombus.contours$Y,
-#colombus$HOVAL,colombus$CRIME,label=colombus$NEIGNO, carte=colombus.contours$poly,
-#listvar=colombus,listnomvar=names(colombus))
-
+x <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
+colombus.contours<-map2list(x)
+colombus<-x$att.data
+dblehistomap(colombus.contours$X,colombus.contours$Y,
+colombus$HOVAL,colombus$CRIME,
+label=colombus$NEIGNO, carte=colombus.contours$poly,
+listvar=colombus,listnomvar=names(colombus))
 
 }
 \keyword{spatial}

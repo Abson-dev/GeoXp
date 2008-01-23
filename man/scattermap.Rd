@@ -44,20 +44,19 @@ There is an interactivity between the two windows: the sites selected by `point'
 \seealso{\code{\link{dblehistomap}}, \code{\link{histobarmap}}, \code{\link{scattermap}}, \code{\link{densitymap}}}
 
 \examples{
-# library tcltk and fields
+# data on price indices of real estate in France
+data(immob)
+midiP <- readOGR(system.file("vectors/region.mif", package = "GeoXp")[1], "region")
+cont_midiP<-spdf2list(midiP)$poly
+scattermap(immob$longitude,immob$latitude,immob$prix.vente,
+immob$prix.location,carte= cont_midiP,listvar=immob,
+listnomvar=names(immob))
+
 # data baltimore
 data(baltimore)
 scattermap(baltimore$X,baltimore$Y,baltimore$PRICE,baltimore$SQFT,
 listvar=baltimore, listnomvar=names(baltimore),labvar=c("SQFT","PRICE"),
 criteria=(baltimore$CITCOU==1),axis=TRUE,lablong="X",lablat="Y",opt=2)
-
-# Data Colombus
-#x <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
-#colombus.contours<-map2list(x)
-#colombus<-x$att.data
-#scattermap(colombus.contours$X,colombus.contours$Y,
-#colombus$HOVAL,colombus$CRIME,label=colombus$NEIGNO, carte=colombus.contours$poly,
-#listvar=colombus,listnomvar=names(colombus))
 
 # Data Eire
 data(eire)

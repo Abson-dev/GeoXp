@@ -588,22 +588,13 @@ tkgrid(tklabel(tt,text="    "))
    
 
 labelText71 <- tclVar("Empirical Semi-Variogram")
-label71 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText71))
+label71 <- tklabel(tt,justify = "center", wraplength = "3i", text=tclvalue(labelText71))
 tkconfigure(label71, textvariable=labelText71)
 tkgrid(label71,columnspan=2)
 
-vari.but <- tkbutton(tt, text="  On/Off  ", command=vari);
-tkgrid(vari.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-
-labelText72 <- tclVar("Robust Empirical Semi-Variogram")
-label72 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText72))
-tkconfigure(label72, textvariable=labelText72)
-tkgrid(label72,columnspan=2)
-
-vari2.but <- tkbutton(tt, text="  On/Off  ", command=vari2);
-tkgrid(vari2.but,columnspan=2)
+vari.but <- tkbutton(tt, text="  Classic - On/Off  ", command=vari);
+vari2.but <- tkbutton(tt, text=" Robust - On/Off ", command=vari2);
+tkgrid(vari.but, vari2.but)
 tkgrid(tklabel(tt,text="    "))
 
 
@@ -614,20 +605,11 @@ tkconfigure(label73, textvariable=labelText73)
 tkgrid(label73,columnspan=2)
 
 
-vari3.but <- tkbutton(tt, text="     OK     ", command=choixangle);
-tkgrid(vari3.but,columnspan=2)
+vari3.but <- tkbutton(tt, text="     On     ", command=choixangle);
+finish.but<-tkbutton(tt,text="     Off     ",command=OnOK2)
+tkgrid(vari3.but,finish.but)
 tkgrid(tklabel(tt,text="    "))
 
-
-labelText74 <- tclVar("Return to isotropic semi-variogram cloud")
-label74 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText74))
-tkconfigure(label74, textvariable=labelText74)
-tkgrid(label74,columnspan=2)
-
-
-finish.but<-tkbutton(tt,text="     OK     ",command=OnOK2)
-tkgrid(finish.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
 
 
 

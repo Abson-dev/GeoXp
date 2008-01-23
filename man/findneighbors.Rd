@@ -29,7 +29,7 @@ $j$ is m-nearest neighbour to $i$.
 
 \keyword{spatial}
 \keyword{utilities}
-\seealso{\code{\link{moranplotmap}},\code{\link{makedistanceW}},\code{\link{makeneighborsw}}}
+\seealso{\code{\link{moranplotmap}},\code{\link{makedistancew}},\code{\link{makeneighborsw}}}
 
 \examples{
 data(auckland)

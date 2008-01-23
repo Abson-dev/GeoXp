@@ -68,7 +68,7 @@ contours.OLD<-polylist2list(oldcol.polys)
 obs<-clustermap(oldcol$X, oldcol$Y,oldcol[,7:12],3,listvar=oldcol,
 listnomvar=names(oldcol),carte=contours.OLD,criteria=(oldcol$CP==1))
 
-
+# Extract for GeoXp manual
 # data avifaune 
 #library(ade4)
 #data(mafragh)

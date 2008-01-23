@@ -59,12 +59,12 @@ Caussinus H., Fekri M., Hakam S., Ruiz-Gazen A. (2003) , ``A monitoring display 
 
 \examples{
 # Data Colombus
-#x <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
-#colombus.contours<-map2list(x)
-#colombus<-x$att.data
-#obs<-pcamap(colombus.contours$X,colombus.contours$Y,
-#colombus[,6:12],label=colombus$NEIGNO, carte=colombus.contours$poly,
-#listvar=colombus,listnomvar=names(colombus),namedata=names(colombus[,6:12]))
+x <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
+colombus.contours<-map2list(x)
+colombus<-x$att.data
+obs<-pcamap(colombus.contours$X,colombus.contours$Y,colombus[,6:12],
+label=colombus$NEIGNO, carte=colombus.contours$poly,listvar=colombus,
+listnomvar=names(colombus),namedata=names(colombus[,6:12]))
 
 
 # data boston

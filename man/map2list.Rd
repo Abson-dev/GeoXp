@@ -36,14 +36,14 @@ of the vertices of the polygons) where polygons are seperated from each other by
 Bivand R. (2008), `The maptools package', \url{http://cran.r-project.org/doc/packages/maptools.pdf}.
 }
 
-\author{Thomas-Agnan C., Aragon Y., Ruiz-Gazen A., Laurent T., Robidou L.}
+\author{Thibault Laurent}
 
 \seealso{\code{\link{polylist2list}},\code{\link{spdf2list}}}
 
 \examples{
-#x <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
-#colombus.contours<-map2list(x)
-#colombus<-x$att.data
+x <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
+colombus.contours<-map2list(x)
+colombus<-x$att.data
 }
 
 

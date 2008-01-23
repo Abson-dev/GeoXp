@@ -804,13 +804,10 @@ tkgrid(label11,columnspan=2)
 tkgrid(tklabel(tt,text="    "))
 
 
-msg <- paste("Moran index: ", MORAN) 
+msg <- paste("Moran index: ", MORAN, " - ","p-value (Gaussian Test) : ", if(round(prob,4)<0.0001){"<0.0001"}else{round(prob,4)}) 
 tkgrid(tklabel(tt,text=msg),columnspan=2)
 tkgrid(tklabel(tt,text="    "))
 
-msg <- paste("p-value (Gaussian Test) : ", if(round(prob,4)<0.0001){"<0.0001"}else{round(prob,4)}) 
-tkgrid(tklabel(tt,text=msg),columnspan=2)
-tkgrid(tklabel(tt,text="    "))
 
 labelText10 <- tclVar("Permutation Test")
 label10 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText10))
@@ -821,24 +818,17 @@ noint10.but <- tkbutton(tt, text="     OK     ", command=permutation);
 tkgrid(noint10.but,columnspan=2)
 tkgrid(tklabel(tt,text="    "))
 
-labelText7 <- tclVar("Non interactive selection")
-label7 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText7))
+
+labelText7 <- tclVar("Non interactive selection  /  Draw Spatial contours ")
+label7 <- tklabel(tt,justify = "center", wraplength = "3i", text=tclvalue(labelText7))
 tkconfigure(label7, textvariable=labelText7)
 tkgrid(label7,columnspan=2)
 
 noint1.but <- tkbutton(tt, text="  On/Off  ", command=fnointer);
-tkgrid(noint1.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-
-labelText6 <- tclVar("Draw spatial contours")
-label6 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText6))
-tkconfigure(label6, textvariable=labelText6)
-tkgrid(label6,columnspan=2)
-
 nocou1.but <- tkbutton(tt, text="  On/Off  ", command=cartfunc);
-tkgrid(nocou1.but,columnspan=2)
+tkgrid(noint1.but , nocou1.but)
 tkgrid(tklabel(tt,text="    "))
+
 
 
 labelText9 <- tclVar("Bubbles")

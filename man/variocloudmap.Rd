@@ -8,10 +8,9 @@ It is used to detect spatial autocorrelation. Possibility to draw the empirical 
 and a robust empirical semi-variogram.}
 
 \usage{
-variocloudmap(long, lat, var, bin = NULL, quantiles = NULL, 
-listvar = NULL, listnomvar = NULL, criteria = NULL, carte = NULL,
-label = "", symbol = 0,labvar = "", axis = FALSE, 
-lablong = "", lablat = "")
+variocloudmap(long, lat, var, bin=NULL, quantiles=NULL, listvar=NULL, listnomvar=NULL,
+criteria=NULL, carte = NULL, label = "", cex.lab=1, pch = 16, col="grey", xlab = "",
+ylab="", axes=FALSE, lablong = "", lablat = "", xlim=NULL, ylim=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -24,12 +23,17 @@ lablong = "", lablat = "")
   \item{listnomvar}{names of variables $listvar$}
   \item{criteria}{a vector of size $n$ of boolean with TRUE on specific sites (these for non interactive selection)}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : $x$ and $y$ coordinates of the vertices of the polygon}
-  \item{label}{vector of character of size $n$ with names of sites}
-  \item{symbol}{0 (by default) or 1, choice of representation of selected points. If 0, selected points are circles, if 1, selected points are stars}
-  \item{labvar}{name of $var$}
-  \item{axis}{a boolean with TRUE for drawing axes on the map}
+  \item{label}{a list of character of size $n$ with names of sites}
+  \item{cex.lab}{character size of label}
+  \item{pch}{16 by default, choice of representation of selected points}
+  \item{col}{"grey" by default, colors of points on the angle plot}  
+  \item{xlab}{a title for the graphic x-axis}
+  \item{ylab}{a title for the graphic y-axis}
+  \item{axes}{a boolean with TRUE for drawing axes on the map}
   \item{lablong}{name of the x-axis that will be printed on the map}
   \item{lablat}{name of the y-axis that will be printed on the map}
+  \item{xlim}{the x limits of the plot}
+  \item{ylim}{the y limits of the plot}
 }
 \details{
 For some couple of sites $(s_i,s_j)$, the graph represents on the $y-axis$ the semi squared difference
@@ -66,11 +70,12 @@ Cressie N. and Hawkins D. (1980), ``Robust estimation of the variogram'', in Jou
 \keyword{spatial}
 \examples{
 # data meuse
-data(meuse.all)
+data(meuse)
 data(meuse.riv)
-obs<-variocloudmap(meuse.all$x,meuse.all$y,
-meuse.all$zinc,quantiles=0.95,listvar=meuse.all,
-listnomvar=names(meuse.all))
+obs<-variocloudmap(meuse$x,meuse$y,meuse$zinc,
+quantiles=0.75,listvar=meuse,listnomvar=names(meuse),
+xlim=c(0,2000),ylim=c(0,500000),pch=2,carte=meuse.riv)
+#bin=c(0,50,100,250,500,750,1000,1250,1500,1750,2000) )
 #points(meuse.riv, type = "l", asp = 1)
 }
 

@@ -1,79 +1,64 @@
 `clustermap` <-
-function(long,lat,dataset,clustnum,method="kmeans",type=NULL,centers=NULL,scale=FALSE,listvar=NULL, listnomvar=NULL,carte=NULL,criteria=NULL,labvar="Cluster",label="",symbol=0,color=1,labmod="",axis=FALSE,lablong="", lablat="")
+function(long, lat, dataset, clustnum, method="kmeans", type=NULL, centers=NULL, scale=FALSE,
+listvar=NULL, listnomvar=NULL, carte=NULL, criteria=NULL, xlab="Cluster", ylab="Count", label="",
+cex.lab=1, pch=16, col="blue", names.arg="", axes=FALSE, lablong="", lablat="")
 {
 
-# initialisation
-nointer<-FALSE
-nocart<-FALSE
-buble<-FALSE
-z<-NULL
-legmap<-NULL
-legends<-list(FALSE,FALSE,"","")
+  # initialisation
+  nointer<-FALSE
+  nocart<-FALSE
+  buble<-FALSE
+  z<-NULL
+  legmap<-NULL
+  legends<-list(FALSE,FALSE,"","")
+  labvar=c(xlab,ylab)
+  fin <- tclVar(FALSE);
+  graphChoice <- ""
+  varChoice1 <- ""
+  varChoice2 <- ""
+  choix <- ""
+  listgraph <- c("Histogram","Barplot","Scatterplot")
+  if(names.arg[1]=="") names.arg <- 1:clustnum
+  obs<-vector(mode = "logical", length = length(long))
+  graphics.off()
 
-if(length(type)==0)
-{if(method=="kmeans")
- {type="Hartigan-Wong"}
- else
-  {type="ward"}
-}
+  # Méthodes de classification
+  if(length(type)==0)
+  {ifelse(method=="kmeans",type<-"Hartigan-Wong", type <-"ward")}
 
-# Réduction de la matrice des données
-if(scale)
-{if(class(dataset)!="dist")
- {dataset<-scale(dataset)}
-}
+  # Réduction de la matrice des données
+  if(scale && class(dataset)!="dist") dataset<-scale(dataset)
 
-# Etude des différentes possibilités
-if(class(dataset)!="dist")
-{if(method=="hclust")
- {dataset<-dist(dataset)}
-}
-else
-{if(method=="kmeans")
- {dataset<-as.matrix(dataset)}
-}
+  # Etude des différentes possibilités
+  if(class(dataset)!="dist")
+  {if(method=="hclust") dataset<-dist(dataset)}
+  else
+  {if(method=="kmeans") dataset<-as.matrix(dataset)}
 
-# Transformation de data.frame en matrix
-if(length(listvar)>0)
-{
- if(dim(as.matrix(listvar))[2]==1)
- {
- listvar<-as.matrix(listvar)
- }
-}
+  # classification
+  if(method=="kmeans")
+  {
+    num.graph <- 4 
+    ifelse(length(centers)==0,res <- kmeans(dataset,clustnum,algorithm=type),
+    res <- kmeans(dataset,centers,algorithm=type))
+    vectclass <- res$cluster
+  }
+  else
+  {
+    num.graph <- 5
+    res <- hclust(dataset,method=type)
+    vectclass <- as.vector(cutree(res,k=clustnum))
+  }
 
-obs<-vector(mode = "logical", length = length(long))
-graphics.off();
 
-get(getOption("device"))()
-get(getOption("device"))()
+  # Transformation de data.frame en matrix
+  if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(listvar)
 
-if(method=="hclust")
-{get(getOption("device"))()}
+  # Ouverture des fenêtres graphiques
+  dev.new()
+  dev.new()
 
-fin <- tclVar(FALSE);
-
-graphChoice <- "";
-varChoice1 <- "";
-varChoice2 <- "";
-choix="";
-listgraph <- c("Histogram","Barplot","Scatterplot")
-
-# classification
-if(method=="kmeans")
-{if(length(centers)==0)
-{res <- kmeans(dataset,clustnum,algorithm=type)}
-else
-{res <- kmeans(dataset,centers,algorithm=type)}
-vectclass <- res$cluster;
-}
-else
-{res <- hclust(dataset,method=type);
-vectclass <- as.vector(cutree(res,k=clustnum));
-}
-
-if(labmod[1]=="")
- {labmod <- 1:clustnum}
+  if(method=="hclust") dev.new()
 
 
 ####################################################
@@ -87,24 +72,28 @@ pointfunc<-function()
     while(!quit)
     {
         #sélection des points
-        dev.set(2);
-        loc<-locator(1);
+        dev.set(2)
+        loc<-locator(1)
         if(is.null(loc)) 
         {
             quit<-TRUE;
             next;
         }   
-        obs<<-selectmap(var1=long,var2=lat,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point");         
+        obs<<-selectmap(var1=long,var2=lat,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point")         
 
         # graphiques
-        carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=symbol,carte=carte,nocart=nocart,method="Cluster",classe=vectclass,col=color,legmap=legmap,legends=legends,labmod=labmod,axis=axis)
-         graphique(var1=vectclass, obs=obs, num=3,graph="Barplot", labvar=labvar, symbol=symbol,labmod=labmod,col=color);
+
+        carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+        lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,
+        method="Cluster",classe=vectclass,couleurs=col,legmap=legmap,legends=legends,labmod=names.arg,
+        cex.lab=cex.lab,axis=axes)
+        
+        graphique(var1=vectclass, obs=obs, num=3,graph="Barplot", labvar=labvar, symbol=pch,labmod=names.arg,couleurs=col);
+        
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
-           if(method=="kmeans")
-            {graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)], obs=obs, num=4, graph=graphChoice, symbol=1, labvar=c(varChoice1,varChoice2))}
-           else
-            {graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)], obs=obs, num=5, graph=graphChoice, symbol=1, labvar=c(varChoice1,varChoice2))}         
+         graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
+         obs=obs, num=num.graph, graph=graphChoice, couleurs=col[1], labvar=c(varChoice1,varChoice2))       
         }
 
 
@@ -117,43 +106,47 @@ pointfunc<-function()
 
 polyfunc<-function() 
 {
-    polyX <- NULL;
-    polyY <- NULL;
-    quit <- FALSE;
+    polyX <- NULL
+    polyY <- NULL
+    quit <- FALSE
 
     while(!quit)
     {
-        dev.set(2);
-        loc<-locator(1);
+        dev.set(2)
+        loc<-locator(1)
         if(is.null(loc)) 
         {
-            quit<-TRUE;
-            next;
+            quit<-TRUE
+            next
         }
 
-        polyX <- c(polyX, loc[1]);
-        polyY <- c(polyY, loc[2]);
-        lines(polyX,polyY);
+        polyX <- c(polyX, loc[1])
+        polyY <- c(polyY, loc[2])
+        lines(polyX,polyY)
     }
 
-    polyX <- c(polyX, polyX[1]);
-    polyY <- c(polyY, polyY[1]);
+    polyX <- c(polyX, polyX[1])
+    polyY <- c(polyY, polyY[1])
 if (length(polyX)>0)
 {
-    lines(polyX,polyY);
+    lines(polyX,polyY)
 
-    obs <<- selectmap(var1=long, var2=lat, obs=obs, Xpoly=polyX, Ypoly=polyY, method="poly");
+    obs <<- selectmap(var1=long, var2=lat, obs=obs, Xpoly=polyX, Ypoly=polyY, method="poly")
 
     #graphiques
-   carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=symbol,col=color,carte=carte,nocart=nocart,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=labmod,axis=axis)
-        graphique(var1=vectclass, obs=obs, num=3,graph="Barplot", labvar=labvar, symbol=symbol,labmod=labmod,col=color);
+   carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+   lablong=lablong, lablat=lablat, label=label, symbol=pch,couleurs=col,carte=carte,nocart=nocart,
+   method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes,cex.lab=cex.lab)
+   
+   graphique(var1=vectclass, obs=obs, num=3,graph="Barplot", labvar=labvar, symbol=pch,labmod=names.arg,
+   couleurs=col)
+   
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
-           if(method=="kmeans")
-            {graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)], obs=obs, num=4, graph=graphChoice, symbol=1, labvar=c(varChoice1,varChoice2))}
-           else
-            {graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)], obs=obs, num=5, graph=graphChoice, symbol=1, labvar=c(varChoice1,varChoice2))}         
+         graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
+         obs=obs, num=num.graph, graph=graphChoice, couleurs=col[1], labvar=c(varChoice1,varChoice2))       
         }
+
 }
 
   }
@@ -164,31 +157,33 @@ if (length(polyX)>0)
 
 barfunc<-function()
 {
-    SGfunc();
-    quit <- FALSE;
+    SGfunc()
+    quit <- FALSE
 
     while(!quit)
     {
-        dev.set(3);
-        loc<-locator(1);
+        dev.set(3)
+        loc<-locator(1)
         if(is.null(loc)) 
         {
-            quit<-TRUE;
-            next;
+          quit<-TRUE
+          next
         }           
         obs<<-selectstat(var1=as.vector(vectclass),obs=obs,Xpoly=loc[1], Ypoly=loc[2],method="Barplot");   
 
         # graphiques
-        graphique(var1=vectclass, obs=obs, num=3,graph="Barplot", labvar=labvar, symbol=symbol,labmod=labmod,col=color);
-        carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=symbol,carte=carte,nocart=nocart,col=color,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=labmod,axis=axis)
-        {
-           if(method=="kmeans")
-            {graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)], obs=obs, num=4, graph=graphChoice, symbol=1, labvar=c(varChoice1,varChoice2))}
-           else
-            {graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)], obs=obs, num=5, graph=graphChoice, symbol=1, labvar=c(varChoice1,varChoice2))}         
-        }
+        graphique(var1=vectclass, obs=obs, num=3,graph="Barplot", labvar=labvar, symbol=pch,labmod=names.arg,
+        couleurs=col)
+        
+        carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+        lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,couleurs=col,
+        method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
 
-      
+        if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
+        {
+         graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
+         obs=obs, num=num.graph, graph=graphChoice, couleurs=col[1], labvar=c(varChoice1,varChoice2))       
+        }      
     }
   }
 
@@ -200,33 +195,28 @@ graphfunc <- function()
 {
     if ((length(listvar) != 0) && (length(listnomvar) != 0))
     {
-       if(method=="kmeans")
-        {dev.off(4)}
-       else
-        {dev.off(5)}
-        choix <<- selectgraph(listnomvar,listgraph);
-        varChoice1 <<- choix$varChoice1;
-        varChoice2 <<- choix$varChoice2;
-        graphChoice <<- choix$graphChoice;
+       ifelse(method=="kmeans",dev.off(4),dev.off(5))
+        
+        choix <<- selectgraph(listnomvar,listgraph)
+        varChoice1 <<- choix$varChoice1
+        varChoice2 <<- choix$varChoice2
+        graphChoice <<- choix$graphChoice
             
         if ((graphChoice != "") && (varChoice1 != ""))
         {
-            x11(width=5, height=5);
-         
-           if(method=="kmeans")
-            {graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)], obs=obs, num=4, graph=graphChoice, symbol=1, labvar=c(varChoice1,varChoice2))}
-           else
-            {graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)], obs=obs, num=5, graph=graphChoice, symbol=1, labvar=c(varChoice1,varChoice2))}         
+         dev.new()
+         graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
+         obs=obs, num=num.graph, graph=graphChoice, couleurs=col[1], labvar=c(varChoice1,varChoice2))       
         }
         else
         {
-        tkmessageBox(message="You must choose a variable",icon="warning",type="ok");
+        tkmessageBox(message="You must choose a variable",icon="warning",type="ok")
         }
         
     }
     else
     {
-        tkmessageBox(message="You must give listvar and listnomvar in input",icon="warning",type="ok");
+        tkmessageBox(message="You must give listvar and listnomvar in input",icon="warning",type="ok")
     }
   }
 
@@ -234,28 +224,20 @@ graphfunc <- function()
 ####################################################
 # contour des unités spatiales
 ####################################################
+
 cartfunc <- function()
-{
-  if(!nocart)
-   { if (length(carte) != 0)
-       {nocart<<-TRUE
-        carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=symbol,carte=carte,nocart=nocart,col=color,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=labmod,axis=axis)
-        }
-     else
-       {
-        tkmessageBox(message="Spatial contours have not been given",icon="warning",type="ok")
-        carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=symbol,col=color,carte=carte,nocart=nocart,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=labmod,axis=axis)
-       }
-  }
-
- else
-
-
- {
-   nocart<<-FALSE;
-   carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=symbol,col=color,carte=carte,nocart=nocart,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=labmod,axis=axis)
- }
-
+{ 
+ if (length(carte) != 0)
+   {
+   ifelse(!nocart,nocart<<-TRUE,nocart<<-FALSE)
+   carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+   lablong=lablong, lablat=lablat, label=label, cex.lab=cex.lab, symbol=pch,couleurs=col,carte=carte,
+   nocart=nocart, method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)    
+   }
+   else
+   {
+    tkmessageBox(message="Spatial contours have not been given",icon="warning",type="ok")    
+   }
 }
 
 
@@ -266,15 +248,18 @@ cartfunc <- function()
 SGfunc<-function() 
 {
     obs<<-vector(mode = "logical", length = length(long));
-    carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=symbol,carte=carte,nocart=nocart,col=color,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=labmod,axis=axis)
-    graphique(var1=vectclass, obs=obs, num=3, graph="Barplot", labvar=labvar, symbol=symbol,labmod=labmod,col=color);
-    if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
+   
+    carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+    lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,
+    couleurs=col,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
+    
+    graphique(var1=vectclass, obs=obs, num=3, graph="Barplot", labvar=labvar, symbol=pch,labmod=names.arg,couleurs=col)
+    
+     if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
-           if(method=="kmeans")
-            {graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)], obs=obs, num=4, graph=graphChoice, symbol=1, labvar=c(varChoice1,varChoice2))}
-           else
-            {graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)], obs=obs, num=5, graph=graphChoice, symbol=1, labvar=c(varChoice1,varChoice2))}         
-        }
+         graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
+         obs=obs, num=num.graph, graph=graphChoice, couleurs=col[1], labvar=c(varChoice1,varChoice2))       
+        }      
   }
 
 ####################################################
@@ -285,7 +270,7 @@ quitfunc<-function()
 {
     tclvalue(fin)<<-TRUE
   #  graphics.off();
-    tkdestroy(tt);
+    tkdestroy(tt)
   }
 
 ####################################################
@@ -294,203 +279,55 @@ quitfunc<-function()
 
 fnointer<-function() 
 {
- if(!nointer)
-  { if (length(criteria) != 0)
-     {nointer<<-TRUE
-      carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=symbol,carte=carte,nocart=nocart,col=color,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=labmod,axis=axis)
-     }
-   else
-      {
-       tkmessageBox(message="Criteria has not been given",icon="warning",type="ok")
-      }
-
-  }
-
- else 
-
+ if (length(criteria) != 0)
  {
-   nointer<<-FALSE;
-   carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=symbol,carte=carte,nocart=nocart,col=color,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=labmod,axis=axis)
+   ifelse(!nointer,nointer<<-TRUE,nointer<<-FALSE)
+   carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+   lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,
+   couleurs=col,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)   
  }
-
+ else
+ {
+  tkmessageBox(message="Criteria has not been given",icon="warning",type="ok")
+ }
+ 
 }
 
-
-
-####################################################
-# Choisir une variable
-####################################################
-
-    choixvarfunc <- function(title, question, liste) {
-        tt2 <- tktoplevel()
-        scr <- tkscrollbar(tt2, repeatinterval = 5, command = function(...) tkyview(lstbox, 
-            ...))
-        lstbox <- tklistbox(tt2, height = 4, selectmode = "single", 
-            yscrollcommand = function(...) tkset(scr, ...), background = "white")
-        tkgrid(tklabel(tt2, text = question))
-        tkfocus(tt2)
-        tkwm.title(tt2, title)
-        varChoice <- ""
-        tkgrid(lstbox, scr)
-        tkgrid.configure(scr, rowspan = 4, sticky = "nsw")
-        var <- liste
-        for (i in 1:length(var)) {
-            tkinsert(lstbox, "end", var[i])
-        }
-        OnOK <- function() {
-            varChoice <<- var[as.numeric(tkcurselection(lstbox)) + 
-                1]
-            tkdestroy(tt2)
-        }
-        OK.but <- tkbutton(tt2, text = "   OK   ", command = OnOK)
-        tkgrid(OK.but)
-        tkbind(tt2, "<Destroy>", function() {
-            tkdestroy(tt2)
-        })
-        tkfocus(tt2)
-        tkwait.window(tt2)
-        return(varChoice)
-    }
 
 
 ####################################################
 # Bubble
 ####################################################
 
-fbubble<-function(){
-
-if(!buble)
+fbubble<-function()
 {
-   if ((length(listvar) != 0) && (length(listnomvar) != 0))
-    {
-
-
-     varChoix <- choixvarfunc("Choice of variables","Choose the variable",listnomvar)
-      bubble <- listvar[,which(listnomvar == varChoix)]
-      if ((length(bubble) != 0)&&(min(bubble)>=0))
-       { 
-         buble<<-TRUE   
-       } 
-      else
-       {
-        tkmessageBox(message="Bubbles have not been given or must be positiv",icon="warning",type="ok")
-       }
-
-    }
-
-else
-    {
-        tkmessageBox(message="To use Bubbles, the lists wich contain the variables and their names must have been given",icon="warning",type="ok");
-    }
-
-}
-
-else
-{buble<<-FALSE
- legends<<-list(FALSE,legends[[2]],"",legends[[4]])
- carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=symbol,carte=carte,nocart=nocart,col=color,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=labmod,axis=axis)
-}
-
-
-
-
-if(buble)
-{
-
-tt2 <- tktoplevel()
-
-OnOK <- function()
-{ 
-tkdestroy(tt2)	
-
-tt3 <- tktoplevel()
-
-
-bubl<-function()
-{
-tkdestroy(tt3)	
-msg <- paste("Click on the map to indicate the location of the upper left corner of the legend box
-")
-tkmessageBox(message=msg)
-dev.set(2);
-loc <- locator(1)
-rbValue="math"
-if(rbValue=="math")
-{
-z<<-sqrt(bubble/max(bubble))*3
-legmap<<-c(sqrt(as.numeric(tclvalue(ma))/max(bubble))*3,sqrt(as.numeric(tclvalue(mea))/max(bubble))*3,sqrt(as.numeric(tclvalue(mi))/max(bubble))*3,as.numeric(tclvalue(ma)),as.numeric(tclvalue(mea)),as.numeric(tclvalue(mi)),varChoix)
-}
-else
-{
-z<<-3*(bubble/max(bubble))^0.57
-legmap<<-c(3*(as.numeric(tclvalue(ma))/max(bubble))^0.57,3*(as.numeric(tclvalue(mea))/max(bubble))^0.57,3*(as.numeric(tclvalue(mi))/max(bubble))^0.57,as.numeric(tclvalue(ma)),as.numeric(tclvalue(mea)),as.numeric(tclvalue(mi)),varChoix)
-}
-
-
-legends<<-list(TRUE,legends[[2]],loc,legends[[4]])
-carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=symbol,carte=carte,nocart=nocart,col=color,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=labmod,axis=axis)
-
-
-}
-
-
-mi<-tclVar(round(min(bubble),2))
-mea<-tclVar(round(mean(bubble),2))
-ma<-tclVar(round(max(bubble),2))
-entry.Name <-tkentry(tt3,width="5",textvariable=mi)
-entry.Name2 <-tkentry(tt3,width="5",textvariable=mea)
-entry.Name3 <-tkentry(tt3,width="5",textvariable=ma)
-tkgrid(tklabel(tt3,text="Break Points:"))
-tkgrid(tklabel(tt3,text="Small Bubble"),entry.Name)
-tkgrid(tklabel(tt3,text="Middle Bubble"),entry.Name2)
-tkgrid(tklabel(tt3,text="Large Bubble"),entry.Name3)
-
-autre.but <- tkbutton(tt3, text="     OK     " , command=bubl);
-tkgrid(autre.but,columnspan=2)
-tkgrid(tklabel(tt3,text="    "))
-tkfocus(tt3)
-
-}
-
-OnOK2 <- function()
-{ 
-tkdestroy(tt2)
-rbValue="math"
-if(rbValue=="math")
-{
-z<<-sqrt(bubble/max(bubble))*3
-}
-else
-{
-z<<-3*(bubble/max(bubble))^0.57
-}	
-carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=symbol,carte=carte,nocart=nocart,col=color,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=labmod,axis=axis)
+  res2<-choix.bubble(buble,listvar,listnomvar,legends)
+  
+  buble <<- res2$buble
+  legends <<- res2$legends
+  z <<- res2$z
+  legmap <<- res2$legmap
+  
+  carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+  lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,
+  couleurs=col,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes) 
  
 }
 
+####################################################
+# Représentation graphique
+####################################################
 
-labelText12 <- tclVar("Do you want a legend for bubbles")
-label12 <- tklabel(tt2,justify = "center", wraplength = "3i", text=tclvalue(labelText12))
-tkconfigure(label12, textvariable=labelText12)
-tkgrid(label12,columnspan=2)
-
-point.but <- tkbutton(tt2, text="  Yes  ", command=OnOK);
-poly.but <- tkbutton(tt2, text=" No ", command=OnOK2);
-tkgrid(point.but, poly.but)
-tkgrid(tklabel(tt2,text="    "))
-tkfocus(tt2)
-}
-
-
-
-}
-
-carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=symbol,carte=carte,nocart=nocart,col=color,method="Cluster",classe=vectclass,legends=legends,labmod=labmod)
-graphique(var1=as.vector(vectclass), obs=obs, num=3, graph="Barplot", labvar=labvar, symbol=symbol,labmod=labmod,col=color);
+carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,
+couleurs=col,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
+    
+graphique(var1=as.vector(vectclass), obs=obs, num=3, graph="Barplot", labvar=labvar, symbol=pch,
+labmod=names.arg,couleurs=col)
 
 if(method=="hclust") 
-{dev.set(4);
-plot(res);
+{dev.set(4)
+plot(res)
 }
 
 
@@ -500,50 +337,54 @@ plot(res);
 
 if(interactive())
 {
-OnOK <- function()
-{ 
-tkdestroy(tt1)	
-msg <- paste("Click on the map to indicate the location of the upper left corner of the legend box")
+ OnOK <- function()
+ { 
+  tkdestroy(tt1)	
+  msg <- paste("Click on the map to indicate the location of the upper left corner of the legend box")
 	tkmessageBox(message=msg)
 
-dev.set(2);
-loc <- locator(1)
-legends<<-list(legends[[1]],TRUE,legends[[4]],loc)
+  dev.set(2)
+  loc <- locator(1)
+  legends<<-list(legends[[1]],TRUE,legends[[3]],loc)
 
-carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=symbol,carte=carte,nocart=nocart,col=color,method="Cluster",classe=vectclass,legends=legends,labmod=labmod)
-graphique(var1=as.vector(vectclass), obs=obs, num=3, graph="Barplot", labvar=labvar, symbol=symbol,labmod=labmod,col=color);
+  carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+  lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,
+  couleurs=col,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
 
-
-}
+  graphique(var1=as.vector(vectclass), obs=obs, num=3, graph="Barplot", labvar=labvar, symbol=pch,
+  labmod=names.arg,couleurs=col)
+ }
 
 OnOK2 <- function()
-{ 
-legends<<-list(legends[[2]],FALSE,legends[[4]],"")
-tkdestroy(tt1)	
+ { 
+  legends<<-list(legends[[1]],FALSE,legends[[3]],"")
+  tkdestroy(tt1)	
 
-carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=symbol,carte=carte,nocart=nocart,col=color,method="Cluster",classe=vectclass,legends=legends,labmod=labmod)
-graphique(var1=as.vector(vectclass), obs=obs, num=3, graph="Barplot", labvar=labvar, symbol=symbol,labmod=labmod,col=color);
-
-}
-
-
-if(color==1)
-{
-tt1<-tktoplevel()
-
-labelText12 <- tclVar("Do you want a legend for factors")
-label12 <- tklabel(tt1,justify = "center", wraplength = "3i", text=tclvalue(labelText12))
-tkconfigure(label12, textvariable=labelText12)
-tkgrid(label12,columnspan=2)
-
-point.but <- tkbutton(tt1, text="  Yes  ", command=OnOK);
-poly.but <- tkbutton(tt1, text=" No ", command=OnOK2);
-tkgrid(point.but, poly.but)
-tkgrid(tklabel(tt1,text="    "))
+  carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+  lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,
+  couleurs=col,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
+    
+  graphique(var1=as.vector(vectclass), obs=obs, num=3, graph="Barplot", labvar=labvar, 
+  symbol=pch,labmod=names.arg,couleurs=col)
+  }
 
 
-tkfocus(tt1)
-}
+if(length(col)==length(levels(as.factor(vectclass)))||length(pch)==length(levels(as.factor(vectclass))))
+ {
+  tt1<-tktoplevel()
+
+  labelText12 <- tclVar("Do you want a legend for factors")
+  label12 <- tklabel(tt1,justify = "center", wraplength = "3i", text=tclvalue(labelText12))
+  tkconfigure(label12, textvariable=labelText12)
+  tkgrid(label12,columnspan=2)
+
+  point.but <- tkbutton(tt1, text="  Yes  ", command=OnOK)
+  poly.but <- tkbutton(tt1, text=" No ", command=OnOK2)
+  tkgrid(point.but, poly.but)
+  tkgrid(tklabel(tt1,text="    "))
+
+  tkfocus(tt1)
+ }
 }
 ####################################################
 # création de la boite de dialogue

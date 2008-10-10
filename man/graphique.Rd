@@ -9,9 +9,11 @@ one of these graphics : Histogram, Barplot, Boxplot, Polyboxplot, Scatterplot, D
 
 \usage{
 graphique(var1, var2, var3, obs, num, graph = "", couleurs = "",
-symbol = 0, col = 0, labvar = "", nbcol = 10, alpha1, W, Xpoly, Ypoly,
-F, G, opt1 = 1, opt2 = 1, quantiles = 0.5, labmod = "", direct,
-inertie, label = 0, kernel, obsq, locmoran = 0, bin = NULL)
+    symbol = 16, labvar = "", nbcol = 10, alpha1, W,
+    Xpoly, Ypoly, F, G, opt1 = 1, opt2 = 1, quantiles = 0,
+    labmod = "", direct, inertie, label = 0, kernel, obsq, locmoran = FALSE,
+    bin = NULL, cex.lab=1, buble=FALSE, cbuble=NULL, legmap=NULL, 
+    legends=list(FALSE,FALSE), xlim, ylim)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -21,9 +23,8 @@ inertie, label = 0, kernel, obsq, locmoran = 0, bin = NULL)
   \item{obs}{a vector of boolean of size $n$ with sites selected}
   \item{num}{number of windows which must be activated (3 ou 4)}
   \item{graph}{name of graphic which must be drawn : Histogram, Barplot, Boxplot, Polyboxplot, Scatterplot, Densityplot1, Densityplot2, Neighbourplot, Lorentz, Moran, Quadrant, Angleplot, Variocloud, Cluster, Acp1, Acp2}
-  \item{couleurs}{Possibilty to change colors (for admin only)}
-  \item{symbol}{0 or 1, choice of representation of points selected  (0, selected points are in red or 1, selectd points are stars)}
-  \item{col}{0 or 1, choice of representation of points selected (0, sites are represented in blue and 1, sites are represented with different colors for each factor)}
+  \item{couleurs}{Possibilty to change colors on the graphic}
+  \item{symbol}{choice of representation of selected sites}
   \item{labvar}{name(s) of variable(s) studied}
   \item{nbcol}{number of cells if the graphic choosen is the histogram (10 by default)  }
   \item{alpha1}{regression smoothing paramater}
@@ -32,7 +33,7 @@ inertie, label = 0, kernel, obsq, locmoran = 0, bin = NULL)
   \item{Ypoly}{y-coordinates of the vertices of selected polygon}
   \item{F}{Used for Ginimap}
   \item{G}{Used for Ginimap}
-  \item{opt1}{Option for scattermap (1 graphic only, 2 drawing of the conditionnal median regression spline, 3 drawing of the conditionnal quantile regression spline (user has to give option quantiles))}
+  \item{opt1}{Option for adding a curve (regression line or conditionnal quantile depending on the function) }
   \item{opt2}{Option for drawing robust empirical variogram}
   \item{quantiles}{vector which contains the values of $\alpha$ for conditionnal quantile}
   \item{labmod}{names of factor if the graphic choosed is a barplot}
@@ -42,7 +43,15 @@ inertie, label = 0, kernel, obsq, locmoran = 0, bin = NULL)
   \item{kernel}{Name of the kernel choosed in densitymap}
   \item{obsq}{Used for clustermap and barmap}
   \item{locmoran}{Print local moran for each site}
-  \item{bin}{The bins chosen to calculte empirical variogram}
+  \item{bin}{The bins chosen to calculate empirical variogram}
+  \item{cex.lab}{character size of label}
+  \item{buble}{For Local Moran plot only : a boolean with TRUE for drawing bubbles, FALSE otherwise}
+  \item{cbuble}{For Local Moran plot only : vector of size $n$ with size of each site depending on variable with which bubbles are constructed }
+  \item{legmap}{For Local Moran plot only : a list of (numeric,numeric,numeric,numeric,numeric,numeric,character) with the sizes and the corresponding values of the 3 bubbles represented in the legend and the variable name of variable choosed }
+  \item{legends}{For Local Moran plot only : a list of c(boolean,boolean,c(numeric,numeric),c(numeric,numeric)) with TRUE for drawing legends of bubbles (1st argument) or factors (2nd argument) and the coordinates of the location of the upper left corner of the legend box}
+  \item{xlim}{the x limits of the plot}
+  \item{ylim}{the y limits of the plot} 
+ 
 }
 \details{This function is called by any function which draws a graphic. A lot of options
 are considered because of the large number of graphics proposed

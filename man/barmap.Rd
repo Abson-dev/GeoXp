@@ -5,25 +5,28 @@
 The function `barmap' draws a bar plot (vertical bar) of the given factor variable $var$ and a map with sites of coordinates $(long,lat)$.}
 
 \usage{
-barmap(long, lat, var, listvar = NULL, listnomvar = NULL,
-criteria = NULL, carte = NULL, label = "", color = 1, symbol = 0,
-labvar = "", labmod = "", axis = FALSE, lablong = "", lablat = "")
+barmap(long,lat,var,listvar=NULL,listnomvar=NULL,criteria=NULL,carte=NULL,
+label="",cex.lab=1,col="blue",pch=16,xlab="",ylab="",names.arg="",
+axes=FALSE, lablong="", lablat="")
 }
+
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{long}{a vector $x$ of size $n$}
   \item{lat}{a vector $y$ of size $n$}
   \item{var}{a vector of factor of size $n$}
-  \item{listvar}{matrix of variables fo size $n \times p$ for optional additional graph and bubbles}
-  \item{listnomvar}{list of character of size $p$ with name of variables from $listvar$}
-  \item{criteria}{a vector of size n of boolean with TRUE on specific sites (these for non interactive selection)}
-  \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : $x$ and $y$ coordinates of the vertices of the polygon}
-  \item{label}{vector of character of size $n$ with name of each site}
-  \item{color}{0 or 1, choice of representation of selected points. If 0, sites are represented in blue, if 1, sites are represented with different colors for each factor}
-  \item{symbol}{0 or 1, choice of representation of selected points. If 0, selected points are circles, if 1, selected points are stars}
-  \item{labvar}{name of variable $var$}
-  \item{labmod}{names of factors of $var$}
-  \item{axis}{a boolean with TRUE for drawing axes on the map}
+  \item{listvar}{matrix of variables which permit to plot bubbles on map or add a graphic using the tk window}
+  \item{listnomvar}{list of character with name of variables from $listvar$}
+  \item{criteria}{a vector of size n of boolean which permit to represent sites selected with a cross, using the tcltk window}
+  \item{carte}{matrix with 2 columns for drawing spatial polygonal contours using the tcltk window : $x$ and $y$ coordinates of the vertices of the polygon}
+  \item{label}{a list of character of size $n$ with name of site. Names are printed on map after a selection}
+  \item{cex.lab}{character size of label}
+  \item{col}{a vector of colors which must be equal to the number of group else all sites and all bars are printed in col[1]}
+  \item{pch}{a vector of symbol which must be equal to the number of group else all sites are printed in pch[1]}
+  \item{xlab}{a title for the graphic x-axis}
+  \item{ylab}{a title for the graphic y-axis}
+  \item{names.arg}{names of factors of $var$}
+  \item{axes}{a boolean with TRUE for drawing axes on the map}
   \item{lablong}{name of the x-axis that will be printed on the map}
   \item{lablat}{name of the y-axis that will be printed on the map}
 }
@@ -43,19 +46,20 @@ results in the drawing of the sub-barplot in red.
 
 \examples{
 # data oldcol 
-data(oldcol)
-data(oldcol.polys)
-oldcol.contours<-polylist2list(oldcol.polys)
-barmap(oldcol$X, oldcol$Y, oldcol$NSA, listvar=oldcol,carte=oldcol.contours, 
-listnomvar=names(oldcol),criteria=(oldcol$CP==1),axis=TRUE,lablong="X",lablat="Y")
+example(columbus)
+coords <- coordinates(columbus)
+cont<-spdf2list(columbus)$poly
+
+barmap(coords[,1], coords[,2], columbus@data$NSA, listvar=columbus@data,
+carte=cont, listnomvar=names(columbus@data),criteria=(columbus@data$CP==1),
+col=colors()[101:102],pch=5:6,label=as.character(1:49),cex.lab=0.5)
 
 # data eire
 data(eire)
-data(eire.polys)
-eire.contours<-polylist2list(eire.polys)
-barmap(eire$V1,eire$V2,eire$pale,carte=eire.contours,
-listvar=eire,listnomvar=names(eire),labvar="Appartenance à
-la région du Pale",labmod=c("Hors Pale","Pale"))
+eire.contours<-polylist2list(eire.polys.utm)
+barmap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$pale,carte=eire.contours,
+listvar=eire.df,listnomvar=names(eire.df),xlab="Appartenance à
+la région du Pale",names.arg=c("Hors Pale","Pale"),col=c("purple","pink"))
 
 }
 \keyword{spatial}

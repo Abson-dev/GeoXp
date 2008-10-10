@@ -6,24 +6,26 @@ The function `boxplotmap' draws a boxplot of the given variable $var$
 and a map with site of coordinates $(long,lat)$. }
 
 \usage{
-boxplotmap(long, lat, var, listvar = NULL, listnomvar = NULL,
-carte = NULL, criteria = NULL, label = "", symbol = 0, color = 1,
-labvar = "", axis = FALSE, lablong = "", lablat = "")
+boxplotmap(long,lat,var,listvar=NULL, listnomvar=NULL,carte=NULL,criteria=NULL,
+label="", cex.lab=1,pch=16,col="grey",xlab="",ylab="",axes=FALSE, 
+lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{long}{a vector $x$ of size $n$}
   \item{lat}{a vector $y$ of size $n$}
   \item{var}{a vector of numerical values of size $n$}
-  \item{listvar}{matrix of variables fo size $n \times p$ for optional additional graph and bubbles}
+  \item{listvar}{matrix of variables which permit to plot bubbles on map or add a graphic using the tk window}
   \item{listnomvar}{list of character of size $p$ with names of variables from $listvar$}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : $x$ and $y$ coordinates of the vertices of the polygon}
   \item{criteria}{a vector of size $n$ of boolean with TRUE on specific sites (these for non interactive selection)}
-  \item{label}{vector of character of size $n$ with names of each site}
-  \item{symbol}{0 or 1, choice of representation of selected points. If 0, selected points are circles, if 1, selected points are stars}
-  \item{color}{0 or 1 (by default), choice of representation of selected points (if user has selected a barplot as an additionnal graph). If 0, sites are represented in blue, if 1, sites are represented with different colors for each factor}
-  \item{labvar}{name of variable $var$}
-  \item{axis}{a boolean with TRUE for drawing axes on the map}
+  \item{label}{vector of character of size $n$ with name of site. Names are printed on map after a selection}
+  \item{cex.lab}{character size of label}
+  \item{pch}{16 by default, choice of representation of selected points}
+  \item{col}{"grey" by default, color of the boxplot}
+  \item{xlab}{a title for the graphic x-axis}
+  \item{ylab}{a title for the graphic y-axis}
+  \item{axes}{a boolean with TRUE for drawing axes on the map}
   \item{lablong}{name of the x-axis that will be printed on the map}
   \item{lablat}{name of the y-axis that will be printed on the map}
 }
@@ -42,26 +44,25 @@ are represented on the map in red.
 
 \examples{
 # donnees oldcol
-data(oldcol)
-data(oldcol.polys)
-contours.OLD<-polylist2list(oldcol.polys)
-boxplotmap(oldcol$X, oldcol$Y,oldcol$CRIME,listvar=oldcol,
-carte=contours.OLD, listnomvar=names(oldcol),criteria=(oldcol$CP==1),
-axis=TRUE,lablong="X",lablat="Y") 
+example(columbus)
+coords <- coordinates(columbus)
+cont<-spdf2list(columbus)$poly
+
+boxplotmap(coords[,1], coords[,2],columbus@data$CRIME,listvar=columbus@data,
+carte=cont, listnomvar=names(columbus@data),criteria=(columbus@data$CP==1),
+xlab="Crime",ylab="Percent",label=columbus@data$COLUMBUS.I,cex.lab=0.7) 
 
 # donnees boston
 data(boston)
-boxplotmap(boston$x,boston$y,boston$CRIM,listvar=boston,
-listnomvar=names(boston),criteria=(boston$CHAS==1)) 
+obs<-boxplotmap(boston.utm[,1],boston.utm[,2],boston.c$CRIM,listvar=boston.c,
+listnomvar=names(boston.c),criteria=(boston.c$CHAS==1)) 
 
 # données eire
 data(eire)
-data(eire.polys)
-eire.contours<-polylist2list(eire.polys)
-boxplotmap(eire$V1,eire$V2,eire$POPCHG,
-listvar=eire,listnomvar=names(eire),carte=eire.contours,
-labvar="Taux d'évolution de la population de 1921 à
-1962")
+eire.contours<-polylist2list(eire.polys.utm)
+boxplotmap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$POPCHG,
+listvar=eire.df,listnomvar=names(eire.df),carte=eire.contours,
+xlab="Taux d'évolution de la population de 1921 à 1962",pch=7)
 }
 
 \keyword{spatial}

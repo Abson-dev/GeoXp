@@ -8,10 +8,9 @@ The function `histobarmap' draws a bar plot (vertical bar) of the given variable
 a histogram of the given variable $var2$ and a map with sites of coordinates $(long,lat)$.}
 
 \usage{
-histobarmap(long, lat, var1, var2, criteria = NULL, carte = NULL,
-label = "", symbol = 0, color = 1, nbcol = 10, labvar = c("", ""),
-labmod = "", listvar = NULL, listnomvar = NULL, axis = FALSE,
-lablong = "", lablat = "")
+histobarmap(long,lat,var1,var2,criteria=NULL,carte=NULL, label = "",cex.lab=1,
+pch = 16, col= "grey", nbcol = 10,names.arg="", xlab=c("",""), ylab=c("",""),
+listvar=NULL, listnomvar=NULL, axes=FALSE,lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -21,15 +20,17 @@ lablong = "", lablat = "")
   \item{var2}{a vector of numerical values of size n}
   \item{criteria}{a vector of size $n$ of boolean with TRUE on specific sites (these for non interactive selection)}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : $x$ and $y$ coordinates of the vertices of the polygon}
-  \item{label}{vector of character of size $n$ with name of each site}
-  \item{symbol}{0 or 1, choice of representation of selected points. If 0, selected points are circles, if 1, selected points are stars}
-  \item{color}{0 or 1, choice of representation of selected points. If 0, sites are represented in blue, if 1, sites are represented with different colors for each factor of $var1$}
+  \item{label}{a list of character of size $n$ with name of site. Names are printed on map after a selection}
+  \item{cex.lab}{character size of label}
+  \item{pch}{16 by default, choice of representation of selected points}
+  \item{col}{"grey" by default, color of bars on the histogram}
   \item{nbcol}{number of cells for histogram (10 by default)}
-  \item{labvar}{list of names for variable `var1' and `var2'}
-  \item{labmod}{names of factors `var'}
-  \item{listvar}{matrix of variables fo size $n \times p$ for optional additional graph and bubbles}
-  \item{listnomvar}{list of character of size $p$ with names of variables in 'listvar'}
-  \item{axis}{a boolean with TRUE for drawing axes on the map}
+  \item{names.arg}{names of factors of $var1$}
+  \item{xlab}{a list of title for the two x-axis graphics}
+  \item{ylab}{a list of title for the two y-axis graphics}
+  \item{listvar}{matrix of variables which permit to plot bubbles on map or add a graphic using the tk window}
+  \item{listnomvar}{a list with names of variables $listvar$}
+  \item{axes}{a boolean with TRUE for drawing axes on the map}
   \item{lablong}{name of the x-axis that will be printed on the map}
   \item{lablat}{name of the y-axis that will be printed on the map}
 }
@@ -50,20 +51,21 @@ There is interactivity between the three windows created : the sites selected by
 
 \examples{
 # Data Colombus
-x <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
-colombus.contours<-map2list(x)
-colombus<-x$att.data
-obs<-histobarmap(colombus.contours$X,colombus.contours$Y,colombus$CP,
-colombus$HOVAL,label=colombus$NEIGNO, carte=colombus.contours$poly,
-listvar=colombus,listnomvar=names(colombus))
+example(columbus)
+coords <- coordinates(columbus)
+cont<-spdf2list(columbus)$poly
+obs<-histobarmap(coords[,1], coords[,2],columbus@data$CP,
+columbus@data$HOVAL,label=columbus@data$NEIGNO, carte=cont,
+listvar=columbus@data,listnomvar=names(columbus@data),col=colors()[100:101],
+xlab=c("CP","Hoval"),ylab=c("Count","Count"),names.arg=c("A","B"),pch=2)
 
 # Data eire
 data(eire)
-data(eire.polys)
-eire.contours<-polylist2list(eire.polys)
-histobarmap(eire$V1,eire$V2,eire$pale,eire$A,carte=eire.contours,
-listvar=eire,listnomvar=names(eire),labvar="Appartenance à
-la région du Pale",labmod=c("Hors Pale","Pale"))
+eire.contours<-polylist2list(eire.polys.utm)
+histobarmap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$pale,eire.df$A,carte=eire.contours,
+listvar=eire.df,listnomvar=names(eire.df),xlab=c("Appartenance à
+la région du Pale","Taux moyen de groupe sanguin A"),names.arg=c("Hors Pale","Pale"),
+col=colors()[101:102],label=as.character(1:26),cex.lab=0.7,pch=c(3,7))
 }
 
 \keyword{spatial}

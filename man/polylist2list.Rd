@@ -29,13 +29,13 @@ Bivand R. (2008), `The spdep package', \url{http://cran.r-project.org/doc/packag
 
 \author{Thibault Laurent}
 
-\seealso{\code{\link{spdf2list}},\code{\link{map2list}}}
+\seealso{\code{\link{spdf2list}}}
 
 
 
 \examples{
-data(eire.polys)
-eire.contours<-polylist2list(eire.polys)
+data(eire)
+eire.contours<-polylist2list(eire.polys.utm)
 }
 
 \keyword{manip}

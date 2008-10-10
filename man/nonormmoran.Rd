@@ -4,7 +4,7 @@
 \description{
 The function `nonnormmoran' is used to detect spatial autocorrelation in
 the residuals $u$ from the least squares model $Y=\beta \times X+u$. 
-It calculates Moran's $I$ statistic of the residuals based on the gaussian asymptotic distribution and give a p-value associated to the test of spatial autocorrelation (gaussian version).}
+It calculates Moran's $I$ statistic of the residuals based on the gaussian asymptotic distribution and give a p-value associated to the test of spatial autocorrelation (gaussian version). }
 \usage{
 nonormmoran(y, x, W)
 }
@@ -16,13 +16,15 @@ nonormmoran(y, x, W)
 }
 \details{
 W is supposed standartized :
-\deqn{I=\frac{u'Wu}{u'u}}
+\deqn{I=(n/s)\frac{u'Wu}{u'u}}
 \deqn{I \sim N(E(I),var(I))} 
 let \eqn{M=(I-X(X'X)^{-1}X')}
-\deqn{E(I)=\frac{tr(MW)}{n-k}}
+\deqn{E(I)=(n/s)\frac{tr(MW)}{n-k}}
 \deqn{d=\frac{n-p}{n+p+2}}
-\deqn{V(I)=[tr(MWMW')+tr(MW)^2+(tr(MW))^2]/d-E(I)^2}
-\deqn{Z_I=\frac{I-E(I)}{v(I)^{1/2}}}}
+\deqn{V(I)=(n/s)^2[tr(MWMW')+tr(MW)^2+(tr(MW))^2]/d-E(I)^2}
+\deqn{Z_I=\frac{I-E(I)}{v(I)^{1/2}}}
+
+In the case of W is normed, $s=n$ else $s$ is the number of nonzero links}
 
 \value{
 (nobs,nvar,morani,imean,istat,ivar,prob) where `nobs' is the number of observations,
@@ -39,8 +41,11 @@ let \eqn{M=(I-X(X'X)^{-1}X')}
 \examples{
 # data baltimore
 data(baltimore)
-W <- makeneighborsw(baltimore$X,baltimore$Y,4)
+W <- makeneighborsw(baltimore$X,baltimore$Y,method="neighbor",4)
+# W is not normed
 nonormmoran(baltimore$PRICE,baltimore[,14:15],W)
+# W is normed
+nonormmoran(baltimore$PRICE,baltimore[,14:15],normw(W))
 }
 
-\seealso{\code{\link{moranplotmap}},\code{\link{neighbourmap}},\code{\link{makeneighborsw}},\code{\link{makedistancew}},\code{\link{normw}} }
+\seealso{\code{\link{moranplotmap}},\code{\link{neighbourmap}},\code{\link{makeneighborsw}},\code{\link{normw}} }

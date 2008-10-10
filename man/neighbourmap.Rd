@@ -6,9 +6,9 @@ The function `neighbourmap' identifies spatial outliers by comparing a variable 
 }
 
 \usage{
-neighbourmap(long, lat, var, W, listvar = NULL, listnomvar = NULL,
-carte = NULL, criteria = NULL, label = "", symbol = 0,
-labvar = c("", ""), opt1 = 0, axis = FALSE, lablong = "", lablat = "")
+neighbourmap(long, lat, var, W, id=FALSE, listvar=NULL, listnomvar=NULL, carte=NULL,
+criteria=NULL, label="", cex.lab=1, pch=16, col="blue", xlab="",ylab="",
+axes=FALSE, lablong="", lablat="") 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -16,23 +16,26 @@ labvar = c("", ""), opt1 = 0, axis = FALSE, lablong = "", lablat = "")
   \item{lat}{a vector $y$ of size $n$}
   \item{var}{a vector of numeric values of size $n$}
   \item{W}{A spatial weigth matrix of size $n \times n$}
-  \item{listvar}{matrix of variables}
-  \item{listnomvar}{names of variables $listvar$}
+  \item{id}{If TRUE, drawing the linear curve y=x}
+  \item{listvar}{matrix of variables which permit to plot bubbles on map or add a graphic using the tk window}
+  \item{listnomvar}{a list with names of variables $listvar$}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : $x$ and $y$ coordinates of the vertices of the polygon}
   \item{criteria}{a vector of size $n$ of boolean with TRUE on specific sites (these for non interactive selection)}
-  \item{label}{vector of character of size $n$ with names of sites}
-  \item{symbol}{0 or 1, choice of representation of selected points. If 0, selected points are circles, if 1, selected points are stars}
-  \item{labvar}{names of variable $var$}
-  \item{opt1}{0=graphic only, 1=drawing of the linear predictor for `response' in linear model}
-  \item{axis}{a boolean with TRUE for drawing axes on the map}
+  \item{label}{a list of character of size $n$ with name of site. Names are printed on map after a selection}
+  \item{cex.lab}{character size of label}
+  \item{pch}{16 by default, choice of representation of selected points}  
+  \item{col}{"blue" by default, color of the points on the neighbor plot}
+  \item{xlab}{a title for the graphic x-axis}
+  \item{ylab}{a title for the graphic y-axis}
+  \item{axes}{a boolean with TRUE for drawing axes on the map}
   \item{lablong}{name of the x-axis that will be printed on the map}
   \item{lablat}{name of the y-axis that will be printed on the map}
 }
 \details{
-For a selected site $j$ on the map, are represented on the map its neighbours, and on the graph, on the x-axis the value of $var$ for this site, and in y-axis, the values of $var$ for the neighbouring sites of $j$. For a selected point on the graph, the corresponding pair of sites is represented on the map with a link.}
+For a selected site $j$ on the map, are represented on the map its neighbors, and on the graph, on the x-axis the value of $var$ for this site, and in y-axis, the values of $var$ for the neighbouring sites of $j$. For a selected point on the graph, the corresponding pair of sites is represented on the map with a link.}
 
 \note{
-When user select sites on the graph or on the map, he cannot add a selection by using the other graphic.}
+When user selects sites on the graph or on the map, he cannot add a selection by using the other graphic.}
 
 \value{
 Returns a matrix of size $n \times n$ of boolean with TRUE if pair $(i,j)$ was in the last selection.
@@ -46,14 +49,20 @@ Returns a matrix of size $n \times n$ of boolean with TRUE if pair $(i,j)$ was i
 
 \examples{
 # data oldcol
-data(oldcol)
-data(oldcol.polys)
-contours.OLD<-polylist2list(oldcol.polys)
-W <- makeneighborsw(oldcol$X,oldcol$Y,4)
-obs<-neighbourmap(oldcol$X,oldcol$Y,oldcol$CRIME,W,carte=contours.OLD,
-criteria=(oldcol$CRIME>mean(oldcol$CRIME)),listvar=oldcol,
-listnomvar=names(oldcol))
+
+columbus <- readShapePoly(system.file("etc/shapes/columbus.shp",
+package="spdep")[1])
+
+list.OLD <- spdf2list(columbus)
+contours.OLD <- list.OLD$poly
+x.OLD <- list.OLD$X
+y.OLD <- list.OLD$Y
+
+W <- makeneighborsw(x.OLD , y.OLD,method="neighbor",4)
+obs<-neighbourmap(x.OLD , y.OLD,columbus@data$CRIME, W,carte=contours.OLD,
+criteria=(columbus@data$CRIME>mean(columbus@data$CRIME)),listvar=columbus@data,
+listnomvar=names(columbus@data),id=TRUE,col="grey",pch=4)
 }
 
-\seealso{\code{\link{moranplotmap}},\code{\link{makeneighborsw}},\code{\link{makedistancew}},\code{\link{normw}},\code{\link{nonormmoran}} }
+\seealso{\code{\link{moranplotmap}},\code{\link{makeneighborsw}},\code{\link{normw}},\code{\link{nonormmoran}} }
 

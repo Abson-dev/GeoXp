@@ -4,13 +4,13 @@
 \title{Interactive scatterplot and map}
 
 \description{
-The function `scattermap' draws a scatterplot of the given variables $(var1,var2)$ and a map with sites of coordinates $(long,lat)$. Boxplots of each variable $var1$ and $var2$ are represented below the x-axis and y-axis.}
+The function `scattermap' draws a scatterplot of the given variables $(var1,var2)$ and a map with sites 
+of coordinates $(long,lat)$. Boxplots of each variable $var1$ and $var2$ are represented below the x-axis and y-axis.}
 
 \usage{
-scattermap(long, lat, var1, var2, listvar = NULL, listnomvar = NULL,
-opt = 1, quantiles = 0.5, criteria = NULL, carte = NULL, label = "",
-symbol = 0, labvar = c("", ""), color = 1, axis = FALSE,
-lablong = "", lablat = "")
+scattermap(long,lat,var1,var2,listvar=NULL, listnomvar=NULL,reg.line=TRUE,quantiles=NULL,
+criteria=NULL, carte=NULL,label="",cex.lab=1, pch=16, xlab="",ylab="", col="grey",
+axes=FALSE, lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -18,22 +18,27 @@ lablong = "", lablat = "")
   \item{lat}{a vector $y$ of size $n$}
   \item{var1}{a vector of numeric values of size $n$}
   \item{var2}{a vector of numeric values of size $n$}
-  \item{listvar}{matrix of variables}
-  \item{listnomvar}{names of variables $listvar$}
-  \item{opt}{1=graphic only, 2=drawing of the linear predictor for `response' in linear model, 3=drawing of the conditionnal quantile regression spline (user has to give option quantiles)}
-  \item{quantiles}{vector which contains a list of order (if opt = 3)}
+  \item{listvar}{matrix of variables which permit to plot bubbles on map or add a graphic using the tk window}
+  \item{listnomvar}{a list with names of variables $listvar$}
+  \item{reg.line}{If TRUE, drawing of the linear predictor for `response' in linear model}
+  \item{quantiles}{a list of order of conditionnal quantile regression spline }
   \item{criteria}{a vector of size $n$ of boolean with TRUE on specific sites (these for non interactive selection)}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : $x$ and $y$ coordinates of the vertices of the polygon}
-  \item{label}{vector of character of size $n$ with names of sites}
-  \item{symbol}{0 or 1, choice of representation of selected points. If 0, selected points are circles, if 1, selected points are stars}
-  \item{labvar}{names of variables $var1$ and $var2$}
-  \item{color}{0 or 1, choice of representation of selected points. If 0, sites are represented in blue, if 1, sites are represented with different colors for each factor}
-  \item{axis}{a boolean with True for drawing axes on the map}
+  \item{label}{a list of character of size $n$ with name of site. Names are printed on map after a selection}
+  \item{cex.lab}{character size of label}
+  \item{pch}{16 by default, choice of representation of selected points}
+  \item{xlab}{a title for the graphic x-axis}
+  \item{ylab}{a title for the graphic y-axis}
+  \item{col}{"grey" by default, color of the points of the scatter plot}
+  \item{axes}{a boolean with True for drawing axes on the map}
   \item{lablong}{name of the x-axis that will be printed on the map}
   \item{lablat}{name of the y-axis that will be printed on the map}
 }
 \details{Each site is associated to a value of `var1' and a value of `var2'. 
-There is an interactivity between the two windows: the sites selected by `point' or `polygon' on the scatterplot are represented on the map in red; sites selected on the map are then represented in red on the scatterplot. Users have the possibility to draw linear predictor for `response' in linear model or conditionnal quantile regression spline (option $opt$ and $quantiles$).}
+There is an interactivity between the two windows: the sites selected by `point' or `polygon' on the scatterplot are 
+represented on the map in red; sites selected on the map are then represented in red on the scatterplot. Users have 
+the possibility to draw linear predictor for `response' in linear model (option $reg.line$) or conditionnal quantile regression spline 
+(option $quantiles$).}
 
 \value{A vector of boolean of size $n$. TRUE if the site was in the last selection.}
 
@@ -50,21 +55,23 @@ midiP <- readOGR(system.file("vectors/region.mif", package = "GeoXp")[1], "regio
 cont_midiP<-spdf2list(midiP)$poly
 scattermap(immob$longitude,immob$latitude,immob$prix.vente,
 immob$prix.location,carte= cont_midiP,listvar=immob,
-listnomvar=names(immob))
+listnomvar=names(immob),pch=5,xlab="Prix de vente",ylab="Prix de location",
+col="purple",quantiles=0.5)
 
 # data baltimore
 data(baltimore)
 scattermap(baltimore$X,baltimore$Y,baltimore$PRICE,baltimore$SQFT,
-listvar=baltimore, listnomvar=names(baltimore),labvar=c("SQFT","PRICE"),
-criteria=(baltimore$CITCOU==1),axis=TRUE,lablong="X",lablat="Y",opt=2)
+listvar=baltimore, listnomvar=names(baltimore),xlab="SQFT",ylab="PRICE",
+criteria=(baltimore$CITCOU==1),axes=TRUE,lablong="X",lablat="Y",
+reg.line=TRUE)
 
 # Data Eire
 data(eire)
-data(eire.polys)
-eire.contours<-polylist2list(eire.polys)
-scattermap(eire$V1,eire$V2,eire$ROADACC,eire$OWNCONS,
-listvar=eire,listnomvar=names(eire),carte=eire.contours,
-labvar=c("Routes","Taux de consomation"),opt=2,quantiles=0.95)
+eire.contours<-polylist2list(eire.polys.utm)
+
+scattermap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$ROADACC,
+eire.df$OWNCONS, listvar=eire.df,listnomvar=names(eire.df),carte=eire.contours,
+xlab="Routes",ylab="Taux de consomation",reg.line=TRUE,quantiles=0.95)
 }
 
 \keyword{regression}

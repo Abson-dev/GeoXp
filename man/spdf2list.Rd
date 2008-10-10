@@ -35,7 +35,7 @@ Bivand R. (2008), `The rgdal package', \url{http://cran.r-project.org/doc/packag
 
 \author{Thibault Laurent}
 
-\seealso{\code{\link{polylist2list}},\code{\link{map2list}}}
+\seealso{\code{\link{polylist2list}}}
 
 \examples{
 midiP <- readOGR(system.file("vectors/region.mif", package = "GeoXp")[1], 

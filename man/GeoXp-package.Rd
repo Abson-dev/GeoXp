@@ -23,11 +23,12 @@ some dimension reduction techniques such as PCA.
 \tabular{ll}{
 Package: \tab GeoXp\cr
 Type: \tab Package\cr
-Version: \tab 1.1\cr
-Date: \tab 2008-01-14\cr
+Version: \tab 1.3\cr
+Date: \tab 2008-10-08\cr
 License: \tab GPL Vesion 2 or later \cr
 }
-GeoXp don't use classes yet. The coordinates of sites are represented by 
+
+The coordinates of sites are represented by 
 two vectors $long$ (for $x-axis$) and $lat$ (for $y-axis$) of size $n$ of 
 numeric values. Attribute value is designed by argument $var$ of size $n$ and 
 can be a vector of numeric values (function histomap, densitymap,...) or 
@@ -60,7 +61,9 @@ in the case of a graph using a factor (argument $color$ with 1 for different col
 0 otherwise). Users could choose if a legend with corresponding colors
 will appear on the map. Users can also modify the representation of sites on map 
 (choosed by default and not modifiable by users) with argument
-$symbol$ (with 1 for different symbols, 0 otherwise).  
+$symbol$ (with 1 for different symbols, 0 otherwise).    \cr
+GeoXp don't use classes yet excepted bar.nb and hist.nb functions which call a nb object 
+(see package spdep). These two functions make an analysis of a neighborhood matrix. 
 
  
 }

@@ -6,11 +6,10 @@ The function `clustermap' performs a classification of the sites from the variab
 Classification methods comes from hclust.R (hierarchical cluster analysis) and kmeans.R (k-means clustering) and number of class is chosen with $clustnum$.
 }
 \usage{
-clustermap(long, lat, dataset, clustnum, method = "kmeans",
-type = NULL, centers = NULL, scale = FALSE, listvar = NULL,
-listnomvar = NULL, carte = NULL, criteria = NULL, labvar = "Cluster",
-label = "", symbol = 0, color = 1, labmod = "", axis = FALSE,
-lablong = "", lablat = "")
+clustermap(long, lat, dataset, clustnum, method="kmeans", type=NULL,
+centers=NULL, scale=FALSE, listvar=NULL, listnomvar=NULL, carte=NULL,
+criteria=NULL, xlab="Cluster", ylab="Count", label="", cex.lab=1, pch=16,
+col="blue", names.arg="", axes=FALSE, lablong="", lablat="")
 }
 
 \arguments{
@@ -24,16 +23,18 @@ lablong = "", lablat = "")
   as `Forgy', etc)}
   \item{centers}{If method='kmeans', user can give a matrix with initial cluster centers.}
   \item{scale}{If scale=TRUE, the dataset is reducted.}
-  \item{listvar}{matrix of variables}
-  \item{listnomvar}{names of variables $listvar$}
+  \item{listvar}{matrix of variables which permit to plot bubbles on map or add a graphic using the tk window}
+  \item{listnomvar}{list of character with name of variables from $listvar$}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : $x$ and $y$ coordinates of the vertices of the polygon}
   \item{criteria}{a vector of size $n$ of boolean with TRUE on specific sites (these for non interactive selection)}
-  \item{labvar}{name of variable $var$}
-  \item{label}{vector of size $n$ with names of each site}
-  \item{symbol}{0 (by default) or 1, choice of representation of selected points. If 0, selected points are circles, if 1, selected points are stars}
-  \item{color}{0 or 1 (by default), choice of representation of selected points. If 0, sites are represented in blue, if 1, sites are represented with different colors for each cluster}
-  \item{labmod}{names of Clusters}
-  \item{axis}{a boolean with TRUE for drawing axes on the map}
+  \item{xlab}{a title for the graphic x-axis}
+  \item{ylab}{a title for the graphic y-axis}
+  \item{label}{vector of character of size $n$ with name of site. Names are printed on map after a selection}
+  \item{cex.lab}{character size of label}
+  \item{pch}{a vector of symbol which must be equal to the number of group else all sites are printed in pch[1]}
+  \item{col}{a vector of colors which must be equal to the number of group else all sites and all bars are printed in col[1]}
+  \item{names.arg}{names of Clusters}
+  \item{axes}{a boolean with TRUE for drawing axes on the map}
   \item{lablong}{name of the x-axis that will be printed on the map}
   \item{lablat}{name of the y-axis that will be printed on the map}
 }
@@ -62,11 +63,18 @@ then use the function barmap.r to visualize the calculated clusters. }
 
 \examples{
 # données oldcol
-data(oldcol)
-data(oldcol.polys)
-contours.OLD<-polylist2list(oldcol.polys)
-obs<-clustermap(oldcol$X, oldcol$Y,oldcol[,7:12],3,listvar=oldcol,
-listnomvar=names(oldcol),carte=contours.OLD,criteria=(oldcol$CP==1))
+example(columbus)
+coords <- coordinates(columbus)
+cont<-spdf2list(columbus)$poly
+
+obs<-clustermap(coords[,1], coords[,2],columbus@data[,7:12],3,listvar=columbus@data,
+listnomvar=names(columbus@data),carte=cont,criteria=(columbus@data$CP==1),
+col=colors()[20:22],label=as.character(1:49),cex.lab=0.7)
+
+obs<-clustermap(coords[,1], coords[,2],columbus@data[,7:12],3,method="hclust",
+listvar=columbus@data,listnomvar=names(columbus@data),carte=cont,
+criteria=(columbus@data$CP==1),col=colors()[20:22],label=as.character(1:49),
+cex.lab=0.7)
 
 # Extract for GeoXp manual
 # data avifaune 

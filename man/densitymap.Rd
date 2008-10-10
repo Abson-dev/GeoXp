@@ -7,10 +7,9 @@ The function `densitymap' draws kernel density estimates of the variable $var$ w
 and a map with sites of coordinate $(long,lat)$. Each site is associated to a value of $var$ and there is interactivity between the two windows. 
 }
 \usage{
-densitymap(long, lat, var, kernel = "triweight", listvar = NULL,
-listnomvar = NULL, carte = NULL, criteria = NULL, label = "",
-symbol = 0, color = 1, labvar = "", axis = FALSE,
-lablong = "", lablat = "")
+densitymap(long, lat, var, kernel='triweight',listvar=NULL, listnomvar=NULL,
+carte=NULL, criteria=NULL,label="",cex.lab=1, pch=16, col="blue", xlab="",
+ylab="", axes=FALSE, lablong="", lablat="")
 }
 
 \arguments{
@@ -18,15 +17,17 @@ lablong = "", lablat = "")
   \item{lat}{a vector $y$ of size $n$}
   \item{var}{a vector of numeric values of size $n$}
   \item{kernel}{Smoothing kernel (see help(bkde) for list of options)}
-  \item{listvar}{matrix of variables}
-  \item{listnomvar}{names of variables $listvar$}
+  \item{listvar}{matrix of variables which permit to plot bubbles on map or add a graphic using the tk window}
+  \item{listnomvar}{a list with names of variables $listvar$}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : $x$ and $y$ coordinates of the vertices of the polygon}
   \item{criteria}{a vector of size $n$ of boolean with TRUE on specific sites (these for non interactive selection)}
   \item{label}{vector of character of size $n$ with names of sites}
-  \item{symbol}{0 or 1, choice of representation of selected points. If 0, selected points are circles, if 1, selected points are stars}
-  \item{color}{0 or 1, choice of representation of selected points (if user has selected a barplot as an additionnal graph). If 0, sites are represented in blue, if 1, sites are represented with different colors for each factor}
-  \item{labvar}{name of variable $var$}
-  \item{axis}{a boolean with True for drawing axes on the map}
+  \item{cex.lab}{character size of label on map}
+  \item{pch}{16 by default, choice of representation of selected points on map}
+  \item{col}{"blue" by default, color of the density curve}  
+  \item{xlab}{a title for the graphic x-axis}
+  \item{ylab}{a title for the graphic y-axis}
+  \item{axes}{a boolean with TRUE for drawing axes on the map}
   \item{lablong}{name of the x-axis that will be printed on the map}
   \item{lablat}{name of the y-axis that will be printed on the map}
 }
@@ -56,23 +57,23 @@ midiP <- readOGR(system.file("vectors/region.mif", package = "GeoXp")[1], "regio
 cont_midiP<-spdf2list(midiP)$poly
 densitymap(immob$longitude,immob$latitude,immob$prix.vente,
 carte=cont_midiP,listvar=immob,listnomvar=names(immob),
-labvar="Prix de vente moyen par m2")
+xlab="Prix de vente moyen par m2",label=immob$Nom,cex.lab=0.7,col='purple',pch=15)
 
 # data olcol
-data(oldcol)
-data(oldcol.polys)
-contours.OLD<-polylist2list(oldcol.polys)
-densitymap(oldcol$X,oldcol$Y,oldcol$CRIME,listvar=oldcol,
-carte=contours.OLD, listnomvar=names(oldcol),
-criteria=(oldcol$CRIME>mean(oldcol$CRIME)))
+example(columbus)
+coords <- coordinates(columbus)
+cont<-spdf2list(columbus)$poly
+
+densitymap(coords[,1], coords[,2],columbus@data$CRIME,listvar=columbus@data,
+carte=cont, listnomvar=names(columbus@data),
+criteria=(columbus@data$CRIME>mean(columbus@data$CRIME)))
 
 # data eire
 data(eire)
-data(eire.polys)
-eire.contours<-polylist2list(eire.polys)
-densitymap(eire$V1,eire$V2,eire$A,carte=eire.contours,
-listvar=eire,listnomvar=names(eire),
-labvar="Taux d'individus au groupe sanguin A")
+eire.contours<-polylist2list(eire.polys.utm)
+densitymap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$A,
+carte=eire.contours,listvar=eire.df,listnomvar=names(eire.df),
+xlab="Taux d'individus au groupe sanguin A",ylab="densite")
 
 }
 

@@ -1,130 +1,127 @@
 `moranplotmap` <-
-function (long, lat, var, W, flower=0,opt1=1, locmoran=0,listvar=NULL, listnomvar=NULL,carte=NULL,criteria=NULL, label="", symbol=0, labvar="",axis=FALSE,lablong="", lablat="")
+function (long, lat, var, W, flower=FALSE, locmoran=FALSE, listvar=NULL, listnomvar=NULL,carte=NULL,
+criteria=NULL, label="", cex.lab=1, col="blue",pch=16, xlab=expression((X-bar(X))),ylab=expression(W(X-bar(X))),
+axes=FALSE, lablong="", lablat="",names.arg=c("H.-H.","L.-H.","L.-L.","H.-L."))
 {
 
 #initialisation
+  obs<-vector(mode = "logical", length = length(long))
+  obsq<-rep(0,length(long))
+  nointer<-FALSE
+  nocart<-FALSE
+  buble<-FALSE
+  buble2<-FALSE
+  maptest<-FALSE
+  classe<-rep(1,length(long))
 
-obs<-vector(mode = "logical", length = length(long))
-obsq<-rep(0,length(long));
+  legends<-list(FALSE,FALSE,"","")
+  legends2<-list(FALSE,FALSE,"","")
 
+  z<-NULL
+  z2<-NULL
+  legmap<-NULL
+  legmap2<-NULL
+  num<-NULL
+  labvar=c(xlab,ylab)
 
-nointer<-FALSE
-nocart<-FALSE
-buble<-FALSE
-maptest<-FALSE
+  graphChoice <- ""
+  varChoice1 <- ""
+  varChoice2 <- ""
+  choix <- ""
+  listgraph <- c("Histogram","Barplot","Scatterplot")
 
-legends<-list(FALSE,FALSE,"","")
-z<-NULL
-legmap<-NULL
-num<-NULL
+#Ouverture des fenêtres graphiques
+graphics.off()
+dev.new()
+dev.new()
 
-graphChoice <- "";
-varChoice1 <- "";
-varChoice2 <- "";
-choix<-""
-listgraph <- c("Histogram","Barplot","Scatterplot")
+fin <- tclVar(FALSE)
 
-graphics.off();
-
-get(getOption("device"))()
-get(getOption("device"))()
-
-fin <- tclVar(FALSE);
-
-quad <- FALSE;
+quad <- FALSE
 
 # Transformation data.frame en matrix
+if((length(listvar)>0)&&(dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(listvar)
 
-if(length(listvar)>0)
-{
- if(dim(as.matrix(listvar))[2]==1)
- {
- listvar<-as.matrix(listvar)
- }
-}
+# Option sur le moran
+ifelse(flower,method <- "Neighbourplot1", method <- "")
+
+choix.col<-FALSE
+
+graph <- "Moran"
+col2 <- rep(col[1],4)
+pch2 <- rep(pch[1],4)
+
 
 #Normalize w
-W<-normw(W)
+#W<-normw(W)
+ifelse(apply(W,1,sum)==rep(1,length(long)),is.norm<-TRUE,is.norm<-FALSE)
 # calcul du I de Moran
-var <- var - mean(var);
+var <- var - mean(var)
 wvar <- W%*%var
-stdvar <- var/sd(var);
-uns <- rep(1, length(var));
-result <- nonormmoran(stdvar,uns,W);
-MORAN <- result$morani;
-prob <- 1-pnorm(result$istat);
-rvar <- qr(var);
-beta <- qr.coef(rvar,wvar)
+stdvar <- var/sd(var)
+uns <- rep(1, length(var))
+result <- nonormmoran(stdvar,uns,W)
+MORAN <- result$morani
+prob.I <- pnorm(result$istat)
+rvar <- qr(var)
+beta.I <- qr.coef(rvar,wvar)
 
 # calcul de la variable obsq (pour les quadrants)
-for (i in 1:length(var))
-{
-    if ((var[i] > 0) && (wvar[i] >= 0))
-    {
-        obsq[i] <- 1;
-    }
-    if ((var[i] <= 0) && (wvar[i] > 0))
-    {
-        obsq[i] <- 2;
-    }
-    if ((var[i] < 0) && (wvar[i] <= 0))
-    {
-        obsq[i] <- 3;
-    }
-    if ((var[i] >= 0) && (wvar[i] < 0))
-    {
-        obsq[i] <- 4;
-    }
-  }   
 
+obsq[which((var > 0) & (wvar >= 0))] <- 1
+obsq[which((var <= 0) & (wvar > 0))] <- 2
+obsq[which((var < 0) & (wvar <= 0))] <- 3
+obsq[which((var >= 0) & (wvar < 0))] <- 4
+ 
+  
 ####################################################
 # sélection d'un point
 ####################################################
 
 pointfunc<-function() 
 {
-    quit <- FALSE;
-    quad <<- FALSE;
+    quit <- FALSE
+    quad <<- FALSE
 
     while(!quit)
     {
         if(maptest) 
         {
-            dev.set(2);
-            loc<-locator(1);
+            dev.set(2)
+            loc<-locator(1)
             if(is.null(loc)) 
             {
-                quit<-TRUE;
-                next;
+              quit<-TRUE
+              next
             }           
-            obs<<-selectmap(var1=long,var2=lat,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point"); 
+            obs<<-selectmap(var1=long,var2=lat,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point") 
         }
         else
         {
-            dev.set(3);
-            loc<-locator(1);
+            dev.set(3)
+            loc<-locator(1)
             if(is.null(loc)) 
             {
-                quit<-TRUE;
-                next;
+              quit<-TRUE
+              next
             }
-            obs<<-selectmap(var1=var,var2=wvar,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point");
+            obs<<-selectmap(var1=var,var2=wvar,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point")
         }
         
         #graphiques
-        if (flower == 1)
-        {
-            carte(long=long, lat=lat, obs=obs,  label=label, carte=carte,nocart=nocart, symbol=symbol, W=W, method="Neighbourplot1",buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-        }
-        else
-        {
-            carte(long=long, lat=lat, obs=obs,  label=label, carte=carte,nocart=nocart, symbol=symbol,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-        }       
+        carte(long=long, lat=lat, obs=obs,  carte=carte,nocart=nocart, classe=obsq,
+        couleurs=col2, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
+        nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
+        label=label, cex.lab=cex.lab, labmod=names.arg)      
 
-        graphique(var1=var, var2=wvar, obs=obs, num=3, graph="Moran", labvar=labvar, symbol=symbol, b=beta, locmoran=locmoran,opt1=opt1);
+        graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2, 
+        symbol=pch2, locmoran=locmoran,obsq=obsq, cex.lab=cex.lab,buble=buble2, cbuble=z2, 
+        legmap=legmap2, legends=legends2 ) 
+           
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
-            graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)], obs=obs, num=4, graph=graphChoice, symbol=1, labvar=c(varChoice1,varChoice2));
+            graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)], 
+            obs=obs, num=4, graph=graphChoice, couleurs=col[1], symbol=pch[1], labvar=c(varChoice1,varChoice2))
         }
     }
   }
@@ -135,18 +132,22 @@ pointfunc<-function()
 
 pt1func <- function()
 {
-    maptest <<- TRUE;
-    pointfunc();
-  }
+  ifelse(flower,method <<- "Neighbourplot1", method <<- "")
+  graph <<- "Moran" 
+  maptest <<- TRUE  
+  pointfunc()
+}
 
 ####################################################
 # sélection d'un point sur le graphique
 ####################################################
 
 pt2func <- function()
-{
-    maptest <<- FALSE;
-    pointfunc();
+{    
+  ifelse(flower,method <<- "Neighbourplot1", method <<- "")
+  graph <<- "Moran" 
+  maptest <<- FALSE  
+  pointfunc()
   }
 
 ####################################################
@@ -155,69 +156,70 @@ pt2func <- function()
 
 polyfunc<-function() 
 {
-    polyX <- NULL;
-    polyY <- NULL;
-    quit <- FALSE;
-    quad <<- FALSE;
+   polyX <- NULL
+   polyY <- NULL
+   quit <- FALSE
+   quad <<- FALSE
 
-    while(!quit)
+   while(!quit)
     {
         if(maptest)
         {
-            dev.set(2);
-            loc<-locator(1);
-            if(is.null(loc)) 
+          dev.set(2)
+          loc<-locator(1)
+          if(is.null(loc)) 
             {
-                quit<-TRUE;
-                next;
+              quit<-TRUE
+              next
             }
         }
         else
         {
             dev.set(3);
-            loc<-locator(1);
+            loc<-locator(1)
             if(is.null(loc)) 
             {
-                quit<-TRUE;
-                next;
+                quit<-TRUE
+                next
             }   
         }
-        polyX <- c(polyX, loc[1]);
-        polyY <- c(polyY, loc[2]);
-        lines(polyX,polyY);
+        polyX <- c(polyX, loc[1])
+        polyY <- c(polyY, loc[2])
+        lines(polyX,polyY)
     }
-    polyX <- c(polyX, polyX[1]);
-    polyY <- c(polyY, polyY[1]);
-if (length(polyX)>0)
-{
-    lines(polyX,polyY);
+    polyX <- c(polyX, polyX[1])
+    polyY <- c(polyY, polyY[1])
+
+  if (length(polyX)>0)
+  {
+    lines(polyX,polyY)
 
     if (maptest)
     {
-        obs <<- selectmap(var1=long, var2=lat, obs=obs, Xpoly=polyX, Ypoly=polyY, method="poly");
+        obs <<- selectmap(var1=long, var2=lat, obs=obs, Xpoly=polyX, Ypoly=polyY, method="poly")
     }
     else
     {
-        obs <<- selectmap(var1=var, var2=wvar, obs=obs, Xpoly=polyX, Ypoly=polyY, method="poly");
+        obs <<- selectmap(var1=var, var2=wvar, obs=obs, Xpoly=polyX, Ypoly=polyY, method="poly")
     }
 
     #graphiques
-    if (flower == 1)
-    {
-        carte(long=long, lat=lat, obs=obs,  label=label, carte=carte,nocart=nocart, symbol=symbol, W=W, method="Neighbourplot1",buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-    }
-    else
-    {
-        carte(long=long, lat=lat, obs=obs,  label=label, carte=carte,nocart=nocart, symbol=symbol,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-    }       
+        carte(long=long, lat=lat, obs=obs,  carte=carte,nocart=nocart, classe=obsq,
+        couleurs=col2, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
+        nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
+        label=label, cex.lab=cex.lab, labmod=names.arg)        
 
-    graphique(var1=var, var2=wvar, obs=obs, num=3, graph="Moran", labvar=labvar, symbol=symbol, b=beta, locmoran=locmoran,opt1=opt1);
-    if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
+        graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2, 
+        symbol=pch2, locmoran=locmoran,obsq=obsq, cex.lab=cex.lab,buble=buble2, cbuble=z2, 
+        legmap=legmap2, legends=legends2 )   
+        
+     if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
-            graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)], obs=obs, num=4, graph=graphChoice, symbol=1, labvar=c(varChoice1,varChoice2));
+          graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)], 
+          obs=obs, num=4, graph=graphChoice, couleurs=col[1], symbol=pch[1], labvar=c(varChoice1,varChoice2))
         }
-}
   }
+}
 
 ####################################################
 # sélection d'un polygone sur la carte
@@ -225,14 +227,17 @@ if (length(polyX)>0)
 
 poly1func <- function()
 {
+  ifelse(flower,method <<- "Neighbourplot1", method <<- "")
+  graph <<- "Moran" 
+       
     if (quad == TRUE)
     {
-        SGfunc();
-        quad <<- FALSE;
+      SGfunc()
+      quad <<- FALSE
     }
     
-    maptest <<- TRUE;
-    polyfunc();
+    maptest <<- TRUE
+    polyfunc()
   }
 
 ####################################################
@@ -241,13 +246,17 @@ poly1func <- function()
 
 poly2func <- function()
 {
+ 
+  ifelse(flower,method <<- "Neighbourplot1", method <<- "")
+  graph <<- "Moran" 
+       
     if (quad == TRUE)
     {
-        SGfunc();
-        quad <<- FALSE;
+      SGfunc()
+      quad <<- FALSE
     }
-    maptest <<- FALSE;
-    polyfunc();
+    maptest <<- FALSE
+    polyfunc()
   }
 
 ####################################################
@@ -258,63 +267,93 @@ quadfunc <- function()
 {
     if (quad == FALSE)
     {
-        SGfunc();
-        quad <<- TRUE;
+      SGfunc()
+      quad <<- TRUE
     }
 
-    obs[which(obsq == num)] <<- !obs[which(obsq == num)];
+    obs[which(obsq == num)] <<- !obs[which(obsq == num)]
 
+    carte(long=long, lat=lat, obs=obs, classe=obsq,  carte=carte,nocart=nocart, labmod=names.arg,
+    couleurs=col2,symbol=pch2, method="Quadrant",buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,
+    legends=legends,axis=axes,lablong=lablong, lablat=lablat, label=label, cex.lab=cex.lab) 
 
-
-    carte(long=long, lat=lat, obs=obs, obsq=obsq,  carte=carte,nocart=nocart, label=label, symbol=symbol, method="Quadrant",buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-
-    graphique(var1=var, var2=wvar, obs=obs, num=3, graph="Quadrant", labvar=labvar, symbol=symbol, b=beta, locmoran=locmoran, obsq=obsq,opt1=opt1);
+    graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2, 
+    symbol=pch2, locmoran=locmoran,obsq=obsq, cex.lab=cex.lab,buble=buble2, cbuble=z2, 
+    legmap=legmap2, legends=legends2 )   
+    
     if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
-        {
-            graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)], obs=obs, num=4, graph=graphChoice, symbol=1, labvar=c(varChoice1,varChoice2));
-        }
-  }
+     {
+      graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
+      obs=obs, num=4, graph=graphChoice, symbol=pch[1], couleurs=col[1], labvar=c(varChoice1,varChoice2))
+     }
+}
 
 ####################################################
-# sélection du quadrant 1 sur le graphique
+# sélection d'un des 4 quadrants 
 ####################################################
 
 quad1func <- function()
 {
-    num <<- 1
-    quadfunc();
-  }
-
-####################################################
-# sélection du quadrant 2 sur le graphique
-####################################################
+  num <<- 1 
+  method <<- "Quadrant" 
+  graph <<- "Quadrant"  
+  quadfunc()
+}
 
 quad2func <- function()
 {
-    num <<- 2
-    quadfunc();
-  }
-
-####################################################
-# sélection du quadrant 3 sur le graphique
-####################################################
+ num <<- 2  
+ method <<- "Quadrant"
+ graph <<- "Quadrant"      
+ quadfunc()
+}
 
 quad3func <- function()
 {
-    num <<- 3
-    quadfunc();
-  }
-
-####################################################
-# sélection du quadrant 4 sur le graphique
-####################################################
+ num <<- 3
+ method <<- "Quadrant"
+ graph <<- "Quadrant"    
+ quadfunc()
+}
 
 quad4func <- function()
 {
-    num <<- 4
-    quadfunc();
-  }
+ num <<- 4
+ method <<- "Quadrant"
+ graph <<- "Quadrant"    
+ quadfunc()
+}
 
+####################################################
+# Différentes couleurs selon le quadrant
+####################################################
+
+ colfunc <- function()
+{
+    if(!choix.col)
+    {choix.col<<-TRUE
+     res1<-choix.couleur("Moran",col=col[1],pch=pch[1],legends=legends)     
+     ifelse(length(res1$col2)==4,col2 <<- res1$col2,col2 <<- rep(col[1],4))
+     ifelse(length(res1$pch2)==4,pch2 <<- res1$pch2,pch2 <<- rep(pch[1],4))
+     legends <<- res1$legends
+     }
+    else
+    {choix.col<<-FALSE
+     col2 <<- rep(col[1],4)
+     pch2 <<- rep(pch[1],4)
+     legends <<- list(legends[[1]],FALSE,legends[[3]],"")
+    }
+     
+carte(long=long, lat=lat, obs=obs, carte=carte,nocart=nocart, classe=obsq,
+couleurs=col2, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
+nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
+label=label, cex.lab=cex.lab,labmod=names.arg)     
+
+graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2, 
+symbol=pch2, locmoran=locmoran,obsq=obsq, cex.lab=cex.lab,buble=buble2, cbuble=z2, 
+legmap=legmap2, legends=legends2 )   
+        
+  }
 
 ####################################################
 # choix d'un autre graphique
@@ -324,79 +363,47 @@ graphfunc <- function()
 {
     if ((length(listvar) != 0) && (length(listnomvar) != 0))
     {
-        dev.off(4);
-        choix <<- selectgraph(listnomvar,listgraph);
-        varChoice1 <<- choix$varChoice1;
-        varChoice2 <<- choix$varChoice2;
-        graphChoice <<- choix$graphChoice;
+        dev.off(4)
+        choix <<- selectgraph(listnomvar,listgraph)
+        varChoice1 <<- choix$varChoice1
+        varChoice2 <<- choix$varChoice2
+        graphChoice <<- choix$graphChoice
             
         if ((graphChoice != "") && (varChoice1 != ""))
         {
-            x11(width=5, height=5);
-            graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)], obs=obs, num=4, graph=graphChoice, symbol=1, labvar=c(varChoice1,varChoice2));
-            }
+            dev.new()
+            graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
+            obs=obs, num=4, graph=graphChoice, couleurs=col[1], symbol=pch[1], labvar=c(varChoice1,varChoice2))
+        }
     }
     else
     {
-        tkmessageBox(message="List of Variables and list of variables names must have been given",icon="warning",type="ok");
+        tkmessageBox(message="List of Variables and list of variables names must have been given",icon="warning",type="ok")
     }
-  }
+}
+
 
 
 ####################################################
 # contour des unités spatiales
 ####################################################
+
 cartfunc <- function()
-{
-  if(!nocart)
-   { if (length(carte) != 0)
-       {nocart<<-TRUE
-        if (quad)
-        {
-            carte(long=long, lat=lat, obs=obs,  label=label, symbol=symbol, carte=carte,nocart=nocart, obsq=obsq, method="Quadrant",buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-        }
-        else
-        {
-          if (flower == 1)
-          {
-           carte(long=long, lat=lat, obs=obs,  label=label, carte=carte,nocart=nocart, symbol=symbol, W=W, method="Neighbourplot1",buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-          }
-         else
-          {
-            carte(long=long, lat=lat, obs=obs,  label=label, carte=carte,nocart=nocart, symbol=symbol,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-          }        
-        }
-
-
-      }
-     else
-       {
-        tkmessageBox(message="Spatial Contours have not been given",icon="warning",type="ok")
-       }
-  }
-
- else
-
-
- {
-   nocart<<-FALSE;
-        if (quad)
-        {
-            carte(long=long, lat=lat, obs=obs,  label=label, symbol=symbol, carte=carte,nocart=nocart, obsq=obsq, method="Quadrant",buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-        }
-        else
-        {
-         if (flower == 1)
-         {
-          carte(long=long, lat=lat, obs=obs,  label=label, carte=carte,nocart=nocart, symbol=symbol, W=W, method="Neighbourplot1",buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-         }
-         else
-         {
-          carte(long=long, lat=lat, obs=obs,  label=label, carte=carte,nocart=nocart, symbol=symbol,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-         }    
-      } }
-
+{  
+  if (length(carte) != 0)
+   {
+    ifelse(!nocart,nocart<<-TRUE,nocart<<-FALSE)
+    carte(long=long, lat=lat, obs=obs, carte=carte,nocart=nocart, classe=obsq,
+    couleurs=col2, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
+    nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
+    label=label, cex.lab=cex.lab,labmod=names.arg)        
+   }
+   else
+   {
+    tkmessageBox(message="Spatial contours have not been given",icon="warning",type="ok")    
+   }
 }
+
 
 
 ####################################################
@@ -407,8 +414,15 @@ SGfunc<-function()
 {
     obs<<-vector(mode = "logical", length = length(long));
 
-    carte(long=long, lat=lat, obs=obs,  label=label, carte=carte,nocart=nocart, symbol=symbol,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-    graphique(var1=var, var2=wvar, obs=obs, num=3, graph="Moran", labvar=labvar, symbol=symbol, b=beta, locmoran=locmoran, obsq=obsq,opt1=opt1);
+carte(long=long, lat=lat, obs=obs, carte=carte,nocart=nocart, classe=obsq,
+couleurs=col2, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
+nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
+label=label, cex.lab=cex.lab,labmod=names.arg)     
+
+graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2, 
+symbol=pch2, locmoran=locmoran,obsq=obsq, cex.lab=cex.lab,buble=buble2, cbuble=z2, 
+legmap=legmap2, legends=legends2 )   
+    
    if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
             graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)], obs=obs, num=4, graph=graphChoice, symbol=1, labvar=c(varChoice1,varChoice2));
@@ -422,11 +436,9 @@ SGfunc<-function()
 
 quitfunc<-function() 
 {
-    tclvalue(fin)<<-TRUE;
-#    graphics.off();
-    tkdestroy(tt);
-  }
-
+  tclvalue(fin)<<-TRUE
+  tkdestroy(tt)
+}
 
 ####################################################
 # Open a no interactive selection
@@ -434,293 +446,86 @@ quitfunc<-function()
 
 fnointer<-function() 
 {
- if(!nointer)
-  { if (length(criteria) != 0)
-     {nointer<<-TRUE
-        if (quad)
-        {
-            carte(long=long, lat=lat, obs=obs,  label=label, symbol=symbol,  carte=carte,nocart=nocart, obsq=obsq, method="Quadrant",buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-        }
-        else
-        {
-          if (flower == 1)
-          {
-           carte(long=long, lat=lat, obs=obs,  label=label, carte=carte,nocart=nocart, symbol=symbol, W=W, method="Neighbourplot1",buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-          }
-         else
-          {
-            carte(long=long, lat=lat, obs=obs,  label=label, carte=carte,nocart=nocart, symbol=symbol,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-          }          }     
-     }
-   else
-      {
-       tkmessageBox(message="Criteria has not been given",icon="warning",type="ok")
-      }
-
-  }
-
- else 
-
+ if (length(criteria) != 0)
  {
-   nointer<<-FALSE;
-        if (quad)
-        {
-            carte(long=long, lat=lat, obs=obs,  label=label, symbol=symbol,  carte=carte,nocart=nocart, obsq=obsq, method="Quadrant",buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-        }
-        else
-        {
-          if (flower == 1)
-          {
-           carte(long=long, lat=lat, obs=obs,  label=label, carte=carte,nocart=nocart, symbol=symbol, W=W, method="Neighbourplot1",buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-          }
-         else
-          {
-            carte(long=long, lat=lat, obs=obs,  label=label, carte=carte,nocart=nocart, symbol=symbol,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-          }          }
+ ifelse(!nointer,nointer<<-TRUE,nointer<<-FALSE)
+ carte(long=long, lat=lat, obs=obs, carte=carte,nocart=nocart, classe=obsq,
+ couleurs=col2, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
+ nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
+ label=label, cex.lab=cex.lab,labmod=names.arg)       
  }
-
+ else
+ {
+  tkmessageBox(message="Criteria has not been given",icon="warning",type="ok")
+ }
+ 
 }
-
-
-
-####################################################
-# Choisir une variable
-####################################################
-
-    choixvarfunc <- function(title, question, liste) {
-        tt2 <- tktoplevel()
-        scr <- tkscrollbar(tt2, repeatinterval = 5, command = function(...) tkyview(lstbox, 
-            ...))
-        lstbox <- tklistbox(tt2, height = 4, selectmode = "single", 
-            yscrollcommand = function(...) tkset(scr, ...), background = "white")
-        tkgrid(tklabel(tt2, text = question))
-        tkfocus(tt2)
-        tkwm.title(tt2, title)
-        varChoice <- ""
-        tkgrid(lstbox, scr)
-        tkgrid.configure(scr, rowspan = 4, sticky = "nsw")
-        var <- liste
-        for (i in 1:length(var)) {
-            tkinsert(lstbox, "end", var[i])
-        }
-        OnOK <- function() {
-            varChoice <<- var[as.numeric(tkcurselection(lstbox)) + 
-                1]
-            tkdestroy(tt2)
-        }
-        OK.but <- tkbutton(tt2, text = "   OK   ", command = OnOK)
-        tkgrid(OK.but)
-        tkbind(tt2, "<Destroy>", function() {
-            tkdestroy(tt2)
-        })
-        tkfocus(tt2)
-        tkwait.window(tt2)
-        return(varChoice)
-    }
-
 
 
 ####################################################
 # Bubble
 ####################################################
 
-fbubble<-function(){
-
-if(!buble)
+fbubble<-function()
 {
-   if ((length(listvar) != 0) && (length(listnomvar) != 0))
-    {
-
-     varChoix <- choixvarfunc("Choice of variables","Choose the variable",listnomvar)
-     bubble <- listvar[,which(listnomvar == varChoix)]
-      if ((length(bubble) != 0)&&(min(bubble)>=0))
-       { 
-         buble<<-TRUE   
-       } 
-      else
-       {
-        tkmessageBox(message="Bubbles have not been given or must be positiv",icon="warning",type="ok")
-       }
-
-    }
-
-else
-    {
-        tkmessageBox(message="To use Bubbles, listvar and listnomvar must have be given in input",icon="warning",type="ok");
-    }
-
+  res2<-choix.bubble(buble,listvar,listnomvar,legends)
+  
+  buble <<- res2$buble
+  legends <<- res2$legends
+  z <<- res2$z
+  legmap <<- res2$legmap
+  
+carte(long=long, lat=lat, obs=obs, carte=carte,nocart=nocart, classe=obsq,
+couleurs=col2, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
+nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
+label=label, cex.lab=cex.lab,labmod=names.arg)    
+ 
 }
 
-else
-{buble<<-FALSE
- legends<<-list(FALSE,legends[[2]],"",legends[[4]])
- if (quad)
-        {
-            carte(long=long, lat=lat, obs=obs,  label=label, symbol=symbol,  carte=carte,nocart=nocart, obsq=obsq, method="Quadrant",buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-        }
-        else
-        {
-          if (flower == 1)
-          {
-           carte(long=long, lat=lat, obs=obs,  label=label, carte=carte,nocart=nocart, symbol=symbol, W=W, method="Neighbourplot1",buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-          }
-         else
-          {
-            carte(long=long, lat=lat, obs=obs,  label=label, carte=carte,nocart=nocart, symbol=symbol,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-          }          }}
+####################################################
+# Bubble  of Lisa
+####################################################
 
-
-
-
-if(buble)
+lisa<-function()
 {
-
-tt2 <- tktoplevel()
-
-OnOK <- function()
-{ 
-tkdestroy(tt2)	
-
-tt3 <- tktoplevel()
-
-
-bubl<-function()
-{
-rbValue="math"
-tkdestroy(tt3)	
-msg <- paste("Click on the map to indicate the location of the upper left corner of the legend box
-")
-tkmessageBox(message=msg)
-dev.set(2);
-loc <- locator(1)
-
-if(rbValue=="math")
-{
-z<<-sqrt(bubble/max(bubble))*3
-legmap<<-c(sqrt(as.numeric(tclvalue(ma))/max(bubble))*3,sqrt(as.numeric(tclvalue(mea))/max(bubble))*3,sqrt(as.numeric(tclvalue(mi))/max(bubble))*3,as.numeric(tclvalue(ma)),as.numeric(tclvalue(mea)),as.numeric(tclvalue(mi)),varChoix)
+  ilocal <- (var/sd(var)) * (wvar/sd(var))          
+  res3<-choix.bubble(buble2,abs(ilocal),"ilocal",legends2)
+  
+  buble2 <<- res3$buble
+  legends2 <<- res3$legends
+  z2 <<- res3$z
+  legmap2 <<- res3$legmap
+  
+graphique(var1=var, var2=wvar, obs=obs, num=3, graph=graph, labvar=labvar, couleurs=col2, 
+symbol=pch2, locmoran=locmoran,obsq=obsq, cex.lab=cex.lab,buble=buble2, cbuble=z2, 
+legmap=legmap2, legends=legends2 )   
+ 
 }
-else
-{
-z<<-3*(bubble/max(bubble))^0.57
-legmap<<-c(3*(as.numeric(tclvalue(ma))/max(bubble))^0.57,3*(as.numeric(tclvalue(mea))/max(bubble))^0.57,3*(as.numeric(tclvalue(mi))/max(bubble))^0.57,as.numeric(tclvalue(ma)),as.numeric(tclvalue(mea)),as.numeric(tclvalue(mi)),varChoix)
-}
-
-
-legends<<-list(TRUE,legends[[2]],loc,legends[[4]])
- if (quad)
-        {
-            carte(long=long, lat=lat, obs=obs,  label=label, symbol=symbol,  carte=carte,nocart=nocart, obsq=obsq, method="Quadrant",buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-        }
-        else
-        {
-          if (flower == 1)
-          {
-           carte(long=long, lat=lat, obs=obs,  label=label, carte=carte,nocart=nocart, symbol=symbol, W=W, method="Neighbourplot1",buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-          }
-         else
-          {
-            carte(long=long, lat=lat, obs=obs,  label=label, carte=carte,nocart=nocart, symbol=symbol,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-          }          }
-
-}
-
-
-mi<-tclVar(round(min(bubble),2))
-mea<-tclVar(round(mean(bubble),2))
-ma<-tclVar(round(max(bubble),2))
-entry.Name <-tkentry(tt3,width="5",textvariable=mi)
-entry.Name2 <-tkentry(tt3,width="5",textvariable=mea)
-entry.Name3 <-tkentry(tt3,width="5",textvariable=ma)
-tkgrid(tklabel(tt3,text="Break Points:"))
-tkgrid(tklabel(tt3,text="Small Bubble"),entry.Name)
-tkgrid(tklabel(tt3,text="Middle Bubble"),entry.Name2)
-tkgrid(tklabel(tt3,text="Large Bubble"),entry.Name3)
-
-autre.but <- tkbutton(tt3, text="     OK     " , command=bubl);
-tkgrid(autre.but,columnspan=2)
-tkgrid(tklabel(tt3,text="    "))
-tkfocus(tt3)
-
-}
-
-OnOK2 <- function()
-{ 
-rbValue="math"
-tkdestroy(tt2)
-if(rbValue=="math")
-{
-z<<-sqrt(bubble/max(bubble))*3
-}
-else
-{
-z<<-3*(bubble/max(bubble))^0.57
-}	
- if (quad)
-        {
-            carte(long=long, lat=lat, obs=obs,  label=label, symbol=symbol,  carte=carte,nocart=nocart, obsq=obsq, method="Quadrant",buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-        }
-        else
-        {
-          if (flower == 1)
-          {
-           carte(long=long, lat=lat, obs=obs,  label=label, carte=carte,nocart=nocart, symbol=symbol, W=W, method="Neighbourplot1",buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-          }
-         else
-          {
-            carte(long=long, lat=lat, obs=obs,  label=label, carte=carte,nocart=nocart, symbol=symbol,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,legmap=legmap,legends=legends,axis=axis,lablong=lablong, lablat=lablat)
-          }          }
-}
-
-
-labelText12 <- tclVar("Do you want a legend for bubbles")
-label12 <- tklabel(tt2,justify = "center", wraplength = "3i", text=tclvalue(labelText12))
-tkconfigure(label12, textvariable=labelText12)
-tkgrid(label12,columnspan=2)
-
-point.but <- tkbutton(tt2, text="  Yes  ", command=OnOK);
-poly.but <- tkbutton(tt2, text=" No ", command=OnOK2);
-tkgrid(point.but, poly.but)
-tkgrid(tklabel(tt2,text="    "))
-tkfocus(tt2)
-}
-
-
-
-}
-
-
-
-
 
 ####################################################
 # Permutation
 ####################################################
 permutation<-function()
 {
+  tt1<-tktoplevel()
+  Name <- tclVar("n")
+  entry.Name <-tkentry(tt1,width="5",textvariable=Name)
+  tkgrid(tklabel(tt1,text="Number of simulations"),entry.Name)
 
-
-tt1<-tktoplevel()
-Name <- tclVar("n")
-entry.Name <-tkentry(tt1,width="5",textvariable=Name)
-tkgrid(tklabel(tt1,text="Number of simulations"),entry.Name)
-
-
-
-
-OnOK <- function()
-{ 
-	value1 <- tclvalue(Name)
-	tkdestroy(tt1)
+  OnOK <- function()
+  { 
+	 value1 <- tclvalue(Name)
+	 tkdestroy(tt1)
        if(is.na(as.integer(value1)))
-    {
+      {
         tkmessageBox(message="Sorry, but you have to choose decimal values",icon="warning",type="ok");
-    }
+      }
       else
-    {
-    n=as.integer(value1)
-    perm<-NULL
-     for (i in 1:n)
-     {
+      {
+       n=as.integer(value1)
+       perm<-NULL
+      for (i in 1:n)
+       {
        sam<-sample(var,length(var))
        sam <- sam - mean(sam);
 
@@ -728,29 +533,26 @@ OnOK <- function()
        mi <- (sam %*% W %*% sam)/epe
        morani <- round(mi,4);
        perm <- c(perm,morani);
-     }
-
+      }
      msg <- paste("The p-value of the permutation test is :",1-length(which(perm<rep(MORAN,n)))/n)
-
      tkmessageBox(message=msg,icon="info",type="ok") 
-
     }   
 }
 
 
-
-OK.but <-tkbutton(tt1,text="   OK   ",command=OnOK)
-#tkbind(entry.Name, "<Return>",OnOK)
-tkgrid(OK.but)
-tkfocus(tt1)
-
-
-
+  OK.but <-tkbutton(tt1,text="   OK   ",command=OnOK)
+  tkgrid(OK.but)
+  tkfocus(tt1)
 }
 
-carte(long=long, lat=lat, obs=obs,  label=label, symbol=symbol,axis=axis,lablong=lablong, lablat=lablat)
-graphique(var1=var, var2=wvar, obs=obs, num=3, graph="Moran", labvar=labvar, symbol=symbol, b=beta, locmoran=locmoran, obsq=obsq,opt1=opt1);
+carte(long=long, lat=lat, obs=obs, carte=carte,nocart=nocart, classe=classe,
+couleurs=col2, symbol=pch2, W=W, method=method, buble=buble, cbuble=z, criteria=criteria,
+nointer=nointer, legmap=legmap, legends=legends,axis=axes,lablong=lablong, lablat=lablat,
+label=label, cex.lab=cex.lab)     
 
+graphique(var1=var, var2=wvar, obs=obs, num=3, graph="Moran", labvar=labvar, couleurs=col2, symbol=pch2, 
+locmoran=locmoran,obsq=obsq,buble=buble2, cbuble=z2, legmap=legmap2, legends=legends2 )
+        
 
 ####################################################
 # création de la boite de dialogue
@@ -804,7 +606,7 @@ tkgrid(label11,columnspan=2)
 tkgrid(tklabel(tt,text="    "))
 
 
-msg <- paste("Moran index: ", MORAN, " - ","p-value (Gaussian Test) : ", if(round(prob,4)<0.0001){"<0.0001"}else{round(prob,4)}) 
+msg <- paste("Moran index ",ifelse(is.norm,"(W normalized)","(W not normalized)"),": ", MORAN, " - ","p-value (Gaussian Test) : ", if(round(prob.I,4)<0.0001){"<0.0001"}else{round(prob.I,4)}) 
 tkgrid(tklabel(tt,text=msg),columnspan=2)
 tkgrid(tklabel(tt,text="    "))
 
@@ -831,13 +633,14 @@ tkgrid(tklabel(tt,text="    "))
 
 
 
-labelText9 <- tclVar("Bubbles")
+labelText9 <- tclVar("Print different colors by quadrant / Bubbles")
 label9 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText9))
 tkconfigure(label9, textvariable=labelText9)
 tkgrid(label9,columnspan=2)
 
+coul.but <- tkbutton(tt, text="  On/Off  ", command=colfunc);
 bubble.but <- tkbutton(tt, text="  On/Off  ", command=fbubble);
-tkgrid(bubble.but,columnspan=2)
+tkgrid(coul.but,bubble.but)
 tkgrid(tklabel(tt,text="    "))
 
 labelText3 <- tclVar("Restore graph")
@@ -850,13 +653,14 @@ tkgrid(nettoy.but,columnspan=2)
 tkgrid(tklabel(tt,text="    "))
 
 
-labelText4 <- tclVar("Additional graph")
+labelText4 <- tclVar("Bubbles of LISA / Additional graph")
 label4 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText4))
 tkconfigure(label4, textvariable=labelText4)
 tkgrid(label4,columnspan=2)
 
+lisa.but <- tkbutton(tt, text="  On/Off  ", command=lisa);
 autre.but <- tkbutton(tt, text="     OK     " , command=graphfunc);
-tkgrid(autre.but,columnspan=2)
+tkgrid(lisa.but,autre.but)
 tkgrid(tklabel(tt,text="    "))
 
 

@@ -3,25 +3,11 @@ function(w)
 {
 # initialisation
 res <- dim(w)
-if(res[1]!=res[2])
-{tkmessageBox(message="matrix must be squared",icon="Error",
-type="ok")}
+if(res[1]!=res[2]) stop("w is not a squared matrix") 
 
-nterm <- rep(0,ncol(w))
+non.0<-which(apply(w,2,sum)!=0)
+w[non.0,]<-w[non.0,]/apply(w,1,sum)[non.0]
 
-# normalisation
-
-for(i in 1:ncol(w))
-{ v <- cumsum(w[i,])
- nterm[i] <- v[ncol(w)]
-  }
-
-for(i in 1:ncol(w))
-{  if(nterm[i]!=0)
-  {
-    W <- w/nterm
-  }
-}
-return(W)
+return(w)
 }
 

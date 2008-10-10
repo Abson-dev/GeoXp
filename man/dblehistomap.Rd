@@ -5,10 +5,9 @@
 The function `dblehistomap' draws two histograms of the given variables $var1$ and $var2$ and a map with sites of coordinates $(long,lat)$. Each site is associated to a value of $var1$ and $var2$ and there is interactivity between the two windows created.}
 
 \usage{
-dblehistomap(long, lat, var1, var2, listvar = NULL, listnomvar = NULL,
-nbcol1 = 10, nbcol2 = 10, carte = NULL, criteria = NULL, symbol = 0,
-color = 1, labvar = c("", ""), label = "", axis = FALSE,
-lablong = "", lablat = "")
+dblehistomap(long, lat, var1, var2,listvar=NULL, listnomvar=NULL, nbcol=c(10,10),
+carte = NULL,criteria=NULL, pch = 16, col=c("grey","blue"), xlab = c("",""),
+ylab=c("count","count"), label = "",cex.lab=1,axes=FALSE, lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -16,17 +15,18 @@ lablong = "", lablat = "")
   \item{lat}{a vector $y$ of size $n$}
   \item{var1}{a vector of numeric values of size $n$}
   \item{var2}{a vector of numeric values of size $n$}
-  \item{listvar}{matrix of variables}
-  \item{listnomvar}{names of variables $listvar$}
-  \item{nbcol1}{number of cells for histogram 1 (10 by default)}
-  \item{nbcol2}{number of cells for histogram 2 (10 by default)}
+  \item{listvar}{matrix of variables which permit to plot bubbles on map or add a graphic using the tk window}
+  \item{listnomvar}{a list with names of variables $listvar$}
+  \item{nbcol}{a list of number of cells for histogram 1 and histogram 2 (10 by default)}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : $x$ and $y$ coordinates of the vertices of the polygon}
   \item{criteria}{a vector of size $n$ of boolean with TRUE on specific sites (these for non interactive selection)}
-  \item{symbol}{0 (by default) or 1, choice of representation of selected points. If 0, selected points are circles, if 1, selected points are stars}
-  \item{color}{0 or 1 (by default), choice of representation of selected points (if user has selected a barplot as an additionnal graph). If 0, sites are represented in blue, if 1, sites are represented with different colors for each factor}
-  \item{labvar}{name of variable $var$}
-  \item{label}{vector of character of size $n$ with names of sites}
-  \item{axis}{a boolean with TRUE for drawing axes on the map}
+  \item{pch}{16 by default, choice of representation of selected points}
+  \item{col}{a list of colors for the bars on the histogram 1 and histogram 2}
+  \item{xlab}{a list of title for the two x-axis graphics}
+  \item{ylab}{a list of title for the two y-axis graphics}
+  \item{label}{a list of character of size $n$ with name of site. Names are printed on map after a selection}
+  \item{cex.lab}{character size of label}
+  \item{axes}{a boolean with TRUE for drawing axes on the map}
   \item{lablong}{name of the x-axis that will be printed on the map}
   \item{lablat}{name of the y-axis that will be printed on the map}
 }
@@ -48,26 +48,28 @@ midiP <- readOGR(system.file("vectors/region.mif", package = "GeoXp")[1], "regio
 cont_midiP<-spdf2list(midiP)$poly
 dblehistomap(immob$longitude,immob$latitude,immob$prix.vente,
 immob$prix.location,carte= cont_midiP,listvar=immob,
-listnomvar=names(immob),label=immob$Nom)
+listnomvar=names(immob),label=immob$Nom,cex.lab=0.7,xlab=c("vente","location"),
+col=colors()[99:100])
 
 # data auckland
 data(auckland)
-data(auck.polys)
-contours.auckland<-polylist2list(auck.polys)
+contours.auckland<-polylist2list(auckpolys)
 dblehistomap(auckland$Easting,auckland$Northing,var1=auckland$Deaths.1977.85,
 var2=auckland$Under.5.1981,carte=contours.auckland,
 listvar=cbind(auckland,as.numeric(auckland$Deaths.1977.85>
 mean(auckland$Deaths.1977.85))),listnomvar=c(names(auckland),"sup to mean"),
-labvar=c("Deaths.1977.85","Under.5.1981"),
+xlab=c("Deaths.1977.85","Under.5.1981"),
 criteria=(auckland$Deaths.1977.85>mean(auckland$Deaths.1977.85)))
 
 # data colombus
-x <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
-colombus.contours<-map2list(x)
-colombus<-x$att.data
-dblehistomap(colombus.contours$X,colombus.contours$Y,
-colombus$HOVAL,colombus$CRIME,
-label=colombus$NEIGNO, carte=colombus.contours$poly,
+x <- readShapePoly(system.file("shapes/columbus.shp", package="maptools")[1])
+colombus.contours<-spdf2list(x)$poly
+coords <- coordinates(x)
+colombus<-x@data
+
+dblehistomap(coords[,1],coords[,2],
+colombus$HOVAL,colombus$CRIME,xlab=c("hoval","crime"),
+label=colombus$NEIGNO, cex.lab=0.7, carte=colombus.contours,
 listvar=colombus,listnomvar=names(colombus))
 
 }

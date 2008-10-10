@@ -4,10 +4,10 @@
 \description{
 The function `dbledensitymap' plots two kernel density estimates from $var1$ and $var2$, computed with `bkde.R', and a map with sites of coordinates $(long,lat)$. Each site is associated to a value of $var1$ and $var2$ and the two windows are interactive. }
 \usage{
-dbledensitymap(long, lat, var1, var2, kernel = "triweight",
-listvar = NULL, listnomvar = NULL, carte = NULL, criteria = NULL,
-label = "", symbol = 0, color = 1, labvar = c("var1", "var2"),
-axis = FALSE, lablong = "", lablat = "")
+dbledensitymap(long, lat, var1, var2, kernel='triweight',listvar=NULL, 
+listnomvar=NULL, carte=NULL, criteria=NULL, label="", cex.lab=1, pch=16,
+col=c("grey","blue"), xlab=c("",""), ylab=c("density","density"),axes=FALSE,
+lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -16,22 +16,24 @@ axis = FALSE, lablong = "", lablat = "")
   \item{var1}{a vector of numeric values of size $n$}
   \item{var2}{a vector of numeric values of size $n$}
   \item{kernel}{Smoothing kernel (see help(bkde) for list of options)}
-  \item{listvar}{matrix of variables}
-  \item{listnomvar}{names of variables $listvar$}
+  \item{listvar}{matrix of variables which permit to plot bubbles on map or add a graphic using the tk window}
+  \item{listnomvar}{a list with names of variables $listvar$}
   \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : $x$ and $y$ coordinates of the vertices of the polygon}
   \item{criteria}{a vector of size $n$ of boolean with TRUE on specific sites (these for non interactive selection)}
   \item{label}{vector of character of size $n$ with names of sites}
-  \item{symbol}{0 or 1, choice of representation of selected points. If 0, selected points are circles, if 1, selected points are stars}
-  \item{color}{0 or 1, choice of representation of selected points (if user has selected a barplot as an additionnal graph). If 0, sites are represented in blue, if 1, sites are represented with different colors for each factor}
-  \item{labvar}{list of character with names of variables $var1$ and $var2$}
-  \item{axis}{a boolean with True for drawing axes on the map}
+  \item{cex.lab}{character size of label on map}
+  \item{pch}{16 by default, choice of representation of selected points on map}
+  \item{col}{c("grey","blue") by default, color of the two density curves}  
+  \item{xlab}{a list of title for the two x-axis graphics}
+  \item{ylab}{a list of title for the two y-axis graphics}
+  \item{axes}{a boolean with True for drawing axes on the map}
   \item{lablong}{name of the x-axis that will be printed on the map}
   \item{lablat}{name of the y-axis that will be printed on the map}
 }
 \details{
 The user can choose an interval on the density curve by mouse clicking on the lower and upper boundaries of the interval or by giving directly these values.
 The selected sites are then represented on the map in red.
-A selection by `points' or `polygon' on the map results in the drawing of the density of the corresponding sub-distribution on the density plot. Finally, the user can modify the bandwith parameter with a cursor in the tcltk window (parameter $\alpha$). $\alpha$ is the smoothing parameter for the kernel smooth : it represents the mean percentage of sample points involved in the local averaging (example : $\alpha=20$ means that on average, $n \times 0.2$ points are in any interval of length $2h$ where h is the usual bandwidth).}
+A selection by `points' or `polygon' on the map results in the drawing of the density of the corresponding sub-distribution on the density plot. Finally, the user can modify the bandwith parameter with a cursor in the tk window (parameter $\alpha$). $\alpha$ is the smoothing parameter for the kernel smooth : it represents the mean percentage of sample points involved in the local averaging (example : $\alpha=20$ means that on average, $n \times 0.2$ points are in any interval of length $2h$ where h is the usual bandwidth).}
 
 
 \value{A vector of boolean of size $n$. TRUE if the site was in the last selection.}
@@ -50,30 +52,32 @@ Wand M.P. et Jones M.C. (1995), ``Kernel Smoothing'', Chapman \& Hall.
 \examples{
 # data auckland
 data(auckland)
-data(auck.polys)
-contours.auckland<-polylist2list(auck.polys)
+contours.auckland<-polylist2list(auckpolys)
 dbledensitymap(auckland$Easting,auckland$Northing,var1=auckland$Deaths.1977.85,
 var2=auckland$Under.5.1981,carte=contours.auckland,
 listvar=cbind(auckland,as.numeric(auckland$Deaths.1977.85>
 mean(auckland$Deaths.1977.85))), listnomvar=c(names(auckland),"sup to mean"),
-labvar=c("Deaths.1977.85","Under.5.1981"),
+xlab=c("Deaths.1977.85","Under.5.1981"),
 criteria=(auckland$Deaths.1977.85>mean(auckland$Deaths.1977.85)))
 
 # data columbus
-x <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
-colombus.contours<-map2list(x)
-colombus<-x$att.data
-obs<-dbledensitymap(colombus.contours$X,colombus.contours$Y,colombus$HOVAL,
-colombus$CRIME,label=colombus$NEIGNO,carte=colombus.contours$poly)
+x <- readShapePoly(system.file("shapes/columbus.shp", package="maptools")[1])
+colombus.contours<-spdf2list(x)$poly
+coords <- coordinates(x)
+colombus<-x@data
+
+obs<-dbledensitymap(coords[,1],coords[,2],colombus$HOVAL,
+colombus$CRIME,label=colombus$NEIGNO,carte=colombus.contours,
+cex.lab=0.7,listvar=colombus,listnomvar=names(colombus),
+col=c("purple","pink"),xlab=c("hoval","crime"),pch=14)
 
 # data eire
 data(eire)
-data(eire.polys)
-eire.contours<-polylist2list(eire.polys)
-dbledensitymap(eire$V1,eire$V2,eire$A,eire$towns,
-labvar=c("Taux d'individus au groupe sanguin A",
+eire.contours<-polylist2list(eire.polys.utm)
+dbledensitymap(eire.coords.utm$V1,eire.coords.utm$V2,eire.df$A,eire.df$towns,
+xlab=c("Taux d'individus au groupe sanguin A",
 "Surface urbaine"),carte=eire.contours,kernel="normal",
-listvar=eire,listnomvar=names(eire))
+listvar=eire.df,listnomvar=names(eire.df))
 
 }
 

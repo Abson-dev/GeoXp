@@ -27,7 +27,7 @@ Prepared by Thibault LAURENT.
 }
 
 \references{
-\url{http://www.fnaim.fr/infos/lettre-de-conjoncture/lettre_conjoncture_N-51.pdf}
+\url{http://www.fnaim.fr/}
 }
 
 \examples{

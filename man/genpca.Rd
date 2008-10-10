@@ -7,8 +7,8 @@ It calculates the principal components, the coordinates of the variables and
 in these principals components axes and the inertia of these principal components. 
 }
 \usage{
-genpca(data, w = rep(1/nrow(data), length = nrow(data)),
-m = diag(1, ncol(data), ncol(data)), center = TRUE, reduc = TRUE)
+genpca(data, w=rep(1/nrow(data),length=nrow(data)), 
+m=diag(ncol(data)), center=NULL, reduc=TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

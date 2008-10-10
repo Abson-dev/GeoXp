@@ -26,11 +26,17 @@ A matrix of size $n \times n$
 
 \keyword{spatial}
 
-\seealso{\code{\link{neighbourmap}}, \code{\link{moranplotmap}},\code{\link{makedistancew}},\code{\link{makeneighborsw}}}
+\seealso{\code{\link{neighbourmap}}, \code{\link{moranplotmap}},\code{\link{makeneighborsw}}}
 
 \examples{
 # data auckland
 data(auckland)
-W<-makedistancew(auckland$Easting,auckland$Northing,5)
+x.ext <- auckland$Easting[1:10]
+y.ext <- auckland$Northing[1:10] 
+#plot(x.ext,y.ext,type='p')
+#text(x.ext,y.ext,as.character(1:10))
+
+# matrix based on 5 nearest neighbors
+W<-makeneighborsw(x.ext,y.ext,method="neighbor",m=3)
 W2<-normw(W)
 } 

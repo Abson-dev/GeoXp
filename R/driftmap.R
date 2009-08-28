@@ -635,7 +635,7 @@ tkgrid(point.but, poly.but)
 tkgrid(tklabel(tt,text="    "))
 
 
-label1 <- tclVar("To stop selection, leave the cursur on the active graph, click on the right button of the mouse and stop")
+label1 <- tclVar("To stop selection, leave the cursor on the active graph, click on the right button of the mouse and stop")
 label11 <- tklabel(tt,justify = "center", wraplength = "3i", text=tclvalue(label1))
 tkconfigure(label11, textvariable=label1)
 tkgrid(label11,columnspan=2)

@@ -599,14 +599,14 @@ tkgrid(tklabel(tt,text="    "))
 
 
 
-label1 <- tclVar("To stop selection, leave the cursur on the active graph, click on the right button of the mouse and stop")
+label1 <- tclVar("To stop selection, leave the cursor on the active graph, click on the right button of the mouse and stop")
 label11 <- tklabel(tt,justify = "center", wraplength = "3i", text=tclvalue(label1))
 tkconfigure(label11, textvariable=label1)
 tkgrid(label11,columnspan=2)
 tkgrid(tklabel(tt,text="    "))
 
 
-msg <- paste("Moran index ",ifelse(is.norm,"(W normalized)","(W not normalized)"),": ", MORAN, " - ","p-value (Gaussian Test) : ", if(round(prob.I,4)<0.0001){"<0.0001"}else{round(prob.I,4)}) 
+msg <- paste("Moran index ",ifelse(is.norm,"(W normalized)","(W not normalized)"),": ", MORAN, " - ","p-value (Gaussian Test) : ", ifelse(round(1-prob.I,4)<0.0001,"<0.0001",round(1-prob.I,4)))
 tkgrid(tklabel(tt,text=msg),columnspan=2)
 tkgrid(tklabel(tt,text="    "))
 
@@ -621,7 +621,7 @@ tkgrid(noint10.but,columnspan=2)
 tkgrid(tklabel(tt,text="    "))
 
 
-labelText7 <- tclVar("Non interactive selection  /  Draw Spatial contours ")
+labelText7 <- tclVar("Preselected sites  /  Draw Spatial contours ")
 label7 <- tklabel(tt,justify = "center", wraplength = "3i", text=tclvalue(labelText7))
 tkconfigure(label7, textvariable=labelText7)
 tkgrid(label7,columnspan=2)

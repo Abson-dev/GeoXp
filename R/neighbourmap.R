@@ -336,7 +336,7 @@ tkgrid(vari.but,vari2.but)
 tkgrid(tklabel(tt,text="    "))
 
 
-label1 <- tclVar("To stop selection, let the cursur on the active graph, click on the right button of the mouse and stop")
+label1 <- tclVar("To stop selection, let the cursor on the active graph, click on the right button of the mouse and stop")
 label11 <- tklabel(tt,justify = "center", wraplength = "3i", text=tclvalue(label1))
 tkconfigure(label11, textvariable=label1)
 tkgrid(label11,columnspan=2)
@@ -344,7 +344,7 @@ tkgrid(tklabel(tt,text="    "))
 
 
 
-labelText7 <- tclVar("Non interactive selection")
+labelText7 <- tclVar("Preselected sites")
 label7 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText7))
 tkconfigure(label7, textvariable=labelText7)
 tkgrid(label7,columnspan=2)

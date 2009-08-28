@@ -12,8 +12,8 @@ This data frame contains price indices of real estate from biggest cities in Fra
     \item{\code{Nom}}{Name of the city}
     \item{\code{Code.INSEE}}{Code Insee of the city}
     \item{\code{Code.region}}{Code of the 'region' area of the city}
-    \item{\code{longitude}}{A vector $x$ of size $n$}
-    \item{\code{latitude}}{A vector $y$ of size $n$}
+    \item{\code{longitude}}{A vector x of size n}
+    \item{\code{latitude}}{A vector y of size n}
     \item{\code{prix.vente}}{Average selling price at square metres}
     \item{\code{variation.vente}}{Rates of change in the average selling price for a quarter year}
     \item{\code{prix.location}}{ Average price of rental square metres }

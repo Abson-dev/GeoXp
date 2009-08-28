@@ -2,8 +2,8 @@
 \alias{histnbmap}
 \title{Interactive histogram of the distances between two neighbors of a nb object and map}
 \description{
-The function `histnbmap' draws the histogram of the distances between two neighbors for
-a neighbourhood structure given by a $nb$ object and calculated by nbdists function (see spdep package), 
+The function \code{histnbmap()} draws the histogram of the distances between two neighbors for
+a neighbourhood structure given by a \code{nb} object and calculated by nbdists function (see spdep package),
 and links the graphic with a map.
 }
 
@@ -15,19 +15,18 @@ xlab="", ylab="", cex.lab=1, axes=FALSE, lablong="",lablat="")
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{object}{a object of class nb}
-  \item{coords}{a matrix of size $n \times 2$}
+  \item{coords}{a matrix of size \eqn{n \times 2}{n x 2}}
   \item{longlat}{TRUE if point coordinates are longitude-latitude decimal degrees, in which case distances are measured in kilometers;
   if coords is a SpatialPoints object, the value is taken from the object itself}
   \item{sup}{if TRUE, it keeps only the distance of the neighbor the farest }
   \item{nbcol}{number of cells for histogram (10 by default)}
   \item{listvar}{matrix of variables which permit to plot bubbles using the tk window}
-  \item{listnomvar}{names of variables $listvar$}
-  \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : $x$ and $y$ coordinates of 
+  \item{listnomvar}{names of variables \code{listvar}}
+  \item{carte}{matrix with 2 columns for drawing spatial polygonal contours : x and y coordinates of
   the vertices of the polygon}
-  \item{criteria}{a vector of size $n$ of boolean with TRUE on specific sites (these for non interactive selection)}
-  \item{label}{vector of character of size $n$ with names of sites}
+  \item{criteria}{a vector of size n of boolean which permit to represent preselected sites with a cross, using the tcltk window}  \item{label}{vector of character of size n with names of sites}
   \item{col}{color associated to the color of the histogram}
-  \item{pch}{symbol of the sites which are printed}
+  \item{pch}{16 by default, symbol for selected points}
   \item{xlab}{a title for the graphic x-axis}
   \item{ylab}{a title for the graphic y-axis}
   \item{cex.lab}{character size of label}
@@ -36,7 +35,7 @@ xlab="", ylab="", cex.lab=1, axes=FALSE, lablong="",lablat="")
   \item{lablat}{name of the y-axis that will be printed on the map}
 }
 \details{
-For a selected site $j$ on the map, are represented on the map its neighbours.
+For a selected site j on the map, are represented on the map its neighbours.
 For a selected bar on the graph, the corresponding sites are represented on the map with a link which means that two sites
 are neighbours.}
 
@@ -47,8 +46,8 @@ When user select sites on the graph or on the map, he cannot add a selection by 
 No value returned.
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2008), 
-``Statistique et Econométrie pour données géoréférencées : modèles et études de cas''}
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2009),
+\emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
 
 \author{Aragon Y., Thomas-Agnan C., Ruiz-Gazen A., Laurent T.}
 

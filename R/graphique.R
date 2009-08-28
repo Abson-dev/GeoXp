@@ -2,7 +2,7 @@ graphique<-
 function (var1, var2, var3, obs, num, graph = "", couleurs = "",
     symbol = 16, labvar = "", nbcol = 10, alpha1, W,
     Xpoly, Ypoly, F, G, opt1 = 1, opt2 = 1, quantiles = 0,
-    labmod = "", direct, inertie, label = 0, kernel, obsq, locmoran = FALSE,
+    labmod = "", direct=NULL, inertie, label = 0, kernel, obsq, locmoran = FALSE,
     bin = NULL,cex.lab=1, buble=FALSE,cbuble=NULL,legmap=NULL,legends=list(FALSE,FALSE),
     xlim,ylim)
 {
@@ -564,8 +564,9 @@ else
       }  
     }
     
-    if (graph == "Angleplot") 
+    if ((graph == "Angleplot")||(graph == "pairwise"))
     {
+      if((length(quantiles)==1)&&(quantiles[1]==0)) quantiles<-NULL
       ifelse(length(quantiles)>1,color.quant <- colors()[grep("red", colors())],color.quant<-couleurs[1])
        
       diag(var1) <- NA
@@ -583,15 +584,17 @@ else
            fitmax <- qsreg(vect[z, 1], vect[z, 2], lam = alpha1,
            alpha = max(quantiles))
         }
-    
+
       xg <- seq(min(vect[z, 1]), max(vect[z, 1]), length = 100)
     
         if (length(quantiles) != 0) 
         {
             plot(vect1, vect2, "n", xlab = labvar[1], ylab = labvar[2],
             xlim = c(0, max(vect1)),axes=FALSE)
-                
-            axis(1, c(0,pi/4,pi/2,3*pi/4,pi), c("0",expression(pi/4),expression(pi/2),expression(3*pi/4),expression(pi)))    
+            if (graph == "Angleplot")
+            {axis(1, c(0,pi/4,pi/2,3*pi/4,pi), c("0",expression(pi/4),expression(pi/2),expression(3*pi/4),expression(pi)))}
+            else
+            {axis(1)}
             axis(2)
             points(vect1[which(vect2 > predict(fitmax, vect1))],
             vect2[which(vect2 > predict(fitmax, vect1))],
@@ -613,15 +616,54 @@ else
         {
           plot(vect1, vect2, "n", xlab=labvar[1], ylab = labvar[2],
           xlim = c(0, max(vect1)),axes=FALSE)
-          axis(1, c(0,pi/4,pi/2,3*pi/4,pi), c("0",expression(pi/4),expression(pi/2),expression(3*pi/4),expression(pi)))
-          axis(2)
+            if (graph == "Angleplot")
+            {axis(1, c(0,pi/4,pi/2,3*pi/4,pi), c("0",expression(pi/4),expression(pi/2),expression(3*pi/4),expression(pi)))}
+            else
+            {axis(1)}
+            axis(2)
           points(vect1, vect2, col = couleurs, pch = 16, cex = 0.8)
         }
        
        if (length(var1[obs]) != 0) 
          {points(var1[obs], var2[obs], col = "red", pch = symbol,cex = 1)}
-        
+
+       if((labvar[1]!="Rank")&(length(direct)>0))
+       {abline(v=direct)}
     }
+
+
+    if (graph == "pairwise2")
+    {
+
+      diag(var1) <- NA
+      diag(var2) <- NA
+      
+      vect1 <- as.vector(var1[which(!is.na(var1))])
+      vect2 <- as.vector(var2[which(!is.na(var2))])
+      vect <- cbind(vect1, vect2)
+      res <- sort(vect[, 1], index.return = TRUE)
+      x <- res$x
+      y <- vect[res$ix, 2]
+      z <- seq(1, length(x), by = (length(x)/1000))
+      z <- round(z)
+
+
+      xg <- seq(min(vect[z, 1]), max(vect[z, 1]), length = 100)
+
+          plot(vect1, vect2, "n", xlab=labvar[1], ylab = labvar[2],
+          xlim = c(0, max(vect1)),axes=FALSE)
+          if(length(bin)!=0)
+          {abline(v=bin)}
+          axis(1)
+          axis(2)
+          points(vect1, vect2, col = couleurs, pch = 16, cex = 0.8)
+
+
+        if(length(var1[obs]) != 0)
+         {points(var1[obs], var2[obs], col = "red", pch = symbol,cex = 1)}
+
+    }
+    
     
     if (graph == "Variocloud") 
     {

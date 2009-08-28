@@ -17,10 +17,10 @@ graphique(var1, var2, var3, obs, num, graph = "", couleurs = "",
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{var1}{1st variable of size $n$}
-  \item{var2}{2nd variable of size $n$}
-  \item{var3}{3rd variable of size $n$ (used for variocloudmap)}
-  \item{obs}{a vector of boolean of size $n$ with sites selected}
+  \item{var1}{1st variable of size n}
+  \item{var2}{2nd variable of size n}
+  \item{var3}{3rd variable of size n (used for variocloudmap)}
+  \item{obs}{a vector of boolean of size n with sites selected}
   \item{num}{number of windows which must be activated (3 ou 4)}
   \item{graph}{name of graphic which must be drawn : Histogram, Barplot, Boxplot, Polyboxplot, Scatterplot, Densityplot1, Densityplot2, Neighbourplot, Lorentz, Moran, Quadrant, Angleplot, Variocloud, Cluster, Acp1, Acp2}
   \item{couleurs}{Possibilty to change colors on the graphic}
@@ -35,7 +35,7 @@ graphique(var1, var2, var3, obs, num, graph = "", couleurs = "",
   \item{G}{Used for Ginimap}
   \item{opt1}{Option for adding a curve (regression line or conditionnal quantile depending on the function) }
   \item{opt2}{Option for drawing robust empirical variogram}
-  \item{quantiles}{vector which contains the values of $\alpha$ for conditionnal quantile}
+  \item{quantiles}{vector which contains the values of \eqn{\alpha}{alpha} for conditionnal quantile}
   \item{labmod}{names of factor if the graphic choosed is a barplot}
   \item{direct}{Used for PCA}
   \item{inertie}{Used for PCA}
@@ -46,7 +46,7 @@ graphique(var1, var2, var3, obs, num, graph = "", couleurs = "",
   \item{bin}{The bins chosen to calculate empirical variogram}
   \item{cex.lab}{character size of label}
   \item{buble}{For Local Moran plot only : a boolean with TRUE for drawing bubbles, FALSE otherwise}
-  \item{cbuble}{For Local Moran plot only : vector of size $n$ with size of each site depending on variable with which bubbles are constructed }
+  \item{cbuble}{For Local Moran plot only : vector of size n with size of each site depending on variable with which bubbles are constructed }
   \item{legmap}{For Local Moran plot only : a list of (numeric,numeric,numeric,numeric,numeric,numeric,character) with the sizes and the corresponding values of the 3 bubbles represented in the legend and the variable name of variable choosed }
   \item{legends}{For Local Moran plot only : a list of c(boolean,boolean,c(numeric,numeric),c(numeric,numeric)) with TRUE for drawing legends of bubbles (1st argument) or factors (2nd argument) and the coordinates of the location of the upper left corner of the legend box}
   \item{xlim}{the x limits of the plot}
@@ -57,7 +57,7 @@ graphique(var1, var2, var3, obs, num, graph = "", couleurs = "",
 are considered because of the large number of graphics proposed
 } 
 \value{No values, only drawing of a graphic}
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2008), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas''}
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2009), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
 
 \author{Thomas-Agnan C., Aragon Y.,  Ruiz-Gazen A., Laurent T., Robidou L.}
 

@@ -1,30 +1,30 @@
 \name{polylist2list}
 \alias{polylist2list}
 
-\title{Extract from a `polylist' object the vertices of the polygons}
+\title{Extract from a polylist object the vertices of the polygons}
 
 \description{
-The function `polylist2list' extracts the vertices of the polygons from a `polylist' object, seperating polygons from each other by 3 rows of NaN.
+The function \code{polylist2list()} extracts the vertices of the polygons from a \code{polylist} object, seperating polygons from each other by 3 rows of NaN.
 }
 \usage{
 polylist2list(data)
 }
 
 \arguments{
-  \item{data}{A `polylist' object}
+  \item{data}{A \code{polylist} object}
 }
 \details{
-The user can then represent the coordinates of sites of a `polylist' object
-as background map, using the option `carte' included in all interactive functions of GeoXp.
+The user can then represent the coordinates of sites of a \code{polylist} object
+as background map, using the option \code{carte} included in all interactive functions of GeoXp.
 }
 
 \value{
-It returns a matrix of numeric values with 2 columns ($x$ and $y$ coordinates 
+It returns a matrix of numeric values with 2 columns (x and y coordinates
 of the vertices of the polygons) where polygons are seperated from each other by 3 rows of NaN.
 }
 
 \references{
-Bivand R. (2008), `The spdep package', \url{http://cran.r-project.org/doc/packages/spdep.pdf}.
+Bivand R. et al. (2009), \emph{Applied Spatial Data Analysis with R}, Springer.
 }
 
 \author{Thibault Laurent}

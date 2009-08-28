@@ -4,7 +4,7 @@
 \title{Selection of a variable before plotting bubbles}
 
 \description{
-The function `choix.bubble' is used in most of the GeoXp functions to initialize some parameters before plotting bubbles. 
+The function \code{choix.bubble()} is used in most of the GeoXp functions to initialize some parameters before plotting bubbles.
 }
 
 \usage{
@@ -21,7 +21,7 @@ choix.bubble(buble,listvar,listnomvar,legends)
 \details{This function is not an interactive function.}
 
 \value{A list of parameters which permit to use the function carte.}
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2008), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas''}
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2009), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
 \author{Laurent T.}
 
 \keyword{spatial}

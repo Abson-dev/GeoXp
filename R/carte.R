@@ -74,11 +74,6 @@ else
   
 
  
-####################################################
-# Initialisation du plot
-####################################################
- 
-plot(x.lim,y.lim,"n", xlab=lablong, ylab=lablat, tcl=-.25, las=1, cex=cbuble,asp=asp,axes=axis)
 
 
 ####################################################
@@ -87,11 +82,25 @@ plot(x.lim,y.lim,"n", xlab=lablong, ylab=lablat, tcl=-.25, las=1, cex=cbuble,asp
 
 if(class(carte)!="NULL")
 {
-x.cont.lim=c(min(carte[,1],na.rm=TRUE),max(carte[,1],na.rm=TRUE))
-y.cont.ylim=c(min(carte[,2],na.rm=TRUE),max(carte[,2],na.rm=TRUE))
-
-asp.cont=1/cos((mean(y.cont.ylim) * pi)/180)
- if(asp.cont>1.40||asp.cont<0.6) asp.cont=1 
+if(class(carte)!="list")
+{
+ x.cont.lim=range(carte[,1],na.rm=TRUE)
+ y.cont.ylim=range(carte[,2],na.rm=TRUE)
+}
+else
+ {kol<-length(carte)
+ xk.cont.lim<-NULL
+ yk.cont.ylim<-NULL
+  for (k in 1:kol)
+  {cartek<-carte[[k]]
+    xk.cont.lim=c(xk.cont.lim,range(cartek[,1],na.rm=TRUE))
+    yk.cont.ylim=c(yk.cont.ylim,range(cartek[,2],na.rm=TRUE))
+  }
+ x.cont.lim=range(xk.cont.lim,na.rm=TRUE)
+ y.cont.ylim=range(yk.cont.ylim,na.rm=TRUE)
+ }
+ asp.cont=1/cos((mean(y.cont.ylim) * pi)/180)
+ if(asp.cont>1.40||asp.cont<0.6) asp.cont=1
 }
 
 
@@ -99,7 +108,8 @@ asp.cont=1/cos((mean(y.cont.ylim) * pi)/180)
 if(nocart)
 {                                                                                        
 plot(x.cont.lim,y.cont.ylim,"n", xlab=lablong, ylab=lablat, tcl=-.25, las=1, cex=cbuble,asp=asp.cont,axes=axis)
-
+  if(class(carte)!="list")
+   {
     n <- nrow(carte);
     abs1 <- carte[1:(n-1),1];
     ord1 <- carte[1:(n-1),2];
@@ -107,7 +117,29 @@ plot(x.cont.lim,y.cont.ylim,"n", xlab=lablong, ylab=lablat, tcl=-.25, las=1, cex
     ord2 <- carte[2:n,2];
   #  points(long,lat,"n", xlab=lablong, ylab=lablat,xaxt="n",yaxt="n", bty="n", xlim=c(min(long)-(max(long)-min(long))/10, max(long)+(max(long)-min(long))/10), ylim=c(min(lat)-(max(lat)-min(lat))/10, max(lat)+(max(lat)-min(lat))/10));
     segments(abs1,ord1,abs2,ord2,col="black")
+   }
+   else
+   {
+      for (k in 1:kol)
+       {cartek<-carte[[k]]
+        n <- nrow(cartek);
+        abs1 <- cartek[1:(n-1),1];
+        ord1 <- cartek[1:(n-1),2];
+        abs2 <- cartek[2:n,1];
+        ord2 <- cartek[2:n,2];
+       #  points(long,lat,"n", xlab=lablong, ylab=lablat,xaxt="n",yaxt="n", bty="n", xlim=c(min(long)-(max(long)-min(long))/10, max(long)+(max(long)-min(long))/10), ylim=c(min(lat)-(max(lat)-min(lat))/10, max(lat)+(max(lat)-min(lat))/10));
+        segments(abs1,ord1,abs2,ord2,col="black")
+       }
+   }
 }  
+else
+{
+####################################################
+# Initialisation du plot
+####################################################
+
+plot(x.lim,y.lim,"n", xlab=lablong, ylab=lablat, tcl=-.25, las=1, cex=cbuble,asp=asp,axes=axis)
+}
                  
   #       polygon(fleuve,col='royalblue',border="white")
   #       polygon(fleuve2,col='white',border="white")
@@ -143,10 +175,21 @@ else
 #  legend(max(long)-(max(long)-min(long))/9,min(lat)+(max(lat)-min(lat))/9, c(legmap[1],legmap[2],legmap[3]),pch = 16, pt.cex=c(2,1.125,0.25))
 #  text(max(long)-(max(long)-min(long))/15,min(lat)+(max(lat)-min(lat))/7,legmap[4])
  
+ if((method == "pairwise")&(legmap[length(legmap)]=="Mahalanobis"))
+  {
+  legend(legends[[3]]$x,legends[[3]]$y, c(legmap[7],legmap[8],legmap[9],legmap[10],legmap[11]),
+  title=legmap[12],pch = 16,cex=cex.lab,
+  pt.cex=c(as.numeric(legmap[1]),as.numeric(legmap[2]),as.numeric(legmap[3]),
+  as.numeric(legmap[4]),as.numeric(legmap[5])))
+ }
+ else
+ {
   legend(legends[[3]]$x,legends[[3]]$y, c(legmap[4],legmap[5],legmap[6]),
   title=legmap[7],pch = 16,cex=cex.lab, 
   pt.cex=c(as.numeric(legmap[1]),as.numeric(legmap[2]),as.numeric(legmap[3])))
  # text(legends[3]$x,legends[3]$y,legmap[4])
+ }
+
 
 
 #symbols(legends[[3]]$x,legends[[3]]$y+as.numeric(legmap[3]),circle=as.numeric(legmap[3])/1.1,inches=FALSE,add=TRUE,bg=grey(.5),fg=grey(.2))
@@ -266,13 +309,14 @@ if(length(long[obs])!=0)
         }
     }
 
-    if ((method == "Angleplot") || (method == "Variocloud"))
+    if ((method == "Angleplot") || (method == "Variocloud")|| (method == "pairwise"))
     {
         x0<-NULL
         y0<-NULL
         x1<-NULL
         y1<-NULL
-        
+
+       #print(cbuble)
         for (j in 1:length(long))
         {
             for (i in 1:length(long))
@@ -300,7 +344,7 @@ if(length(long[obs])!=0)
                 }
             }
         }
-       segments(x0, y0, x1, y1, col="black")
+       segments(x0, y0, x1, y1, col="green")
     }
     
     if (method == "Scatter3d")

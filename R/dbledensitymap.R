@@ -208,7 +208,7 @@ inter1func<-function()
     }
     
     polyX2[[n.inter+1]]<<-polyX
-    
+
     obs<<-selectstat(var1=var1,obs=obs,Xpoly=polyX[1], Ypoly=polyX[2],method="Densityplot") 
         
     # graphiques
@@ -646,7 +646,7 @@ tkgrid(tklabel(tt,text="    "))
 
 
 
-label1 <- tclVar("To stop selection, leave the cursur on the active graph, click on the right button of the mouse and stop")
+label1 <- tclVar("To stop selection, leave the cursor on the active graph, click on the right button of the mouse and stop")
 label11 <- tklabel(tt,justify = "center", wraplength = "3i", text=tclvalue(label1))
 tkconfigure(label11, textvariable=label1)
 tkgrid(label11,columnspan=2)
@@ -658,7 +658,7 @@ slider1(tt,refresh1.code,c("Alpha (1st graph)"),c(3),c(100),c(1),c(alpha11))
 slider2(tt,refresh2.code,c("Alpha (2nd graph)"),c(3),c(100),c(1),c(alpha21))
 
 
-labelText7 <- tclVar("Non interactive selection / Draw Spatial Contours")
+labelText7 <- tclVar("Preselected sites / Draw Spatial Contours")
 label7 <- tklabel(tt, text=tclvalue(labelText7))
 tkconfigure(label7, textvariable=labelText7)
 tkgrid(label7,columnspan=2)

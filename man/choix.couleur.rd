@@ -4,7 +4,7 @@
 \title{Selection of colors before plotting map }
 
 \description{
-The function `choix.couleur' is used in most of the GeoXp functions to initialize some parameters before plotting map in
+The function \code{choix.couleur()} is used in most of the GeoXp functions to initialize some parameters before plotting map in
 the case of the use of a factor. 
 }
 
@@ -26,7 +26,7 @@ varChoice1=NULL,legends,col,pch)
 \details{This function is not an interactive function.}
 
 \value{A list of parameters which permit to use the function carte.}
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2008), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas''}
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2008), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
 \author{Laurent T.}
 
 \keyword{spatial}

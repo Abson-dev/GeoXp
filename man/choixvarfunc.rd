@@ -4,7 +4,7 @@
 \title{Selection of a variable before plotting bubbles}
 
 \description{
-The function `choixvarfunc' is used in the function choix.bubble(). 
+The function \code{choixvarfunc()} is used in the function \code{choix.bubble()}.
 }
 
 \usage{
@@ -19,7 +19,7 @@ choixvarfunc(title, question, liste)
 \details{This function is not an interactive function.}
 
 \value{Name of variable chosen.}
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2008), ``Statistique et Econométrie pour données géoréférencées : modèles et études de cas''}
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2008), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
 \author{Laurent T.}
 
 \keyword{spatial}

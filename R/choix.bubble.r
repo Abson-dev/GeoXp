@@ -14,7 +14,8 @@ choix.bubble<-function(buble,listvar,listnomvar,legends)
      }
        if ((length(bubble) != 0)&&(min(bubble)>=0))
         {
-         buble<-TRUE
+         if(varChoix != "chi2.quant")
+         {buble<-TRUE
 
          tt2 <- tktoplevel()
          z<-sqrt(abs(bubble)/max(abs(bubble)))*3
@@ -29,7 +30,7 @@ choix.bubble<-function(buble,listvar,listnomvar,legends)
                msg <- paste("Click on the map to indicate the location of the upper left corner of the legend box")
                tkmessageBox(message=msg)
                ifelse(listnomvar=="ilocal",dev.set(3),dev.set(2))
-               
+
                loc <- locator(1)
 
                legmap<<-c(sqrt(abs(as.numeric(tclvalue(ma)))/max(abs(bubble)))*3,sqrt(abs(as.numeric(tclvalue(mea)))/max(abs(bubble)))*3,
@@ -76,15 +77,30 @@ choix.bubble<-function(buble,listvar,listnomvar,legends)
          tkgrid(tklabel(tt2,text="    "))
          tkfocus(tt2)
          tkwait.window(tt2)
+         }
+        else
+         {
+          msg <- paste("Click on the map to indicate the location of the upper left corner of the legend box")
+          tkmessageBox(message=msg)
+          dev.set(2)
+          buble<-TRUE
+          loc <- locator(1)
+           z<-sqrt(abs(bubble+1)/max(abs(bubble)+1))*2.3
+           #print(z)
+           legmap<-c(3,sqrt(4/5)*2.3,sqrt(3/5)*2.3,sqrt(2/5)*2.3,sqrt(1/5)*2.3,"chi2.quant")
+           legends<-list(TRUE,legends[[2]],loc,legends[[4]])
+         }
         }
        else
         {
-         tkmessageBox(message="Bubbles have not been given",icon="warning",type="ok")
+         tkmessageBox(message="Bubbles have not been given or variable is not strictly positive",icon="warning",type="ok")
          buble<-FALSE
          legends<-list(FALSE,legends[[2]],"",legends[[4]])
+         legmap<-NULL
          z<-NULL
         }
-    }
+     }
+
    else
      {
         tkmessageBox(message="To use Bubbles, the lists wich contain the variables and their names must have been given",icon="warning",type="ok");
@@ -102,5 +118,5 @@ choix.bubble<-function(buble,listvar,listnomvar,legends)
   }
 
 return(list(buble=buble,legends=legends,legmap=legmap,z=z))
-  
+
 }

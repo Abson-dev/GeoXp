@@ -62,7 +62,7 @@ if((length(listvar)>0)&&(dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(list
 
    v4 <- sort(dist)
    v4 <- as.vector(v4)
-   z <- seq(1, max(v4), by = (max(v4)/1000))
+   z <- seq(1, max(v4), by = (max(v4)/3500))
    z <- round(z)
    z1 <- z[2:length(z)] - z[1:(length(z) - 1)]
    h <- mean(z1)
@@ -382,7 +382,7 @@ poly.but <- tkbutton(tt, text=" Polygon ", command=polyfunc);
 tkgrid(point.but, poly.but)
 tkgrid(tklabel(tt,text="    "))
 
-label1 <- tclVar("To stop selection, let the cursur on the active graph, click on the right button of the mouse and stop")
+label1 <- tclVar("To stop selection, let the cursor on the active graph, click on the right button of the mouse and stop")
 label11 <- tklabel(tt,justify = "center", wraplength = "3i", text=tclvalue(label1))
 tkconfigure(label11, textvariable=label1)
 tkgrid(label11,columnspan=2)
@@ -421,7 +421,7 @@ tkgrid(tklabel(tt,text="    "))
 
 
 
-labelText7 <- tclVar("Non interactive selection")
+labelText7 <- tclVar("Preselected sites")
 label7 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText7))
 tkconfigure(label7, textvariable=labelText7)
 tkgrid(label7,columnspan=2)

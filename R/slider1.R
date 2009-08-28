@@ -3,11 +3,12 @@ function(fenetre,refresh.code,names,minima,maxima,resolutions,starts,no=0)
 {
   if (!exists("slidenv")) slidenv<<-new.env()
 
-  if (no != 0) return(as.numeric(tclvalue(get(paste("slider",no,sep=""),env=slidenv))))
+ if (no != 0) return(as.numeric(tclvalue(get(paste("slider",no,sep=""),env=slidenv))))
+
 
   for(i in seq(names))
    {
-     eval(parse(text=paste("assign(\"slider",i,"\",tclVar(starts[i]),env=slidenv)",sep="")))
+   eval(parse(text=paste("assign(\"slider",i,"\",tclVar(starts[i]),env=slidenv)",sep="")))
    }
 
    for(i in seq(names))

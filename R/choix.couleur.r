@@ -10,9 +10,9 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
         {method <-"Quadrant"
          n.col <- 4
          # labmod is not used but it permits to uniform the programm
-         labmod <- c("Low-High","High-High","Low-Low","High-Low")         
+         labmod <- c("Low-High","High-High","Low-Low","High-Low")
         }
-         
+
       tt2 <- tktoplevel()
 
        OnOK <- function()
@@ -21,11 +21,7 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
          tt <- tktoplevel()
          txt <- tktext(tt, height=8)
 
-         
-         test.col<-NULL
-         test.col<-colors()[3:(2+n.col)]
-
-         tkpack(tklabel(tt,text=paste("Please, could you give a vector of ",n.col," colors like c(\"orange\",etc)")) )
+         tkpack(tklabel(tt,text=paste("Please, could you give a vector of ",n.col," colors like c(\"orange\", \"purple\", etc) or colors()[99:",98+n.col,"]",sep="")) )
          tkpack(txt)
 
          run <- function()
@@ -39,11 +35,9 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
               return()
              }
 
-            cat("Executing from script window:","-----", code, "result:", sep="\n")
-            print(eval(e))
 
             col2<<-eval(e)
-            col3<<-eval(e)
+            col3<<-col2
 
            if (length(col2)!=n.col)
             {
@@ -59,8 +53,6 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
 
                 tt <- tktoplevel()
                 txt <- tktext(tt, height=8)
-                test.col<-NULL
-                test.col<-colors()[3:(2+n.col)]
 
                 tkpack(tklabel(tt,text=paste("Please, could you give a vector of ",n.col," symbols like c(3, 4, etc)")))
                 tkpack(txt)
@@ -76,8 +68,6 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
                     return()
                   }
 
-                cat("Executing from script window:","-----", code, "result:", sep="\n")
-                print(eval(e))
                 pch2<<-eval(e)
 
                  if (length(pch2)!=n.col)
@@ -93,9 +83,14 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
                       msg <- paste("Click on the map to indicate the location of the upper left corner of the legend box")
                       tkmessageBox(message=msg)
 
-                      dev.set(2);
+                      dev.set(2)
+                      title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+
                       loc <- locator(1)
+                      loc$name <- varChoice1
+
                       legends<<-list(legends[[1]],TRUE,legends[[3]],loc)
+                      print(legends)
                       tkdestroy(tt1)
                      }
 
@@ -109,7 +104,7 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
 
                   tt1<-tktoplevel()
                   ifelse(method=="Quadrant",labelText12 <- tclVar("Do you want a legend for quadrants on the map"),
-                  labelText12 <- tclVar("Do you want a legend for factors on the map"))                  
+                  labelText12 <- tclVar("Do you want a legend for factors on the map"))
                   label12 <- tklabel(tt1,justify = "center", wraplength = "3i", text=tclvalue(labelText12))
                   tkconfigure(label12, textvariable=labelText12)
                   tkgrid(label12,columnspan=2)
@@ -143,9 +138,11 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
                     msg <- paste("Click on the map to indicate the location of the upper left corner of the legend box")
                     tkmessageBox(message=msg)
 
-                    dev.set(2);
-                    loc <- locator(1)
+                    dev.set(2)
+                    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
 
+                    loc <- locator(1)
+                    loc$name <- varChoice1
                     legends<<-list(legends[[1]],TRUE,legends[[3]],loc)
                    }
 
@@ -196,7 +193,7 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
        command=run)
        tkwait.window(tt)
        tkdestroy(tt2)
-        
+
       }
 
 
@@ -231,7 +228,5 @@ choix.couleur <- function(graphChoice,listvar=NULL,listnomvar=NULL,varChoice1=NU
      labmod <- ""
      }
 
-
- 
  return(list(method=method,col2=col2,col3=col3,pch2=pch2,legends=legends,labmod=labmod))
 }

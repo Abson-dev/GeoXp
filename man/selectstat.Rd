@@ -1,8 +1,11 @@
 \name{selectstat}
 \alias{selectstat}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Selection of values on a graphic }
-\description{The function \code{selectstat()} is used to select sites on a graphic such as Histogram, Barplot, Boxplot, Polyboxplot, Scatterplot, Densityplot, Neighbourplot, Lorentz, Moran, Angleplot, Variocloud, Cluster, or PCA. Most of the GeoXp functions call selectstat.r.
+\title{Selection of values on a graphic}
+
+\description{The function \code{selectstat()} is used to select sites on a graphic such
+as Histogram, Barplot, Boxplot, Polyboxplot, Scatterplot, Densityplot, Neighbourplot, Lorentz,
+Moran, Angleplot, Variocloud, Cluster, or PCA. Most of the GeoXp functions call selectstat.r.
 }
 \usage{
 selectstat(var1, var2, obs, Xpoly, Ypoly, method,
@@ -17,15 +20,15 @@ nbcol, W, F, long, lat)
   \item{Ypoly}{Y-coordinates of the vertices of selected polygon}
   \item{method}{name of the graph wich must be drawn among Histogram, Barplot, Boxplot, Polyboxplot, Densityplot, Neighbourplot, Lorentz, Anglepoint, Variopoint}
   \item{nbcol}{nbcol : number of cells for the histogram (10 by default)}
-  \item{W}{A spatial weight matrix of size \eqn{n \times n}{n x n}}
-  \item{F}{a numerical vector}
+  \item{W}{A matrix of size \eqn{n \times n}{n x n} (for spatial weight)}
+  \item{F}{a vector of numeric}
   \item{long}{a vector of x-axis of size n}
   \item{lat}{a vector of y-axis of size n}
 }
 \details{This function is not an interactive function.}
 \value{Return a vector of boolean of size n with TRUE if sites have been selected on a graph}
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2009), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}}
 
 \author{Thomas-Agnan C., Aragon Y., Ruiz-Gazen A., Laurent T., Robidou L.}
 

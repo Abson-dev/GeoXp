@@ -1,7 +1,47 @@
-`ginimap` <-
-function(long,lat,var,listvar=NULL, listnomvar=NULL,carte=NULL,criteria=NULL,label="",
-cex.lab=1, pch=5, col="green", xlab="", ylab="", axes=FALSE, lablong="", lablat="")
+`ginimap` <-function(sp.obj, name.var, names.attr=names(sp.obj), criteria=NULL,
+carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
+xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 {
+# Verification of the Spatial Object sp.obj
+class.obj<-class(sp.obj)[1]
+
+if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
+if(!is.numeric(name.var) & is.na(match(as.character(name.var),names(sp.obj)))) stop("name.var is not included in the data.frame of sp.obj")
+if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all=TRUE))==2)
+ {
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
+
+# we propose to refind the same arguments used in first version of GeoXp
+long<-coordinates(sp.obj)[,1]
+lat<-coordinates(sp.obj)[,2]
+
+var<-sp.obj@data[,name.var]
+
+# verify the type of the main variable
+if(!(is.integer(var) || is.double(var))) stop("the variable name.var should be a numeric variable")
+
+listvar<-sp.obj@data
+listnomvar<-names.attr
+
+# Code which was necessary in the previous version
+ if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
 
 # initialisation
   obs<-vector(mode = "logical", length = length(long))
@@ -26,12 +66,10 @@ cex.lab=1, pch=5, col="green", xlab="", ylab="", axes=FALSE, lablong="", lablat=
 # transformation data.frame en matrix
 if((length(listvar)>0)&&(dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(listvar)
 
-# Ouverture des fenêtres graphiques
-graphics.off()
-dev.new()
-dev.new()
+# Windows device
+if(!(2%in%dev.list())) dev.new()
+if(!(3%in%dev.list())) dev.new()
 
-fin <- tclVar(FALSE)
 
 # Paramètres sur Gini
 result <- gini(var)
@@ -49,38 +87,42 @@ ginifunc<-function()
   quit <- FALSE
   ptX <- NULL
 
+  dev.set(3)
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
  while(!quit)
    {
-   
-  #  while (length(ptX)<1)
-    
-        dev.set(3)
+
+       dev.set(3)
         loc<-locator(1)
-        ptX <- loc[1]
 
          if(is.null(loc))
            {
             quit<-TRUE
+          graphique(var1=var, obs=obs, num=3, graph="Lorentz", Xpoly=ptX, labvar=labvar, symbol=pch,
+          couleurs=col, F=F, G=G)
             next
            }
-    
-    
-    obs<<-selectstat(var1=var,obs=obs,Xpoly=ptX$x, method="Lorentz", F=F)    
+    ptX <- loc[1]
+
+    obs<<-selectstat(var1=var,obs=obs,Xpoly=ptX$x, method="Lorentz", F=F)
 
     # graphiques
     graphique(var1=var, obs=obs, num=3, graph="Lorentz", Xpoly=ptX, labvar=labvar, symbol=pch,
     couleurs=col, F=F, G=G)
- 
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
       carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
       symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-      lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
-  
+      lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
+
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
             graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
             obs=obs, num=4, graph=graphChoice, couleurs=col3,symbol=pch, labvar=c(varChoice1,varChoice2))
-        }    
+        }
 
      }
   }
@@ -89,17 +131,17 @@ ginifunc<-function()
 # contour des unités spatiales
 ####################################################
 cartfunc <- function()
-{  
+{
  if (length(carte) != 0)
-   { 
+   {
     ifelse(!nocart,nocart<<-TRUE,nocart<<-FALSE)
     carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
     symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-    lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
+    lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
    }
    else
    {
-    tkmessageBox(message="Spatial contours have not been given",icon="warning",type="ok")    
+    tkmessageBox(message="Spatial contours have not been given",icon="warning",type="ok")
    }
 }
 
@@ -108,53 +150,52 @@ cartfunc <- function()
 ####################################################
 
 graphfunc <- function()
-{ 
+{
    if ((length(listvar) != 0) && (length(listnomvar) != 0))
     {
-        dev.off(4)
         choix <<- selectgraph(listnomvar,listgraph)
         varChoice1 <<- choix$varChoice1
         varChoice2 <<- choix$varChoice2
         graphChoice <<- choix$graphChoice
-           
+
         if ((graphChoice != "") && (varChoice1 != ""))
         {
-          if (((graphChoice == "Histogram")&&(!is.numeric(listvar[,which(listnomvar == varChoice1)])))||((graphChoice == "Scatterplot")&&((!is.numeric(listvar[,which(listnomvar == varChoice1)]))||(!is.numeric(listvar[,which(listnomvar == varChoice2)]))))) 
+          if (((graphChoice == "Histogram")&&(!is.numeric(listvar[,which(listnomvar == varChoice1)])))||((graphChoice == "Scatterplot")&&((!is.numeric(listvar[,which(listnomvar == varChoice1)]))||(!is.numeric(listvar[,which(listnomvar == varChoice2)])))))
            {
             tkmessageBox(message="Variables choosed are not in a good format",icon="warning",type="ok")
            }
           else
            {
             res1<-choix.couleur(graphChoice,listvar,listnomvar,varChoice1,legends,col,pch)
-            
+
             method <<- res1$method
             col2 <<- res1$col2
             col3 <<- res1$col3
             pch2 <<- res1$pch2
             legends <<- res1$legends
             labmod <<- res1$labmod
-                     
-            dev.new()
+
+            if(!(4%in%dev.list())) dev.new()
             graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-            obs=obs, num=4, graph=graphChoice, couleurs=col3,symbol=pch, labvar=c(varChoice1,varChoice2))    
-            
+            obs=obs, num=4, graph=graphChoice, couleurs=col3,symbol=pch, labvar=c(varChoice1,varChoice2))
+
             carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
             symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-            lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
+            lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
            }
-       }   
+       }
    }
    else
    {
     tkmessageBox(message="Variables (listvar) and their names (listnomvar) must have been given",icon="warning",type="ok")
-   }  
+   }
 }
 
 ####################################################
 # rafraichissement des graphiques
 ####################################################
 
-SGfunc<-function() 
+SGfunc<-function()
 {
     obs<<-vector(mode = "logical", length = length(long));
 
@@ -162,16 +203,16 @@ SGfunc<-function()
 
     graphique(var1=var, obs=obs, num=3, graph="Lorentz",  labvar=labvar, symbol=pch,
     couleurs=col, F=F, G=G)
- 
+
       carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
       symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-      lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
-  
+      lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
+
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
             graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
             obs=obs, num=4, graph=graphChoice, couleurs=col3,symbol=pch, labvar=c(varChoice1,varChoice2))
-        }  
+        }
 
 }
 
@@ -179,33 +220,41 @@ SGfunc<-function()
 # quitter l'application
 ####################################################
 
-quitfunc<-function() 
+quitfunc<-function()
 {
-  tclvalue(fin)<<-TRUE
-  tkdestroy(tt)
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+   # assign("obs", row.names(sp.obj)[obs], envir = .GlobalEnv)
 }
 
-
+quitfunc2<-function()
+{
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+    print("Results have been saved in last.select object")
+    assign("last.select", which(obs), envir = .GlobalEnv)
+}
 
 
 ####################################################
 # Open a no interactive selection
 ####################################################
 
-fnointer<-function() 
+fnointer<-function()
 {
  if (length(criteria) != 0)
  {
   ifelse(!nointer,nointer<<-TRUE,nointer<<-FALSE)
   carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
   symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-  lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
+  lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
  }
  else
  {
   tkmessageBox(message="Criteria has not been given",icon="warning",type="ok")
  }
- 
 }
 
 
@@ -216,15 +265,15 @@ fnointer<-function()
 fbubble<-function()
 {
   res2<-choix.bubble(buble,listvar,listnomvar,legends)
-  
+
   buble <<- res2$buble
   legends <<- res2$legends
   z <<- res2$z
   legmap <<- res2$legmap
-  
+
   carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
   symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-  lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
+  lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
 
 }
 
@@ -233,15 +282,18 @@ fbubble<-function()
 # Choisir une valeur
 ####################################################
 
-choixvalue <- function() 
+choixvalue <- function()
 {
+  dev.set(3)
+  title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+
   tt1<-tktoplevel()
   Name <- tclVar("value")
   entry.Name <-tkentry(tt1,width="8",textvariable=Name)
   tkgrid(tklabel(tt1,text=paste("Please enter a value between",min(var),"and",max(var))),entry.Name)
 
   OnOK <- function()
-  { 
+  {
   	angle <<- tclvalue(Name)
 	  tkdestroy(tt1)
        if(is.na(as.numeric(angle)))
@@ -252,21 +304,21 @@ choixvalue <- function()
         {msg <- paste("You choose",angle)
          tkmessageBox(message=msg)
 
-         angle<-as.numeric(angle) 
+         angle<-as.numeric(angle)
          obs<<-(var<=angle)
-    
+
          graphique(var1=var, obs=obs, num=3, graph="VLorentz", Xpoly=angle, labvar=labvar, symbol=pch,
          couleurs=col, F=F, G=G)
- 
+
          carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
          symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-         lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
-  
+         lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
+
          if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
          {
           graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
           obs=obs, num=4, graph=graphChoice, couleurs=col3,symbol=pch, labvar=c(varChoice1,varChoice2))
-         }  
+         }
         }
   }
 
@@ -277,115 +329,88 @@ tkfocus(tt1)
 
 
 }
-    
+
 graphique(var1=var, obs=obs, num=3, graph="Lorentz", labvar=labvar, symbol=pch,
 couleurs=col, F=F, G=G)
- 
+
 carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
 symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
-lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)]) 
-  
+lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
+
 ####################################################
 # création de la boite de dialogue
 ####################################################
-
 if(interactive())
 {
+fontheading<-tkfont.create(family="times",size=14,weight="bold")
+
 tt <- tktoplevel()
+tkwm.title(tt, "ginimap")
+
+frame1a <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame1a, text = "Interactive selection", font = "Times 14",
+foreground = "blue", background = "white"))
+tkpack(tklabel(frame1a, text = "Select a point on the Lorentz curve", font = "Times 12",
+foreground = "darkred", background = "white"))
+point.but <- tkbutton(frame1a, text="by clicking on graph", command=ginifunc);
+poly.but <- tkbutton(frame1a, text="by choosing a value", command=choixvalue);
+tkpack(point.but, poly.but, side = "left", expand = "TRUE",
+        fill = "x")
+tkpack(frame1a, expand = "TRUE", fill = "x")
+
+frame1c <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+msg <- paste("Gini Index : ", round(GINI,4))
+tkgrid(tklabel(frame1c,text=msg),columnspan=2)
+tkgrid(tklabel(frame1c,text="    "))
+tkpack(frame1c, expand = "TRUE", fill = "x")
+
+frame1b <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+nettoy.but <- tkbutton(frame1b, text="     Reset selection     " , command=SGfunc);
+tkpack(nettoy.but, side = "left", expand = "TRUE", fill = "x")
+tkpack(frame1b, expand = "TRUE", fill = "x")
 
 
-labelText2 <- tclVar("Select a point on the Lorentz curve ")
-label2 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText2))
-tkconfigure(label2, textvariable=labelText2)
-tkgrid(label2,columnspan=2)
+frame2 <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame2, text = "Options", font = "Times 14",
+foreground = "blue", background = "white"))
+tkpack(tklabel(frame2, text = "Spatial contours", font = "Times 11",
+foreground = "darkred", background = "white"),tklabel(frame2, text = "Preselected sites", font = "Times 11",
+foreground = "darkred", background = "white"), side = "left", fill="x",expand = "TRUE")
+tkpack(frame2, expand = "TRUE", fill = "x")
 
-barre.but <- tkbutton(tt, text=" Point ", command=ginifunc);
-tkgrid(barre.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
+frame2b <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+nocou1.but <- tkbutton(frame2b, text="On/Off", command=cartfunc)
+noint1.but <- tkbutton(frame2b, text="On/Off", command=fnointer)
+tkpack(nocou1.but,noint1.but, side = "left", expand = "TRUE", fill = "x")
+tkpack(frame2b, expand = "TRUE", fill = "x")
 
-labelText73 <- tclVar("Choose a value")
-label73 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText73))
-tkconfigure(label73, textvariable=labelText73)
-tkgrid(label73,columnspan=2)
+frame2c <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame2c, text = "Bubbles", font = "Times 11",
+foreground = "darkred", background = "white"),tklabel(frame2c, text = "Additional graph", font = "Times 11",
+foreground = "darkred", background = "white"), side = "left", fill="x",expand = "TRUE")
+tkpack(frame2c, expand = "TRUE", fill = "x")
 
-barre2.but <- tkbutton(tt, text=" Value ", command=choixvalue);
-tkgrid(barre2.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
+frame2d <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+bubble.but <- tkbutton(frame2d, text="On/Off", command=fbubble)
+autre.but <- tkbutton(frame2d, text="     OK     " , command=graphfunc)
+tkpack(bubble.but,autre.but, side = "left", expand = "TRUE", fill = "x")
+tkpack(frame2d, expand = "TRUE", fill = "x")
 
-label1 <- tclVar("To stop selection, leave the cursor on the active graph, click on the right button of the mouse and stop")
-label11 <- tklabel(tt,justify = "center", wraplength = "3i", text=tclvalue(label1))
-tkconfigure(label11, textvariable=label1)
-tkgrid(label11,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
+frame3 <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame3, text = "Exit", font = "Times 14",
+foreground = "blue", background = "white"))
 
+quit.but <- tkbutton(frame3, text="Save results", command=quitfunc2);
+quit.but2 <- tkbutton(frame3, text="Exit without saving", command=quitfunc);
 
-msg <- paste("Gini Index : ", round(GINI,4)) 
-tkgrid(tklabel(tt,text=msg),columnspan=2)
-tkgrid(tklabel(tt,text="    "))
+tkpack(quit.but, quit.but2, side = "left", expand = "TRUE",
+        fill = "x")
 
+tkpack(frame3, expand = "TRUE", fill = "x")
 
-labelText7 <- tclVar("Preselected sites")
-label7 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText7))
-tkconfigure(label7, textvariable=labelText7)
-tkgrid(label7,columnspan=2)
-
-noint1.but <- tkbutton(tt, text="  On/Off  ", command=fnointer);
-tkgrid(noint1.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-
-labelText6 <- tclVar("Draw spatial contours")
-label6 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText6))
-tkconfigure(label6, textvariable=labelText6)
-tkgrid(label6,columnspan=2)
-
-nocou1.but <- tkbutton(tt, text="  On/Off  ", command=cartfunc);
-tkgrid(nocou1.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-
-
-labelText9 <- tclVar("Bubbles")
-label9 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText9))
-tkconfigure(label9, textvariable=labelText9)
-tkgrid(label9,columnspan=2)
-
-bubble.but <- tkbutton(tt, text="  On/Off  ", command=fbubble);
-tkgrid(bubble.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-labelText3 <- tclVar("Restore graph")
-label3 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText3))
-tkconfigure(label3, textvariable=labelText3)
-tkgrid(label3,columnspan=2)
-
-nettoy.but <- tkbutton(tt, text="     OK     " , command=SGfunc);
-tkgrid(nettoy.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-labelText4 <- tclVar("Additional graph")
-label4 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText4))
-tkconfigure(label4, textvariable=labelText4)
-tkgrid(label4,columnspan=2)
-
-autre.but <- tkbutton(tt, text="     OK     " , command=graphfunc);
-tkgrid(autre.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-
-labelText5 <- tclVar("  Exit  ")
-label5 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText5))
-tkconfigure(label5, textvariable=labelText5)
-tkgrid(label5,columnspan=2)
-
-quit.but <- tkbutton(tt, text="     OK     ", command=quitfunc);
-tkgrid(quit.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-tkwait.variable(fin)
 }
-####################################################
 
-return(obs)
-  }
+####################################################
+return(invisible())
+}
 

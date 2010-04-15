@@ -1,8 +1,49 @@
-`clustermap` <-
-function(long, lat, dataset, clustnum, method="kmeans", type=NULL, centers=NULL, scale=FALSE,
-listvar=NULL, listnomvar=NULL, carte=NULL, criteria=NULL, xlab="Cluster", ylab="Count", label="",
-cex.lab=1, pch=16, col="blue", names.arg="", axes=FALSE, lablong="", lablat="")
+`clustermap` <- function(sp.obj, names.var, clustnum, method=c("kmeans","hclust"),type=NULL, centers=NULL, scale=FALSE,
+names.arg="", names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16,
+col="lightblue3", xlab="Cluster", ylab="Number", axes=FALSE, lablong="", lablat="")
 {
+# Verification of the Spatial Object sp.obj
+class.obj<-class(sp.obj)[1]
+
+if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
+if(!is.numeric(names.var) & length(match(names.var,names(sp.obj)))!=length(names.var) ) stop("At least one component of names.var is not included in the data.frame of sp.obj")
+if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all=TRUE))==2)
+ {
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
+
+# we propose to refind the same arguments used in first version of GeoXp
+long<-coordinates(sp.obj)[,1]
+lat<-coordinates(sp.obj)[,2]
+
+dataset <- sp.obj@data[,names.var]
+
+listvar<-sp.obj@data
+listnomvar<-names.attr
+
+# Code which was necessary in the previous version
+ if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+
+ # for colors in map and new grahics
+ ifelse(length(col)==1, col2<-"blue", col2<-col)
+ col3<-"lightblue3"
+ 
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
+
 
   # initialisation
   nointer<-FALSE
@@ -12,7 +53,6 @@ cex.lab=1, pch=16, col="blue", names.arg="", axes=FALSE, lablong="", lablat="")
   legmap<-NULL
   legends<-list(FALSE,FALSE,"","")
   labvar=c(xlab,ylab)
-  fin <- tclVar(FALSE);
   graphChoice <- ""
   varChoice1 <- ""
   varChoice2 <- ""
@@ -20,23 +60,22 @@ cex.lab=1, pch=16, col="blue", names.arg="", axes=FALSE, lablong="", lablat="")
   listgraph <- c("Histogram","Barplot","Scatterplot")
   if(names.arg[1]=="") names.arg <- 1:clustnum
   obs<-vector(mode = "logical", length = length(long))
-  graphics.off()
 
   # Méthodes de classification
   if(length(type)==0)
-  {ifelse(method=="kmeans",type<-"Hartigan-Wong", type <-"ward")}
+  {ifelse(method[1]=="kmeans",type<-"Hartigan-Wong", type <-"ward")}
 
   # Réduction de la matrice des données
   if(scale && class(dataset)!="dist") dataset<-scale(dataset)
 
   # Etude des différentes possibilités
   if(class(dataset)!="dist")
-  {if(method=="hclust") dataset<-dist(dataset)}
+  {if(method[1]=="hclust") dataset<-dist(dataset)}
   else
-  {if(method=="kmeans") dataset<-as.matrix(dataset)}
+  {if(method[1]=="kmeans") dataset<-as.matrix(dataset)}
 
   # classification
-  if(method=="kmeans")
+  if(method[1]=="kmeans")
   {
     num.graph <- 4 
     ifelse(length(centers)==0,res <- kmeans(dataset,clustnum,algorithm=type),
@@ -54,11 +93,12 @@ cex.lab=1, pch=16, col="blue", names.arg="", axes=FALSE, lablong="", lablat="")
   # Transformation de data.frame en matrix
   if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(listvar)
 
-  # Ouverture des fenêtres graphiques
-  dev.new()
-  dev.new()
+# Windows device
+if(!(2%in%dev.list())) dev.new()
+if(!(3%in%dev.list())) dev.new()
 
-  if(method=="hclust") dev.new()
+  if(method[1]=="hclust")
+  {if(!(4%in%dev.list())) dev.new()}
 
 
 ####################################################
@@ -67,7 +107,11 @@ cex.lab=1, pch=16, col="blue", names.arg="", axes=FALSE, lablong="", lablat="")
 
 pointfunc<-function() 
 {
-    quit <- FALSE;
+    quit <- FALSE
+   
+     dev.set(2)
+     title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+     title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
     while(!quit)
     {
@@ -76,8 +120,12 @@ pointfunc<-function()
         loc<-locator(1)
         if(is.null(loc)) 
         {
-            quit<-TRUE;
-            next;
+            quit<-TRUE
+        carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
+        lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,
+        method="Cluster",classe=vectclass,couleurs=col2,legmap=legmap,legends=legends,labmod=names.arg,
+        cex.lab=cex.lab,axis=axes)
+            next
         }   
         obs<<-selectmap(var1=long,var2=lat,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point")         
 
@@ -85,15 +133,17 @@ pointfunc<-function()
 
         carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
         lablong=lablong, lablat=lablat, label=label, symbol=pch,carte=carte,nocart=nocart,
-        method="Cluster",classe=vectclass,couleurs=col,legmap=legmap,legends=legends,labmod=names.arg,
+        method="Cluster",classe=vectclass,couleurs=col2,legmap=legmap,legends=legends,labmod=names.arg,
         cex.lab=cex.lab,axis=axes)
-        
+        title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
         graphique(var1=vectclass, obs=obs, num=3,graph="Barplot", labvar=labvar, symbol=pch,labmod=names.arg,couleurs=col);
         
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
          graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-         obs=obs, num=num.graph, graph=graphChoice, couleurs=col[1], labvar=c(varChoice1,varChoice2))       
+         obs=obs, num=num.graph, graph=graphChoice, couleurs=col3, labvar=c(varChoice1,varChoice2))
         }
 
 
@@ -109,6 +159,10 @@ polyfunc<-function()
     polyX <- NULL
     polyY <- NULL
     quit <- FALSE
+ 
+    dev.set(2)
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
     while(!quit)
     {
@@ -135,7 +189,7 @@ if (length(polyX)>0)
 
     #graphiques
    carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
-   lablong=lablong, lablat=lablat, label=label, symbol=pch,couleurs=col,carte=carte,nocart=nocart,
+   lablong=lablong, lablat=lablat, label=label, symbol=pch,couleurs=col2,carte=carte,nocart=nocart,
    method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes,cex.lab=cex.lab)
    
    graphique(var1=vectclass, obs=obs, num=3,graph="Barplot", labvar=labvar, symbol=pch,labmod=names.arg,
@@ -144,7 +198,7 @@ if (length(polyX)>0)
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
          graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-         obs=obs, num=num.graph, graph=graphChoice, couleurs=col[1], labvar=c(varChoice1,varChoice2))       
+         obs=obs, num=num.graph, graph=graphChoice, couleurs=col3, labvar=c(varChoice1,varChoice2))
         }
 
 }
@@ -159,6 +213,10 @@ barfunc<-function()
 {
     SGfunc()
     quit <- FALSE
+  
+    dev.set(3)
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
     while(!quit)
     {
@@ -167,6 +225,8 @@ barfunc<-function()
         if(is.null(loc)) 
         {
           quit<-TRUE
+        graphique(var1=vectclass, obs=obs, num=3,graph="Barplot", labvar=labvar, symbol=pch,labmod=names.arg,
+        couleurs=col)
           next
         }           
         obs<<-selectstat(var1=as.vector(vectclass),obs=obs,Xpoly=loc[1], Ypoly=loc[2],method="Barplot");   
@@ -174,15 +234,17 @@ barfunc<-function()
         # graphiques
         graphique(var1=vectclass, obs=obs, num=3,graph="Barplot", labvar=labvar, symbol=pch,labmod=names.arg,
         couleurs=col)
-        
+        title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
         carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
-        lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,couleurs=col,
+        lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,couleurs=col2,
         method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
 
         if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
          graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-         obs=obs, num=num.graph, graph=graphChoice, couleurs=col[1], labvar=c(varChoice1,varChoice2))       
+         obs=obs, num=num.graph, graph=graphChoice, couleurs=col3, labvar=c(varChoice1,varChoice2))
         }      
     }
   }
@@ -195,8 +257,6 @@ graphfunc <- function()
 {
     if ((length(listvar) != 0) && (length(listnomvar) != 0))
     {
-       ifelse(method=="kmeans",dev.off(4),dev.off(5))
-        
         choix <<- selectgraph(listnomvar,listgraph)
         varChoice1 <<- choix$varChoice1
         varChoice2 <<- choix$varChoice2
@@ -204,9 +264,12 @@ graphfunc <- function()
             
         if ((graphChoice != "") && (varChoice1 != ""))
         {
-         dev.new()
+         if(method[1]=="kmeans")
+         {if(!(4%in%dev.list())) dev.new()}
+         else
+         {if(!(5%in%dev.list())) dev.new()}
          graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-         obs=obs, num=num.graph, graph=graphChoice, couleurs=col[1], labvar=c(varChoice1,varChoice2))       
+         obs=obs, num=num.graph, graph=graphChoice, couleurs=col3, labvar=c(varChoice1,varChoice2))
         }
         else
         {
@@ -231,7 +294,7 @@ cartfunc <- function()
    {
    ifelse(!nocart,nocart<<-TRUE,nocart<<-FALSE)
    carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
-   lablong=lablong, lablat=lablat, label=label, cex.lab=cex.lab, symbol=pch,couleurs=col,carte=carte,
+   lablong=lablong, lablat=lablat, label=label, cex.lab=cex.lab, symbol=pch,couleurs=col2,carte=carte,
    nocart=nocart, method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)    
    }
    else
@@ -251,14 +314,14 @@ SGfunc<-function()
    
     carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
     lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,
-    couleurs=col,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
+    couleurs=col2,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
     
     graphique(var1=vectclass, obs=obs, num=3, graph="Barplot", labvar=labvar, symbol=pch,labmod=names.arg,couleurs=col)
     
      if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
         {
          graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
-         obs=obs, num=num.graph, graph=graphChoice, couleurs=col[1], labvar=c(varChoice1,varChoice2))       
+         obs=obs, num=num.graph, graph=graphChoice, couleurs=col3, labvar=c(varChoice1,varChoice2))
         }      
   }
 
@@ -266,13 +329,24 @@ SGfunc<-function()
 # quitter l'application
 ####################################################
 
-quitfunc<-function() 
+quitfunc<-function()
 {
-    tclvalue(fin)<<-TRUE
-  #  graphics.off();
+    #tclvalue(fin)<<-TRUE
     tkdestroy(tt)
-  }
+    assign("GeoXp.open", FALSE, envir = baseenv())
+   # assign("obs", row.names(sp.obj)[obs], envir = .GlobalEnv)
+}
 
+quitfunc2<-function()
+{
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+    print("Results have saved in last.select object")
+    res<-list(obs=which(obs),vectclass=vectclass)
+    assign("last.select", res, envir = .GlobalEnv)
+    
+}
 ####################################################
 # Open a no interactive selection
 ####################################################
@@ -284,7 +358,7 @@ fnointer<-function()
    ifelse(!nointer,nointer<<-TRUE,nointer<<-FALSE)
    carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
    lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,
-   couleurs=col,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)   
+   couleurs=col2,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
  }
  else
  {
@@ -310,7 +384,7 @@ fbubble<-function()
   
   carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
   lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,
-  couleurs=col,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes) 
+  couleurs=col2,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
  
 }
 
@@ -320,12 +394,12 @@ fbubble<-function()
 
 carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
 lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,
-couleurs=col,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
+couleurs=col2,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
     
 graphique(var1=as.vector(vectclass), obs=obs, num=3, graph="Barplot", labvar=labvar, symbol=pch,
 labmod=names.arg,couleurs=col)
 
-if(method=="hclust") 
+if(method[1]=="hclust")
 {dev.set(4)
 plot(res)
 }
@@ -345,11 +419,12 @@ if(interactive())
 
   dev.set(2)
   loc <- locator(1)
+  loc$name <- "Cluster"
   legends<<-list(legends[[1]],TRUE,legends[[3]],loc)
 
   carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
   lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,
-  couleurs=col,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
+  couleurs=col2,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
 
   graphique(var1=as.vector(vectclass), obs=obs, num=3, graph="Barplot", labvar=labvar, symbol=pch,
   labmod=names.arg,couleurs=col)
@@ -362,7 +437,7 @@ OnOK2 <- function()
 
   carte(long=long, lat=lat,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,obs=obs,
   lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, symbol=pch,carte=carte,nocart=nocart,
-  couleurs=col,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
+  couleurs=col2,method="Cluster",classe=vectclass,legmap=legmap,legends=legends,labmod=names.arg,axis=axes)
     
   graphique(var1=as.vector(vectclass), obs=obs, num=3, graph="Barplot", labvar=labvar, 
   symbol=pch,labmod=names.arg,couleurs=col)
@@ -391,96 +466,76 @@ if(length(col)==length(levels(as.factor(vectclass)))||length(pch)==length(levels
 ####################################################
 if(interactive())
 {
+fontheading<-tkfont.create(family="times",size=14,weight="bold")
+
 tt <- tktoplevel()
+tkwm.title(tt, "clustermap")
 
-labelText1 <- tclVar("Work on the map")
-label1 <- tklabel(tt,justify = "center", wraplength = "3i", text=tclvalue(labelText1))
-tkconfigure(label1, textvariable=labelText1)
-tkgrid(label1,columnspan=2)
+frame1a <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame1a, text = "Interactive selection", font = "Times 14",
+foreground = "blue", background = "white"))
+tkpack(tklabel(frame1a, text = "Work on the map", font = "Times 12",
+foreground = "darkred", background = "white"))
 
-point.but <- tkbutton(tt, text="  Points  ", command=pointfunc);
-poly.but <- tkbutton(tt, text=" Polygon ", command=polyfunc);
-tkgrid(point.but, poly.but)
-tkgrid(tklabel(tt,text="    "))
+point.but <- tkbutton(frame1a, text="Selection by point", command=pointfunc);
+poly.but <- tkbutton(frame1a, text="Selection by polygon ", command=polyfunc);
+tkpack(point.but, poly.but, side = "left", expand = "TRUE",
+        fill = "x")
 
+tkpack(frame1a, expand = "TRUE", fill = "x")
 
-labelText2 <- tclVar("Work on the bar plot")
-label2 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText2))
-tkconfigure(label2, textvariable=labelText2)
-tkgrid(label2,columnspan=2)
-
-barre.but <- tkbutton(tt, text="   Bar   ", command=barfunc);
-tkgrid(barre.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-
-
-label1 <- tclVar("To stop selection, leave the cursor on the active graph, click on the right button of the mouse and stop")
-label11 <- tklabel(tt,justify = "center", wraplength = "3i", text=tclvalue(label1))
-tkconfigure(label11, textvariable=label1)
-tkgrid(label11,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
+frame1c <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame1c, text = "Work on the bar plot", font = "Times 12",
+foreground = "darkred", background = "white"))
+barre.but <- tkbutton(frame1c, text="  Bar  ", command=barfunc);
+tkpack(barre.but, side = "left", expand = "TRUE", fill = "x")
+tkpack(frame1c, expand = "TRUE", fill = "x")
 
 
-labelText7 <- tclVar("Preselected sites")
-label7 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText7))
-tkconfigure(label7, textvariable=labelText7)
-tkgrid(label7,columnspan=2)
-
-noint1.but <- tkbutton(tt, text="  On/Off  ", command=fnointer);
-tkgrid(noint1.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
+frame1b <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+nettoy.but <- tkbutton(frame1b, text="     Reset selection     " , command=SGfunc);
+tkpack(nettoy.but, side = "left", expand = "TRUE", fill = "x")
+tkpack(frame1b, expand = "TRUE", fill = "x")
 
 
-labelText6 <- tclVar("Draw spatial contours")
-label6 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText6))
-tkconfigure(label6, textvariable=labelText6)
-tkgrid(label6,columnspan=2)
+frame2 <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame2, text = "Options", font = "Times 14",
+foreground = "blue", background = "white"))
+tkpack(tklabel(frame2, text = "Spatial contours", font = "Times 11",
+foreground = "darkred", background = "white"),tklabel(frame2, text = "Preselected sites", font = "Times 11",
+foreground = "darkred", background = "white"), side = "left", fill="x",expand = "TRUE")
+tkpack(frame2, expand = "TRUE", fill = "x")
 
-nocou1.but <- tkbutton(tt, text="  On/Off  ", command=cartfunc);
-tkgrid(nocou1.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
+frame2b <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+nocou1.but <- tkbutton(frame2b, text="On/Off", command=cartfunc)
+noint1.but <- tkbutton(frame2b, text="On/Off", command=fnointer)
+tkpack(nocou1.but,noint1.but, side = "left", expand = "TRUE", fill = "x")
+tkpack(frame2b, expand = "TRUE", fill = "x")
 
+frame2c <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame2c, text = "Bubbles", font = "Times 11",
+foreground = "darkred", background = "white"),tklabel(frame2c, text = "Additional graph", font = "Times 11",
+foreground = "darkred", background = "white"), side = "left", fill="x",expand = "TRUE")
+tkpack(frame2c, expand = "TRUE", fill = "x")
 
-labelText9 <- tclVar("Bubbles")
-label9 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText9))
-tkconfigure(label9, textvariable=labelText9)
-tkgrid(label9,columnspan=2)
+frame2d <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+bubble.but <- tkbutton(frame2d, text="On/Off", command=fbubble)
+autre.but <- tkbutton(frame2d, text="     OK     " , command=graphfunc)
+tkpack(bubble.but,autre.but, side = "left", expand = "TRUE", fill = "x")
+tkpack(frame2d, expand = "TRUE", fill = "x")
 
-bubble.but <- tkbutton(tt, text="  On/Off  ", command=fbubble);
-tkgrid(bubble.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
+frame3 <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame3, text = "Exit", font = "Times 14",
+foreground = "blue", background = "white"))
 
-labelText3 <- tclVar("Restore graph")
-label3 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText3))
-tkconfigure(label3, textvariable=labelText3)
-tkgrid(label3,columnspan=2)
+quit.but <- tkbutton(frame3, text="Save results", command=quitfunc2);
+quit.but2 <- tkbutton(frame3, text="Exit without saving", command=quitfunc)
 
-nettoy.but <- tkbutton(tt, text="     OK     " , command=SGfunc);
-tkgrid(nettoy.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
+tkpack(quit.but, quit.but2, side = "left", expand = "TRUE",
+        fill = "x")
 
+tkpack(frame3, expand = "TRUE", fill = "x")
 
-labelText4 <- tclVar("Additional graph")
-label4 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText4))
-tkconfigure(label4, textvariable=labelText4)
-tkgrid(label4,columnspan=2)
-
-autre.but <- tkbutton(tt, text="     OK     " , command=graphfunc);
-tkgrid(autre.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-
-labelText5 <- tclVar("Exit")
-label5 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText5))
-tkconfigure(label5, textvariable=labelText5)
-tkgrid(label5,columnspan=2)
-
-quit.but <- tkbutton(tt, text="     OK     ", command=quitfunc);
-tkgrid(quit.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-tkwait.variable(fin);
 }
 
 
@@ -488,7 +543,6 @@ tkwait.variable(fin);
 # Fin
 ####################################################
 
-
-return(list(obs=obs,vectclass=vectclass));
+return(invisible())
   }
 

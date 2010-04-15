@@ -7,8 +7,7 @@ function (var1, var2, var3, obs, num, graph = "", couleurs = "",
     xlim,ylim)
 {
     dev.set(num)
-    par(mar = c(4.5, 4.5, 0.5, 0.5))
-
+  #  par(mar = c(4.5, 4.5, 0.5, 0.5))
 
 ####################################################
 # Initialisation des bubbles
@@ -26,7 +25,7 @@ if(buble && (length(cbuble)!=0))
    }
 }
 else
-   {cbuble=rep(0.8,length(var1))
+   {cbuble=rep(0.7,length(var1))
     cbuble[which(obs==TRUE)]=1 
    }
  
@@ -36,6 +35,7 @@ else
         
     if (graph == "Histogram") 
     {
+        if(is.null(bin)) bin<-"count"
         mnv <- min(var1)
         mxv <- max(var1)
         h <- (mxv - mnv)/(nbcol)
@@ -59,10 +59,25 @@ else
           cpt <- c(cpt, cnt)
           absc <- c(absc, x1)
         }
-        
+       
+       sum.cpt<-sum(cpt) 
+
+
         cpt <- c(cpt, 0)
+        if(bin[1]=="percent")
+         {cpt<-cpt/sum.cpt
+          if(labvar[2]=="") labvar[2]="percent"
+         }
+         else
+          {if(bin[1]=="density")
+           {cpt<-cpt/sum.cpt/h
+           if(labvar[2]=="") labvar[2]="density"
+           }
+          }
+        
+        if(labvar[2]=="") labvar[2]="counts"
         plot(absc, cpt, "n", xlim = c(mnv - h, mxv + h), ylim = c(0,max(cpt)),
-        xlab = labvar[1], ylab = labvar[2])
+        xlab = labvar[1], ylab = labvar[2],frame.plot=FALSE)
         
         for (i in 1:nbcol) 
          {
@@ -88,6 +103,15 @@ else
             
             cpt1 <- c(cpt1, 0)
             
+        if(bin[1]=="percent")
+         {cpt1<-cpt1/sum.cpt
+         }
+         else
+          {if(bin[1]=="density")
+           {cpt1<-cpt1/sum.cpt/h
+           }
+          }
+          
             for (i in 1:nbcol) 
                {
                   rect(absc[i], 0, absc[i + 1], cpt1[i], density = 4,
@@ -99,7 +123,8 @@ else
     
     
     if (graph == "histo.nb") 
-     { 
+     {
+      if(is.null(bin)) bin<-"count"
       nblist<-unlist(var2)
         
       mnv <- min(nblist)
@@ -123,8 +148,20 @@ else
           absc <- c(absc, x1)
         }
         
+      sum.cpt<-sum(cpt)
       cpt <- c(cpt, 0)
-       
+      
+       if(bin[1]=="percent")
+        {cpt<-cpt/sum.cpt
+         if(labvar[2]=="") labvar[2]="percent"
+        }
+       else
+        {if(bin[1]=="density")
+          {cpt<-cpt/sum.cpt/h
+           if(labvar[2]=="") labvar[2]="density"
+          }
+        }
+          
       plot(absc, cpt, "n", xlim = c(mnv - h, mxv + h), ylim = c(0,max(cpt)),
       xlab = labvar[1], ylab = labvar[2])
       
@@ -148,6 +185,7 @@ else
             cnt <- length(which((vrob >= absc[1]) & (vrob <= absc[2])))
             cpt1 <- c(cpt1, cnt)
             
+          
             for (i in 2:nbcol) 
             {
               cnt<-length(which((vrob > absc[i]) & (vrob <= absc[i + 1]))) 
@@ -156,6 +194,15 @@ else
             
             cpt1 <- c(cpt1, 0)
             
+           if(bin[1]=="percent")
+            {cpt1<-cpt1/sum.cpt
+            }
+           else
+            {if(bin[1]=="density")
+             {cpt1<-cpt1/sum.cpt/h
+             }
+            }
+           
             for (i in 1:nbcol) 
             {
              rect(absc[i], 0, absc[i + 1], cpt1[i], density = 4,
@@ -172,8 +219,13 @@ else
     
     if ((graph == "Barplot") || (graph == "Cluster")) 
     {
+    
+      if(is.null(bin)) bin<-"count"
       r <- table(var1)
       nomsr <- names(r)
+      r.total<-r
+      
+      if(bin[1]=="percent") r<-r/sum(r)
        
       if (labmod[1] == "") 
        {
@@ -193,10 +245,11 @@ else
          
         if (length(var1[obs]) != 0) 
         {
-         t <- table(var1[obs])
-         nomst <- names(t)
-        
-         for (i in 1:length(t)) 
+         t.obs <- table(var1[obs])
+         nomst <- names(t.obs)
+         if(bin[1]=="percent") t.obs<-t.obs/sum(r.total)
+               
+         for (i in 1:length(t.obs)) 
           {
            quit <- FALSE
            j <- 1
@@ -205,7 +258,7 @@ else
              {
               if (nomst[i] == nomsr[j]) 
                   {                
-                   rect(g[j] - 0.4, 0, g[j] + 0.4, t[[i]],
+                   rect(g[j] - 0.4, 0, g[j] + 0.4, t.obs[[i]],
                    col = "red", density = 4, angle = 45,lwd = 1)
                    quit <- TRUE
                   }
@@ -257,12 +310,19 @@ else
         }
     }    
     
-    
-    if (graph == "Scatterplot") 
+
+
+    if (graph == "Scatterplot" || graph=="Acp1")
     {
         if (length(quantiles)!=0) couleur.quant <- heat.colors(length(quantiles))
-        par()
-        layout(matrix(c(1, 3, 0, 2), 2, 2, byrow = TRUE), c(1,4), c(5, 1), )
+
+        if(graph=="Acp1")
+        {
+         labvar[1] <- paste("component ", labvar[1], " : ", round(inertie[direct[1]], 0), "%", sep = "")
+         labvar[2] <- paste("component ", labvar[2], " : ", round(inertie[direct[2]], 0), "%", sep = "")
+        }
+        
+        layout(matrix(c(1, 3, 0, 2), 2, 2, byrow = TRUE), c(1,4), c(5, 1) )
         par(mar = c(2, 1, 2, 2))
         boxplot(var2, axes = FALSE)
         title(ylab = labvar[2], line = 0)
@@ -272,29 +332,52 @@ else
         par(mar = c(2, 2, 2, 2))
         plot(var1, var2, "n", xlab = "", ylab = "")
         points(var1[!obs], var2[!obs], col = couleurs, pch = 16,cex=0.8)
+
+        if(graph=="Acp1")
+        {
+        segments(min(var1), 0, max(var1), 0, col = "black")
+        segments(0, min(var2), 0, max(var2), col = "black")
+        }
         
-        if (opt1) 
+        if (opt1 & graph == "Scatterplot" )
         {
             xg <- seq(min(var1), max(var1), length = 100)
             reg <- lm(var2 ~ var1)
             lines(xg, reg$coefficients[1] + reg$coefficients[2] * xg)
         }
         
-        if ((length(quantiles)!=0)&&(quantiles!=0)) 
+        if ((length(quantiles)!=0)&&(quantiles!=0)&&(alpha1!=0))
         {
             for (i in 1:length(quantiles)) 
             {
               fit <- qsreg(as.numeric(var1), as.numeric(var2),
               lam = alpha1, alpha = quantiles[i])
               xg <- seq(min(var1), max(var1), length = 100)
-              lines(xg, predict(fit, xg), col = couleur.quant[i])
+              lines(xg, predict(fit, xg), col = "blue",lwd=1.5)
             }
         }
         
         if (length(var1[obs]) != 0) 
         {
          points(var1[obs], var2[obs], col = "red", pch = symbol,cex = 1.2)
+
+          if(graph=="Acp1")
+           {
+            if(is.logical(label))
+            {
+             if (label)
+             {
+              msg <- paste(round(labmod, 0), "%", sep = "")
+              text(var1[obs] + 0.02, var2[obs] + 0.02, msg[obs], cex = cex.lab, font=3,adj=c(0.75,-0.75))
+             }
+           }
+         }
         }
+       if(dev.cur()!=3)
+       {
+       layout(1)
+       par(mar=c(5.1,4.1,4.1,2.1))
+       }
     }
     
     if (graph == "Boxplot") 
@@ -353,11 +436,11 @@ else
      
         if(n5>0)
          {points(rep(1,n5), var1[obs][which((var1[obs] >= mat[5, 1]) & (var1[obs] <= max(out)))],
-          col = "red", pch = symbol,cex = 1)}
+          col = "red", pch = symbol)}
           
         if(n6>0)
          {points(rep(1,n6), var1[obs][which((var1[obs] < mat[1, 1]) & (var1[obs] >= min(out)))],
-          col = "red", pch = symbol,cex = 1)}        
+          col = "red", pch = symbol)}
                      
         }
     }
@@ -441,12 +524,12 @@ else
           if ((var1[obs][j] >= mat[5, k]) && (var1[obs][j] <= max(out)) && 
           (as.character(var2[obs][j]) == as.character(r$names[k]))) 
           {
-           points(k, var1[obs][j], col = "red", pch = symbol, cex = 1.5)
+           points(k, var1[obs][j], col = "red", pch = symbol)
            }
           
           if ((var1[obs][j] < mat[1, k]) && (var1[obs][j] >= min(out))) 
           {
-           points(k, var1[obs][j], col = "red", pch = symbol, cex = 1.5)
+           points(k, var1[obs][j], col = "red", pch = symbol)
           }
          }
         }
@@ -891,12 +974,14 @@ else
     {
       plot(var1, var2, "n", xlab = labvar[1], ylab = labvar[2])
         #,xlim=c(-12,12),ylim=c(-4.5,4.5)
-      segments(min(var1), 0, max(var1), 0, col = "black")
-      segments(0, min(var2), 0, max(var2), col = "black")
+      segments(min(var1), mean(var2), max(var1), mean(var2), col = "black", lty=2)
+      segments(mean(var1), min(var2), mean(var1), max(var2), col = "black", lty=2)
       points(var1[!obs], var2[!obs], col = couleurs[obsq[!obs]], pch = symbol[obsq[!obs]],
       cex=cbuble[!obs])
      
-        if(length(which(var2==rep(1,length(var1)))==TRUE)==length(var1)) abline(lm(var2 ~ var1))
+
+        if(!is.null(bin))
+        {if(bin) abline(lm(var2 ~ var1)) }
 
         if (length(var1[obs]) != 0) 
         {
@@ -922,12 +1007,13 @@ else
     if (graph == "Quadrant") 
     {
         plot(var1, var2, "n", xlab = labvar[1], ylab = labvar[2])
-        segments(min(var1), 0, max(var1), 0, col = "black")
-        segments(0, min(var2), 0, max(var2), col = "black")
+        segments(min(var1), mean(var2), max(var1), mean(var2), col = "black",lty=2)
+        segments(mean(var1), min(var2), mean(var1), max(var2), col = "black",lty=2)
         points(var1[!obs], var2[!obs], col = couleurs[obsq[!obs]], pch = symbol[obsq[!obs]],
         cex=cbuble[!obs])
 
-        if(length(which(var2==rep(1,length(var1)))==TRUE)==length(var1)) abline(lm(var2 ~ var1))
+        if(!is.null(bin))
+         {if(bin) abline(lm(var2 ~ var1))}
         
         if (length(var1[obs]) != 0) 
         {
@@ -976,44 +1062,20 @@ else
         }
     }
     
-    if (graph == "Acp1") 
-    {
-        msg1 <- paste("component ", labvar[1],
-        " : ", round(inertie[direct[1]], 0), "%", sep = "")
-        msg2 <- paste("component ", labvar[2],
-        " : ", round(inertie[direct[2]], 0), "%", sep = "")
-        
-        plot(var1, var2, "n", xlab = msg1, ylab = msg2)
-        points(var1[!obs], var2[!obs], col = couleurs, pch = 16, cex = 0.8)
-        segments(min(var1), 0, max(var1), 0, col = "black")
-        segments(0, min(var2), 0, max(var2), col = "black")
-        if (length(var1[obs]) != 0) 
-        {
-          points(var1[obs], var2[obs], col = "red", pch = symbol, cex = 1.2)
-        
-          if (label) 
-          {
-           msg <- paste(round(labmod, 0), "%", sep = "")
-           text(var1[obs] + 0.02, var2[obs] + 0.02, msg[obs], cex = cex.lab,
-           font=3,adj=c(0.75,-0.75))
-         }
-       }  
-    }
-    
-    
-    if (graph == "Acp2") 
+
+   if (graph == "Acp2")
     {
         centre <- rep(0, length(var1))
         msg1 <- paste("component ", labvar[1],
         " : ", round(inertie[direct[1]], 0), "%", sep = "")
         msg2 <- paste("component ", labvar[2],
         " : ", round(inertie[direct[2]], 0), "%", sep = "")
-       
-        if ((max(abs(var1)) > 1) || (max(abs(var2)) > 1)) 
+
+        if ((max(abs(var1)) > 1) || (max(abs(var2)) > 1))
         {
             plot(var1, var2, "n", xlab = msg1, ylab = msg2)
         }
-        else 
+        else
         {
             plot(-1:1, -1:1, "n", xlab = msg1, ylab = msg2)
             segments(-1, 0, 1, 0, col = "black")
@@ -1028,5 +1090,6 @@ else
         lines(x, y)
         lines(x, -y)
     }
+
 
 }

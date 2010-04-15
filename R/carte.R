@@ -10,14 +10,49 @@ legmap=NULL,legends=list(FALSE,FALSE),labmod="",axis=FALSE)
 
 dev.set(2)
 
+# for the longitude/latitude data
 x.lim=c(min(long,na.rm=TRUE),max(long,na.rm=TRUE)) 
 y.lim=c(min(lat,na.rm=TRUE),max(lat,na.rm=TRUE))
+
+# Calculation of aspect ratio
+
+if(!is.null(carte))
+{
+ if(!is.list(carte))
+ {
+  x.lim=range(carte[,1],na.rm=TRUE)
+  y.lim=range(carte[,2],na.rm=TRUE)
+ }
+else
+ {kol<-length(carte)
+  xk.cont.lim<-NULL
+  yk.cont.ylim<-NULL
+   for (k in 1:kol)
+   {cartek<-carte[[k]]
+    xk.cont.lim=c(xk.cont.lim,range(cartek[,1],na.rm=TRUE))
+    yk.cont.ylim=c(yk.cont.ylim,range(cartek[,2],na.rm=TRUE))
+   }
+  x.lim=range(xk.cont.lim,na.rm=TRUE)
+  y.lim=range(yk.cont.ylim,na.rm=TRUE)
+ }
  
+ asp=1/cos((mean(y.lim) * pi)/180)
+}
+else
+{
 asp=1/cos((mean(y.lim) * pi)/180)
- 
-leg.symb<-symbol
- 
+
+x.lim=c(min(long,na.rm=TRUE),max(long,na.rm=TRUE)) 
+y.lim=c(min(lat,na.rm=TRUE),max(lat,na.rm=TRUE))
+
+}
+
 if(asp>1.40||asp<0.6) asp=1 
+ 
+# initialisation
+ leg.symb<-symbol
+ 
+# Representation case by case
   
 if ((method == "Cluster")||(method == "Quadrant")||(method == "Neighbourplot1"))
 { 
@@ -41,6 +76,7 @@ if ((method == "Cluster")||(method == "Quadrant")||(method == "Neighbourplot1"))
    
  }
 
+
 ####################################################
 # Initialisation des bubbles
 ####################################################
@@ -57,7 +93,7 @@ if(buble && (length(cbuble)!=0))
    }
 }
 else
-   {cbuble=rep(0.5,length(long))
+   {cbuble=rep(0.7,length(long))
     if(class(obs)=="matrix")
      { if(method == "Neighbourplot1") 
        {cbuble[intersect(which(obs==TRUE,arr.ind=TRUE)[,1],which(obs==TRUE,arr.ind=TRUE)[,2])]=1}
@@ -80,34 +116,11 @@ else
 # dessin des contours des unités spatiales
 ####################################################
 
-if(class(carte)!="NULL")
-{
-if(class(carte)!="list")
-{
- x.cont.lim=range(carte[,1],na.rm=TRUE)
- y.cont.ylim=range(carte[,2],na.rm=TRUE)
-}
-else
- {kol<-length(carte)
- xk.cont.lim<-NULL
- yk.cont.ylim<-NULL
-  for (k in 1:kol)
-  {cartek<-carte[[k]]
-    xk.cont.lim=c(xk.cont.lim,range(cartek[,1],na.rm=TRUE))
-    yk.cont.ylim=c(yk.cont.ylim,range(cartek[,2],na.rm=TRUE))
-  }
- x.cont.lim=range(xk.cont.lim,na.rm=TRUE)
- y.cont.ylim=range(yk.cont.ylim,na.rm=TRUE)
- }
- asp.cont=1/cos((mean(y.cont.ylim) * pi)/180)
- if(asp.cont>1.40||asp.cont<0.6) asp.cont=1
-}
-
 
 
 if(nocart)
 {                                                                                        
-plot(x.cont.lim,y.cont.ylim,"n", xlab=lablong, ylab=lablat, tcl=-.25, las=1, cex=cbuble,asp=asp.cont,axes=axis)
+plot(x.lim,y.lim,"n", xlab=lablong, ylab=lablat, tcl=-.25, las=1, cex=cbuble,asp=asp,axes=axis)
   if(class(carte)!="list")
    {
     n <- nrow(carte);
@@ -199,9 +212,13 @@ else
 
  }
 
- if(legends[[2]])
- {
-legend(legends[[4]]$x,legends[[4]]$y, labmod,cex=cex.lab,col=couleurs,pch = leg.symb, pt.cex=1.125)}
+if(legends[[2]])
+ { if(is.null(legends[[4]]$name))
+   {legend(legends[[4]]$x,legends[[4]]$y, labmod,cex=cex.lab,col=couleurs,pch = leg.symb)}
+  else
+  {legend(legends[[4]]$x,legends[[4]]$y, labmod,cex=cex.lab,col=couleurs,pch = leg.symb,
+   title=legends[[4]]$name)}
+ }
 
 
 
@@ -366,7 +383,7 @@ if(length(long[obs])!=0)
 ####################################################
 
 if(nointer)
-{points(long[criteria],lat[criteria], pch="X",cex=0.7)}
+{points(long[criteria],lat[criteria], pch="X",cex=0.7,col="green")}
 
  }
 

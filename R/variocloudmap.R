@@ -1,8 +1,50 @@
-`variocloudmap` <-
-function (long, lat, var, bin=NULL,quantiles=NULL,listvar=NULL, listnomvar=NULL,criteria=NULL,
-carte = NULL, label = "", cex.lab=1, pch = 16, col="grey", xlab = "", ylab="", axes=FALSE, 
-lablong = "", lablat = "",xlim=NULL,ylim=NULL) 
+`variocloudmap` <- function(sp.obj, name.var, bin=NULL, quantiles=NULL,
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8,
+pch=16, col="lightblue3", xlab="", ylab="", axes=FALSE, lablong="", lablat="",
+xlim=NULL, ylim=NULL)
 {
+# Verification of the Spatial Object sp.obj
+class.obj<-class(sp.obj)[1]
+
+if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
+if(!is.numeric(name.var) & is.na(match(as.character(name.var),names(sp.obj)))) stop("name.var is not included in the data.frame of sp.obj")
+if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all=TRUE))==2)  # new environment
+ {
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
+
+# we propose to refind the same arguments used in first version of GeoXp
+long<-coordinates(sp.obj)[,1]
+lat<-coordinates(sp.obj)[,2]
+
+var<-sp.obj@data[,name.var]
+
+# verify the type of the main variable
+if(!(is.integer(var) || is.double(var))) stop("the variable name.var should be a numeric variable")
+
+
+listvar<-sp.obj@data
+listnomvar<-names.attr
+
+# Code which was necessary in the previous version
+ if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
+
 # initialisation
   nointer<-FALSE
   nocart<-FALSE
@@ -17,13 +59,16 @@ lablong = "", lablat = "",xlim=NULL,ylim=NULL)
   opt2<-1
   
   angle<-0
+  names.slide="Quant. reg. smooth spline para."
   obs <- matrix(FALSE, nrow = length(long), ncol = length(long))
-  graphics.off()
 
-# Ouverture des fenêtres graphiques
-  dev.new()
-  dev.new()
-  fin <- tclVar(FALSE)
+  directionnel<-FALSE
+  
+  
+# Windows device
+if(!(2%in%dev.list())) dev.new()
+if(!(3%in%dev.list())) dev.new()
+
 
 # Transformation data.frame en matrix
 if((length(listvar)>0)&&(dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(listvar)
@@ -80,12 +125,21 @@ if((length(listvar)>0)&&(dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(list
     pointfunc <- function() 
      {
         quit <- FALSE
+        
+        dev.set(3)
+        title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
         while (!quit) 
         {
             dev.set(3)
             loc <- locator(1)
-            if (is.null(loc)) {
-                quit <- TRUE
+            if (is.null(loc))
+             {
+               quit <- TRUE
+               graphique(var1 = dist, var2 = dif, var3=dif2, obs = obs,opt1=opt1,opt2=opt2, num = 3, 
+               graph = "Variocloud", labvar = labvar, symbol = pch, couleurs=col, quantiles = quantiles, 
+               alpha1 = alpha, bin=bin, xlim=xlim, ylim=ylim)
                 next
             }
      obs <<- selectstat(var1 = dist, var2 = dif, obs = obs,Xpoly = loc[1], Ypoly = loc[2], 
@@ -94,7 +148,9 @@ if((length(listvar)>0)&&(dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(list
      graphique(var1 = dist, var2 = dif, var3=dif2, obs = obs,opt1=opt1,opt2=opt2, num = 3, 
      graph = "Variocloud", labvar = labvar, symbol = pch, couleurs=col, quantiles = quantiles, 
      alpha1 = alpha, bin=bin, xlim=xlim, ylim=ylim)
-     
+     title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+     title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
      carte(long = long, lat = lat, obs = obs, lablong = lablong,lablat = lablat, 
      label = label,buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart, 
      cex.lab=cex.lab, method = "Variocloud",axis=axes,legmap=legmap,legends=legends)
@@ -110,6 +166,11 @@ if((length(listvar)>0)&&(dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(list
         quit <- FALSE
         polyX <- NULL
         polyY <- NULL
+        
+        dev.set(3) 
+        title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+        title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
         while (!quit) {
             dev.set(3)
             loc <- locator(1)
@@ -170,11 +231,10 @@ if (length(carte) != 0)
 ####################################################
     refresh.code <- function(...) 
     {
-     alpha <<- slider1(no = 1)
+     alpha <<- slider1(names.slide=names.slide, no = 1)
      graphique(var1 = dist, var2 = dif, var3=dif2, obs = obs,opt1=opt1,opt2=opt2, num = 3, 
      graph = "Variocloud", labvar = labvar, symbol = pch, couleurs=col, quantiles = quantiles, 
      alpha1 = alpha, bin=bin, xlim=xlim, ylim=ylim)
-     
     }
 
 
@@ -201,13 +261,23 @@ if (length(carte) != 0)
 # quitter l'application
 ####################################################
 
-quitfunc <- function() 
+quitfunc<-function()
 {
-   tclvalue(fin) <<- TRUE
-   tkdestroy(tt)
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+   # assign("obs", row.names(sp.obj)[obs], envir = .GlobalEnv)
 }
 
-
+quitfunc2<-function()
+{
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+    print("Results have been saved in last.select object")
+    obs[lower.tri(obs)]<-FALSE
+    assign("last.select", which(obs,arr.ind=TRUE), envir = .GlobalEnv)
+}
 
 ####################################################
 # Open a no interactive selection
@@ -276,22 +346,26 @@ fbubble<-function()
 
 choixangle <- function() 
 {
- SGfunc()
- tt1<-tktoplevel()
- Name <- tclVar("0.5")
- entry.Name <-tkentry(tt1,width="3",textvariable=Name)
- tkgrid(tklabel(tt1,text="Please enter a decimal x between 0 and 1 (angle=x.Pi)"),entry.Name)
 
- OnOK <- function()
- { 
-	angle <<- tclvalue(Name)
-	tkdestroy(tt1)
+ directionnel<-!directionnel
+ 
+ if(directionnel)
+  {SGfunc()
+  tt1<-tktoplevel()
+  Name <- tclVar("0.5")
+  entry.Name <-tkentry(tt1,width="3",textvariable=Name)
+  tkgrid(tklabel(tt1,text="Please enter a decimal x between 0 and 1 (angle=x.Pi)"),entry.Name)
+
+  OnOK <- function()
+   {
+  	angle <<- tclvalue(Name)
+   	tkdestroy(tt1)
        
-   if (is.na(as.numeric(angle))||(as.numeric(angle)>1)||(as.numeric(angle)<0))
+    if (is.na(as.numeric(angle))||(as.numeric(angle)>1)||(as.numeric(angle)<0))
     {
      tkmessageBox(message="Sorry, but you have to choose a decimal number between 0 and 1 (exemple : 0.5)",icon="warning",type="ok");
     }
-   else
+    else
     {msg <- paste("You choose",angle,"pi")
 	   tkmessageBox(message=msg)
     
@@ -325,32 +399,26 @@ choixangle <- function()
    }
 }
 
-
-
 OK.but <-tkbutton(tt1,text="   OK   ",command=OnOK)
 #tkbind(entry.Name, "<Return>",OnOK)
 tkgrid(OK.but)
 tkfocus(tt1)
-
 }
-
-####################################################
-# Return to Isotropy Variogram Cloud
-####################################################
-
-
-OnOK2 <- function()
+else
 {
      SGfunc()
-     
+
      dist <<- sqrt((long1 - long2)^2 + (lat1 - lat2)^2)
      dif <<-  (v1 - v2)^2/2
      dif2 <<-  (abs(v1 - v2))^(1/2)
 
-     graphique(var1 = dist, var2 = dif, var3=dif2, obs = obs,opt1=opt1,opt2=opt2, num = 3, 
-     graph = "Variocloud", labvar = labvar, symbol = pch, couleurs=col, quantiles = quantiles, 
+     graphique(var1 = dist, var2 = dif, var3=dif2, obs = obs,opt1=opt1,opt2=opt2, num = 3,
+     graph = "Variocloud", labvar = labvar, symbol = pch, couleurs=col, quantiles = quantiles,
      alpha1 = alpha, bin=bin, xlim=xlim, ylim=ylim)
 }
+
+}
+
 
 ####################################################
 # Représentation Graphique
@@ -370,108 +438,93 @@ OnOK2 <- function()
 
 if(interactive())
 {
+fontheading<-tkfont.create(family="times",size=14,weight="bold")
+
 tt <- tktoplevel()
+tkwm.title(tt, "variocloudmap")
 
-labelText1 <- tclVar("Work on the graph")
-label1 <- tklabel(tt,justify = "center", wraplength = "3i", text=tclvalue(labelText1))
-tkconfigure(label1, textvariable=labelText1)
-tkgrid(label1,columnspan=2)
+frame1a <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame1a, text = "Interactive selection", font = "Times 14",
+foreground = "blue", background = "white"))
+tkpack(tklabel(frame1a, text = "Work on the graph", font = "Times 12",
+foreground = "darkred", background = "white"))
 
-point.but <- tkbutton(tt, text="  Point  ", command=pointfunc);
-poly.but <- tkbutton(tt, text=" Polygon ", command=polyfunc);
-tkgrid(point.but, poly.but)
-tkgrid(tklabel(tt,text="    "))
+point.but <- tkbutton(frame1a, text="Selection by point", command=pointfunc);
+poly.but <- tkbutton(frame1a, text="Selection by polygon ", command=polyfunc);
+tkpack(point.but, poly.but, side = "left", expand = "TRUE",fill = "x")
 
-label1 <- tclVar("To stop selection, let the cursor on the active graph, click on the right button of the mouse and stop")
-label11 <- tklabel(tt,justify = "center", wraplength = "3i", text=tclvalue(label1))
-tkconfigure(label11, textvariable=label1)
-tkgrid(label11,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
+tkpack(frame1a, expand = "TRUE", fill = "x")
 
-
-  if(length(quantiles)!=0)
-{ slider1(tt, refresh.code, c("Quant. reg. smooth spline para."), 
-            c(borne1), c(borne2), c((borne2 - borne1)/100), c(alpha))
-}
-   
-
-labelText71 <- tclVar("Empirical Semi-Variogram")
-label71 <- tklabel(tt,justify = "center", wraplength = "3i", text=tclvalue(labelText71))
-tkconfigure(label71, textvariable=labelText71)
-tkgrid(label71,columnspan=2)
-
-vari.but <- tkbutton(tt, text="  Classic - On/Off  ", command=vari);
-vari2.but <- tkbutton(tt, text=" Robust - On/Off ", command=vari2);
-tkgrid(vari.but, vari2.but)
-tkgrid(tklabel(tt,text="    "))
+frame1b <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+nettoy.but <- tkbutton(frame1b, text="     Reset selection     " , command=SGfunc);
+tkpack(nettoy.but, side = "left", expand = "TRUE", fill = "x")
+tkpack(frame1b, expand = "TRUE", fill = "x")
 
 
-   
-labelText73 <- tclVar("Directional Semi-Variogram Cloud")
-label73 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText73))
-tkconfigure(label73, textvariable=labelText73)
-tkgrid(label73,columnspan=2)
+frame2 <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame2, text = "Options", font = "Times 14",
+foreground = "blue", background = "white"))
+tkpack(tklabel(frame2, text = "Spatial contours  ", font = "Times 11",
+foreground = "darkred", background = "white"),tklabel(frame2, text = "Preselected sites  ", font = "Times 11",
+foreground = "darkred", background = "white"),tklabel(frame2, text = "  Bubbles    ", font = "Times 11",
+foreground = "darkred", background = "white"),side = "left", fill="x",expand = "TRUE")
+tkpack(frame2, expand = "TRUE", fill = "x")
+
+frame2b <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+nocou1.but <- tkbutton(frame2b, text="On/Off", command=cartfunc)
+noint1.but <- tkbutton(frame2b, text="On/Off", command=fnointer)
+bubble.but <- tkbutton(frame2b, text="On/Off", command=fbubble)
+tkpack(nocou1.but,noint1.but,bubble.but, side = "left", expand = "TRUE", fill = "x")
+tkpack(frame2b, expand = "TRUE", fill = "x")
+
+frame2c <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame2c, text = "Classic empirical semi-variogram ", font = "Times 11",
+foreground = "darkred", background = "white"),tklabel(frame2c, text = "Robust empirical semi-variogram  ", font = "Times 11",
+foreground = "darkred", background = "white"),side = "left", fill="x",expand = "TRUE")
+tkpack(frame2c, expand = "TRUE", fill = "x")
+
+frame2d <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+vari.but <- tkbutton(frame2d, text="On/Off", command=vari)
+vari2.but <- tkbutton(frame2d, text="On/Off", command=vari2)
+tkpack(vari.but, vari2.but, side = "left", expand = "TRUE", fill = "x")
+tkpack(frame2d, expand = "TRUE", fill = "x")
+
+frame2e <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame2e, text = "Directional Semi-Variogram Cloud", font = "Times 11",
+foreground = "darkred", background = "white"),side = "left", fill="x",expand = "TRUE")
+tkpack(frame2e, expand = "TRUE", fill = "x")
+
+frame2f <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+angle.but <- tkbutton(frame2f, text="On/Off", command=choixangle)
+tkpack(angle.but, side = "left", expand = "TRUE", fill = "x")
+tkpack(frame2f, expand = "TRUE", fill = "x")
 
 
-vari3.but <- tkbutton(tt, text="     On     ", command=choixangle);
-finish.but<-tkbutton(tt,text="     Off     ",command=OnOK2)
-tkgrid(vari3.but,finish.but)
-tkgrid(tklabel(tt,text="    "))
+if(length(quantiles)!=0)
+{
+frame1c <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
 
+slider1(frame1c, refresh.code, names.slide=names.slide,
+        borne1, borne2, (borne2 - borne1)/100, alpha)
 
-
-
-labelText7 <- tclVar("Preselected sites")
-label7 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText7))
-tkconfigure(label7, textvariable=labelText7)
-tkgrid(label7,columnspan=2)
-
-noint1.but <- tkbutton(tt, text="  On/Off  ", command=fnointer);
-tkgrid(noint1.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-labelText6 <- tclVar("Draw spatial contours")
-label6 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText6))
-tkconfigure(label6, textvariable=labelText6)
-tkgrid(label6,columnspan=2)
-
-nocou1.but <- tkbutton(tt, text="  On/Off  ", command=cartfunc);
-tkgrid(nocou1.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-
-labelText3 <- tclVar("Restore graph")
-label3 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText3))
-tkconfigure(label3, textvariable=labelText3)
-tkgrid(label3,columnspan=2)
-
-nettoy.but <- tkbutton(tt, text="     OK     " , command=SGfunc);
-tkgrid(nettoy.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-labelText9 <- tclVar("Bubbles")
-label9 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText9))
-tkconfigure(label9, textvariable=labelText9)
-tkgrid(label9,columnspan=2)
-
-bubble.but <- tkbutton(tt, text="  On/Off  ", command=fbubble);
-tkgrid(bubble.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-
-labelText5 <- tclVar("  Exit  ")
-label5 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText5))
-tkconfigure(label5, textvariable=labelText5)
-tkgrid(label5,columnspan=2)
-
-quit.but <- tkbutton(tt, text="     OK     ", command=quitfunc);
-tkgrid(quit.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-tkwait.variable(fin)
+tkpack(frame1c, expand = "TRUE", fill = "x")
 }
 
-return(obs)
+frame3 <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame3, text = "Exit", font = "Times 14",
+foreground = "blue", background = "white"))
+
+quit.but <- tkbutton(frame3, text="Save results", command=quitfunc2);
+quit.but2 <- tkbutton(frame3, text="Exit without saving", command=quitfunc);
+
+tkpack(quit.but, quit.but2, side = "left", expand = "TRUE",
+        fill = "x")
+
+tkpack(frame3, expand = "TRUE", fill = "x")
+}
+
+####################################################
+return(invisible())
 
 }
 

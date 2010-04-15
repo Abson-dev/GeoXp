@@ -1,8 +1,48 @@
-`mvariocloudmap` <-
-function (long, lat, object, listvar=NULL, listnomvar=NULL,quantiles=NULL, criteria=NULL,
-carte = NULL, label = "",cex.lab=1,pch = 16,col="blue", xlab = "Pairwise spatial distances",
-ylab="Pairwise Mahalanobis distances", lablong = "", lablat = "", axes=FALSE)
+`mvariocloudmap` <- function(sp.obj, nb.obj, names.var, quantiles=NULL,
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
+xlab="Pairwise spatial distances", ylab="Pairwise Mahalanobis distances", axes=FALSE, lablong="", lablat="")
 {
+# Verification of the Spatial Object sp.obj
+class.obj<-class(sp.obj)[1]
+
+if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
+if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
+if(!is.numeric(names.var) & length(match(names.var,names(sp.obj)))!=length(names.var) ) stop("At least one component of names.var is not included in the data.frame of sp.obj")
+if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
+
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all=TRUE))==2)
+ {
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
+
+# we propose to refind the same arguments used in first version of GeoXp
+long<-coordinates(sp.obj)[,1]
+lat<-coordinates(sp.obj)[,2]
+
+dataset <- sp.obj@data[,names.var]
+
+listvar<-sp.obj@data
+listnomvar<-names.attr
+
+# Code which was necessary in the previous version
+ if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+
+ # for identifyng the selected sites
+ifelse(identify, label<-row.names(listvar),label<-"")
+
+  # Spatial weight matrix
+   W<-nb2mat(nb.obj)
+   
  # initialisation
   xy<-cbind(long, lat)
   nointer<-FALSE
@@ -16,29 +56,30 @@ ylab="Pairwise Mahalanobis distances", lablong = "", lablat = "", axes=FALSE)
   obs <- matrix(FALSE, nrow = length(long), ncol = length(long))
   obs2 <- matrix(FALSE, nrow = length(long), ncol = length(long))
   graf<-"Neighbourplot1"
-  graphics.off()
+  names.slide=c("Quantile smooth spline parameter")
+  
 
-   W<-nb2mat(object)
    
 # Transformation d'un data.frame en matrix
 
 if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(listvar)
+if((length(dataset)>0) && (dim(as.matrix(dataset))[2]==1)) dataset<-as.matrix(dataset)
 
-# ouverture des fenêtres graphiques
-dev.new()
-dev.new()
-fin <- tclVar(FALSE)
+# Windows device
+if(!(2%in%dev.list())) dev.new()
+if(!(3%in%dev.list())) dev.new()
+
 
 # calcul des matrices theta et absvar
 
-n=nrow(listvar)
-covr=covMcd(listvar,alpha=0.75)
+n=nrow(dataset)
+covr=covMcd(dataset,alpha=0.75)
 cinv=solve(covr$cov)
 
 idx=matrix(1:n,n,n)
 se=as.vector(idx[lower.tri(idx)])
 dij=sqrt((rep(xy[-n,1],seq(n-1,1))-xy[se,1])^2+(rep(xy[-n,2],seq(n-1,1))-xy[se,2])^2)
-hlp=as.matrix(listvar[rep(1:(n-1),seq((n-1),1)),]-listvar[se,])
+hlp=as.matrix(dataset[rep(1:(n-1),seq((n-1),1)),]-dataset[se,])
 MDij=sqrt(rowSums((hlp%*%cinv)*hlp))
 
 indij=cbind(rep(1:(n-1),seq(n-1,1)),se)
@@ -54,10 +95,10 @@ absvar<-absvar+t(absvar)
 
 # calcul des distances de Mahalanobis par site
 
-rd <- sqrt(mahalanobis(listvar, center = covr$center, cov = covr$cov))
-xarw <- arw(listvar, covr$center, covr$cov, alpha = 0.025)
-  ifelse(xarw$cn != Inf, alphab <- sqrt(c(xarw$cn, qchisq(c(0.75, 0.5, 0.25), ncol(listvar)))),
-  alphab <- sqrt(qchisq(c(0.975, 0.75, 0.5, 0.25), ncol(listvar))))
+rd <- sqrt(mahalanobis(dataset, center = covr$center, cov = covr$cov))
+xarw <- arw(dataset, covr$center, covr$cov, alpha = 0.025)
+  ifelse(xarw$cn != Inf, alphab <- sqrt(c(xarw$cn, qchisq(c(0.75, 0.5, 0.25), ncol(dataset)))),
+  alphab <- sqrt(qchisq(c(0.975, 0.75, 0.5, 0.25), ncol(dataset))))
 
 
 chi2.quant<-rep(0,n)
@@ -99,18 +140,25 @@ pointfunca<-function()
    if (graf=="pairwise") SGfunc()
    graf<<-"Neighbourplot1"
    
-    quit <- FALSE;
+    quit <- FALSE
+
+    dev.set(2)
+    title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+    title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
     while(!quit)
     {
-        dev.set(2);
-        loc<-locator(1);
+        dev.set(2)
+        loc<-locator(1)
         if (is.null(loc))
         {
-            quit<-TRUE;
-            next;
+          quit<-TRUE
+          carte(long = long, lat = lat, obs = obs,buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,
+          nocart=nocart, lablong = lablong,lablat = lablat,label = label,cex.lab=cex.lab, symbol = pch,method = "pairwise",
+          axis=axes,legmap=legmap,legends=legends)       
+          next
         }
-        obs2<<-selectmap(var1=long,var2=lat,obs=obs2,Xpoly=loc[1], Ypoly=loc[2], method="point");
+        obs2<<-selectmap(var1=long,var2=lat,obs=obs2,Xpoly=loc[1], Ypoly=loc[2], method="point")
 
        obs<<-(diag(n)*obs2>0)
 
@@ -118,7 +166,9 @@ pointfunca<-function()
    carte(long = long, lat = lat, obs = obs,buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,
    nocart=nocart, lablong = lablong,lablat = lablat,label = label,cex.lab=cex.lab, symbol = pch,method = "pairwise",
    axis=axes,legmap=legmap,legends=legends)
-   
+   title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
    #     carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=16,
    #     method="Neighbourplot1", W=W,axis=axes,legmap=legmap,legends=legends,buble=buble,criteria=criteria,
    #     nointer=nointer,cbuble=z,carte=carte,nocart=nocart,couleurs="blue",classe=card(object),cex.lab=cex.lab)
@@ -142,32 +192,36 @@ polyfunca<-function()
    if (graf=="pairwise") SGfunc()
    graf<<-"Neighbourplot1"
    
-    polyX <- NULL;
-    polyY <- NULL;
-    quit <- FALSE;
+    polyX <- NULL
+    polyY <- NULL
+    quit <- FALSE
+  
+   dev.set(2)
+   title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
     while(!quit)
     {
-        dev.set(2);
-        loc<-locator(1);
+        dev.set(2)
+        loc<-locator(1)
         if(is.null(loc))
         {
-            quit<-TRUE;
-            next;
+            quit<-TRUE
+            next
         }
 
-        polyX <- c(polyX, loc[1]);
-        polyY <- c(polyY, loc[2]);
+        polyX <- c(polyX, loc[1])
+        polyY <- c(polyY, loc[2])
         lines(polyX,polyY);
     }
 
-    polyX <- c(polyX, polyX[1]);
-    polyY <- c(polyY, polyY[1]);
+    polyX <- c(polyX, polyX[1])
+    polyY <- c(polyY, polyY[1])
 if (length(polyX)>0)
 {
-    lines(polyX,polyY);
+    lines(polyX,polyY)
 
-    obs2 <<- selectmap(var1=long, var2=lat, obs=obs2, Xpoly=polyX, Ypoly=polyY, method="poly");
+    obs2 <<- selectmap(var1=long, var2=lat, obs=obs2, Xpoly=polyX, Ypoly=polyY, method="poly")
        obs<<-(diag(n)*obs2>0)
            
     # graphiques
@@ -200,6 +254,12 @@ if (length(polyX)>0)
    graf<<-"pairwise"
    
   quit <- FALSE
+  
+  
+  dev.set(3)
+  title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+  title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
   while (!quit) 
   {
     dev.set(3)
@@ -207,6 +267,8 @@ if (length(polyX)>0)
       if (is.null(loc)) 
        {
         quit <- TRUE
+        graphique(var1 = theta, var2 = absvar, obs = obs2,num = 3, graph = "pairwise", labvar = labvar,
+        couleurs=col,symbol = pch, quantiles = quantiles,alpha1 = alpha) 
         next
        }
 
@@ -218,7 +280,9 @@ if (length(polyX)>0)
    obs2<<-obs
    graphique(var1 = theta, var2 = absvar, obs = obs2,num = 3, graph = "pairwise", labvar = labvar,
    couleurs=col,symbol = pch, quantiles = quantiles,alpha1 = alpha)
-  
+   title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+   title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+
    carte(long = long, lat = lat, obs = obs,buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,
    nocart=nocart, lablong = lablong,lablat = lablat,label = label,cex.lab=cex.lab, symbol = pch,method = "pairwise",
    axis=axes,legmap=legmap,legends=legends) 
@@ -241,6 +305,10 @@ if (length(polyX)>0)
   quit <- FALSE
   polyX <- NULL
   polyY <- NULL
+ 
+  dev.set(3)
+  title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
+  title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
    while (!quit) 
     {
@@ -325,13 +393,23 @@ SGfunc<-function()
 # quitter l'application
 ####################################################
 
-quitfunc<-function() 
+quitfunc<-function()
 {
-    tclvalue(fin)<<-TRUE
-#    graphics.off();
-    tkdestroy(tt);
-  }
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+   # assign("obs", row.names(sp.obj)[obs], envir = .GlobalEnv)
+}
 
+quitfunc2<-function()
+{
+    #tclvalue(fin)<<-TRUE
+    tkdestroy(tt)
+    assign("GeoXp.open", FALSE, envir = baseenv())
+    print("Results have been saved in last.select object")
+    obs[lower.tri(obs)]<-FALSE
+    assign("last.select", which(obs,arr.ind=TRUE), envir = .GlobalEnv)
+}
 
 
 ####################################################
@@ -392,7 +470,7 @@ fbubble<-function()
 
     refresh.code <- function(...)
      {
-        alpha <<- slider1(no = 1)
+        alpha <<- slider1(names.slide=names.slide,no = 1)
 
         graphique(var1 = theta, var2 = absvar, obs = obs2, num = 3,
         graph = "pairwise",couleurs=col, labvar = labvar, symbol = pch,
@@ -404,7 +482,7 @@ fbubble<-function()
 ####################################################
 
 carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, 
-      symbol=pch,method="pairwise",axis=axes,legends=legends)
+      symbol=pch, carte=carte, method="pairwise",axis=axes,legends=legends)
 
    graphique(var1 = theta, var2 = absvar, obs = obs,num = 3, graph = "pairwise", labvar = labvar,
    couleurs=col,symbol = pch, quantiles = quantiles,alpha1 = alpha)
@@ -415,94 +493,76 @@ carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label,c
 
 if(interactive())
 {
+fontheading<-tkfont.create(family="times",size=14,weight="bold")
+
 tt <- tktoplevel()
+tkwm.title(tt, "mvariocloudmap")
+
+frame1a <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame1a, text = "Interactive selection", font = "Times 14",
+foreground = "blue", background = "white"))
+tkpack(tklabel(frame1a, text = "Work on the map", font = "Times 12",
+foreground = "darkred", background = "white"))
+point.but <- tkbutton(frame1a, text="Selection by point", command=pointfunca);
+poly.but <- tkbutton(frame1a, text="Selection by polygon ", command=polyfunca);
+tkpack(point.but, poly.but, side = "left", expand = "TRUE",fill = "x")
+tkpack(frame1a, expand = "TRUE", fill = "x")
+
+frame1c <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame1c, text = "Work on the graph", font = "Times 12",
+foreground = "darkred", background = "white"))
+point.but2 <- tkbutton(frame1c, text="Selection by point", command=pointfunc);
+poly.but2 <- tkbutton(frame1c, text="Selection by polygon ", command=polyfunc);
+tkpack(point.but2, poly.but2, side = "left", expand = "TRUE",fill = "x")
+tkpack(frame1c, expand = "TRUE", fill = "x")
 
 
-labelText1 <- tclVar("Work on the map")
-label1 <- tklabel(tt,justify = "center", wraplength = "3i", text=tclvalue(labelText1))
-tkconfigure(label1, textvariable=labelText1)
-tkgrid(label1,columnspan=2)
+frame1b <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+nettoy.but <- tkbutton(frame1b, text="     Reset selection     " , command=SGfunc);
+tkpack(nettoy.but, side = "left", expand = "TRUE", fill = "x")
+tkpack(frame1b, expand = "TRUE", fill = "x")
 
-point.but <- tkbutton(tt, text="  Point  ", command=pointfunca);
-poly.but <- tkbutton(tt, text="  Polygon  ", command=polyfunca);
-tkgrid(point.but, poly.but)
-tkgrid(tklabel(tt,text="    "))
+frame2 <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame2, text = "Options", font = "Times 14",
+foreground = "blue", background = "white"))
+tkpack(tklabel(frame2, text = "Spatial contours  ", font = "Times 11",
+foreground = "darkred", background = "white"),tklabel(frame2, text = "Preselected sites  ", font = "Times 11",
+foreground = "darkred", background = "white"),tklabel(frame2, text = "  Bubbles    ", font = "Times 11",
+foreground = "darkred", background = "white"),side = "left", fill="x",expand = "TRUE")
+tkpack(frame2, expand = "TRUE", fill = "x")
 
-labelText1 <- tclVar("Work on the graph")
-label1 <- tklabel(tt,justify = "center", wraplength = "3i", text=tclvalue(labelText1))
-tkconfigure(label1, textvariable=labelText1)
-tkgrid(label1,columnspan=2)
+frame2b <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+nocou1.but <- tkbutton(frame2b, text="On/Off", command=cartfunc)
+noint1.but <- tkbutton(frame2b, text="On/Off", command=fnointer)
+bubble.but <- tkbutton(frame2b, text="On/Off", command=fbubble)
+tkpack(nocou1.but,noint1.but,bubble.but, side = "left", expand = "TRUE", fill = "x")
+tkpack(frame2b, expand = "TRUE", fill = "x")
 
-point.but <- tkbutton(tt, text="  Point  ", command=pointfunc);
-poly.but <- tkbutton(tt, text=" Polygon ", command=polyfunc);
-tkgrid(point.but, poly.but)
-tkgrid(tklabel(tt,text="    "))
-
-label1 <- tclVar("To stop selection, let the cursor on the active graph, click on the right button of the mouse and stop")
-label11 <- tklabel(tt,justify = "center", wraplength = "3i", text=tclvalue(label1))
-tkconfigure(label11, textvariable=label1)
-tkgrid(label11,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-   if(length(quantiles)!=0)
+if(length(quantiles)!=0)
 {
-        slider1(tt, refresh.code, c("Quantile smooth spline parameter"), 
-            c(borne1), c(borne2), c((borne2 - borne1)/100), c(alpha))
-   
+frame1c <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+
+slider1(frame1c, refresh.code, names.slide=names.slide,
+        borne1, borne2, (borne2 - borne1)/100, alpha)
+
+tkpack(frame1c, expand = "TRUE", fill = "x")
 }
 
-labelText7 <- tclVar("Preselected sites")
-label7 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText7))
-tkconfigure(label7, textvariable=labelText7)
-tkgrid(label7,columnspan=2)
+frame3 <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
+tkpack(tklabel(frame3, text = "Exit", font = "Times 14",
+foreground = "blue", background = "white"))
 
-noint1.but <- tkbutton(tt, text="  On/Off  ", command=fnointer);
-tkgrid(noint1.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
+quit.but <- tkbutton(frame3, text="Save results", command=quitfunc2);
+quit.but2 <- tkbutton(frame3, text="Exit without saving", command=quitfunc);
 
-labelText6 <- tclVar("Draw spatial contours")
-label6 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText6))
-tkconfigure(label6, textvariable=labelText6)
-tkgrid(label6,columnspan=2)
+tkpack(quit.but, quit.but2, side = "left", expand = "TRUE",
+        fill = "x")
 
-nocou1.but <- tkbutton(tt, text="  On/Off  ", command=cartfunc);
-tkgrid(nocou1.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
+tkpack(frame3, expand = "TRUE", fill = "x")
 
-
-labelText3 <- tclVar("Restore graph")
-label3 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText3))
-tkconfigure(label3, textvariable=labelText3)
-tkgrid(label3,columnspan=2)
-
-nettoy.but <- tkbutton(tt, text="     OK     " , command=SGfunc);
-tkgrid(nettoy.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-labelText9 <- tclVar("Bubbles")
-label9 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText9))
-tkconfigure(label9, textvariable=labelText9)
-tkgrid(label9,columnspan=2)
-
-bubble.but <- tkbutton(tt, text="  On/Off  ", command=fbubble);
-tkgrid(bubble.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-
-labelText5 <- tclVar("Exit")
-label5 <- tklabel(tt,justify = "center", wraplength = "3i",text=tclvalue(labelText5))
-tkconfigure(label5, textvariable=labelText5)
-tkgrid(label5,columnspan=2)
-
-quit.but <- tkbutton(tt, text="     OK     ", command=quitfunc);
-tkgrid(quit.but,columnspan=2)
-tkgrid(tklabel(tt,text="    "))
-
-tkwait.variable(fin)
 }
 ####################################################
+return(invisible())
 
-
-return(obs)
 }
 

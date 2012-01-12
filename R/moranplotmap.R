@@ -11,20 +11,6 @@ if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.
 if(!is.numeric(name.var) & is.na(match(as.character(name.var),names(sp.obj)))) stop("name.var is not included in the data.frame of sp.obj")
 if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
 
-# Is there a Tk window already open ?
-if(interactive())
-{
- if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all=TRUE))==2) # new environment
- {
-  assign("GeoXp.open", TRUE, envir = baseenv())
- }
- else
- {if(get("GeoXp.open",envir= baseenv()))
-   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
-  else
-  {assign("GeoXp.open", TRUE, envir = baseenv())}
- }
-}
 
 # we propose to refind the same arguments used in first version of GeoXp
 long<-coordinates(sp.obj)[,1]
@@ -50,8 +36,24 @@ ifelse(identify, label<-row.names(listvar),label<-"")
   W.sn<-listw2sn(listw.obj)
   W[as.matrix(W.sn[,1:2])]<-W.sn[,3]
 
-# Is W normalized ?
+  # Is W normalized ?
   is.norm<-all(apply(W,1,sum)==rep(1,n))
+  
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all=TRUE))==2) # new environment
+ {
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
+
 
 #initialisation
 if(xlab=="") xlab=name.var
@@ -598,7 +600,9 @@ label=label, cex.lab=cex.lab,labmod=names.arg)
 
 lisa<-function()
 {
-  ilocal <- (var/sd(var)) * (wvar/sd(var))          
+  x.centre<-(var-mean(var))
+  wx.centre<-(W%*%x.centre)
+  ilocal <- (x.centre/sd(x.centre)) * (wx.centre/sd(x.centre))          
   res3<-choix.bubble(buble2,abs(ilocal),"ilocal",legends2)
   
   buble2 <<- res3$buble

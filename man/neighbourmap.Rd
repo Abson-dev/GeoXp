@@ -45,7 +45,7 @@ It corresponds to the numbers of spatial unit corresponding to couple of sites s
 just before leaving the Tk window.
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}\cr \cr
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2012), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas}\cr \cr
 
 Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spatial Data Analysis with R}, Springer.
 }

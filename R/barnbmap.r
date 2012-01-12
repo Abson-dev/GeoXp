@@ -7,6 +7,12 @@ class.obj<-class(sp.obj)[1]
 
 if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
 
+ 
+# Initialisation des objets de spdep
+  nb <- nb.obj
+  W<-nb2mat(nb,zero.policy=TRUE)
+  if (!inherits(nb, "nb")) stop("Not a neighbours list")
+
 # Is there a Tk window already open ?
 if(interactive())
 {
@@ -56,10 +62,6 @@ ifelse(identify, label<-row.names(listvar),label<-"")
 if((length(listvar)>0) && (dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(listvar)
 
 # Initialisation des objets de spdep
-  nb <- nb.obj
-  W<-nb2mat(nb)
-  if (!inherits(nb, "nb")) stop("Not a neighbours list")
- 
   c.nb <- card(nb)
   n.nb <- length(nb)
   regids <- attr(nb, "region.id")
@@ -82,6 +84,7 @@ if(!(3%in%dev.list())) dev.new()
  ifelse(length(col)==1, col2<-"blue", col2<-col)
  col3<-"lightblue3"
  
+
 ####################################################
 # sélection d'un point sur la carte
 ####################################################

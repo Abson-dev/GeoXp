@@ -293,12 +293,14 @@ if(length(long[obs])!=0)
                 }
                 else 
                 {
-                    if ((obs[j,i]) & (W[j,i] != 0))
+                    if (obs[j,i])
                     {
                       points(long[j],lat[j],col="red",cex=cbuble[j],pch=ppp[j])                      
-                      #écriture des labels de chaque point sélectionné                         
+                      if(W[j,i] != 0)
+                      {#écriture des labels de chaque point sélectionné                         
                       segments(long[j], lat[j], long[i], lat[i], col="red");
                       text(long[j], lat[j], label[j], cex=cex.lab,font=3,adj=c(0.75,-0.75));
+                      }
                     }                                                                                            
                 }
         }

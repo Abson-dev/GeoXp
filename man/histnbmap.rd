@@ -45,7 +45,7 @@ When user select sites on the graph or on the map, he cannot add a selection by 
 No value returned.
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010),
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2012),
 \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
 
 Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spatial Data Analysis with R}, Springer.

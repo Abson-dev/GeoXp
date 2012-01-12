@@ -374,7 +374,6 @@ The corresponding sub-density of this selection has been drawn on the second gra
 \begin{center}
 \includegraphics[width=6cm]{fig2b}
 \includegraphics[width=6cm]{fig2c}
-\includegraphics[width=6cm]{fig2d}
 \end{center}
 \caption{example of the \code{dbledensitymap} function}\label{fig3b}
 \end{figure}

@@ -20,7 +20,7 @@ normw(w)
 A matrix of size \eqn{n \times n}{n x n}
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2010), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} }
+\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2012), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} }
 
 \author{Aragon Y., Thomas-Agnan C., Ruiz-Gazen A., Robidou L.}
 

@@ -7,20 +7,7 @@ class.obj<-class(sp.obj)[1]
 
 if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
 
-# Is there a Tk window already open ?
-if(interactive())
-{
- if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all=TRUE))==2)
- {
-  assign("GeoXp.open", TRUE, envir = baseenv())
- }
- else
- {if(get("GeoXp.open",envir= baseenv()))
-   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
-  else
-  {assign("GeoXp.open", TRUE, envir = baseenv())}
- }
-}
+
 
 # we propose to refind the same arguments used in first version of GeoXp
 coords<-coordinates(sp.obj)
@@ -56,7 +43,7 @@ ifelse(identify, label<-row.names(listvar),label<-"")
 
 # Récupération des objets spdep 
    nb <- object
-   W<-nb2mat(nb)
+   W<-nb2mat(nb,zero.policy=TRUE)
    if (!inherits(nb, "nb"))
         stop("Not a neighbours list")
    c.nb <- card(nb)
@@ -142,6 +129,20 @@ if(!(3%in%dev.list())) dev.new()
  }                                
 
 
+ # Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all=TRUE))==2)
+ {
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
 ####################################################
 # sélection d'un point sur la carte
 ####################################################

@@ -10,6 +10,19 @@ if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.
 if(!is.numeric(name.var) & is.na(match(as.character(name.var),names(sp.obj)))) stop("name.var is not included in the data.frame of sp.obj")
 if(length(names.attr)!=length(names(sp.obj))) stop("names.attr should be a vector of character with a length equal to the number of variable")
 
+# we propose to refind the same arguments used in first version of GeoXp
+long<-coordinates(sp.obj)[,1]
+lat<-coordinates(sp.obj)[,2]
+
+var<-sp.obj@data[,name.var]
+
+# verify the type of the main variable
+if(!(is.integer(var) || is.double(var))) stop("the variable name.var should be a numeric variable")
+
+listvar<-sp.obj@data
+listnomvar<-names.attr
+
+
 # Is there a Tk window already open ?
 if(interactive())
 {
@@ -25,17 +38,6 @@ if(interactive())
  }
 }
 
-# we propose to refind the same arguments used in first version of GeoXp
-long<-coordinates(sp.obj)[,1]
-lat<-coordinates(sp.obj)[,2]
-
-var<-sp.obj@data[,name.var]
-
-# verify the type of the main variable
-if(!(is.integer(var) || is.double(var))) stop("the variable name.var should be a numeric variable")
-
-listvar<-sp.obj@data
-listnomvar<-names.attr
 
 # Code which was necessary in the previous version
 

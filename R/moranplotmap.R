@@ -42,7 +42,7 @@ ifelse(identify, label<-row.names(listvar),label<-"")
 # Is there a Tk window already open ?
 if(interactive())
 {
- if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all=TRUE))==2) # new environment
+ if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all.names=TRUE))==2) # new environment
  {
   assign("GeoXp.open", TRUE, envir = baseenv())
  }

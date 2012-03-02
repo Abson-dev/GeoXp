@@ -24,7 +24,7 @@ if(!(is.integer(var) || is.double(var))) stop("the variable name.var should be a
 # Is there a Tk window already open ?
 if(interactive())
 {
- if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all=TRUE))==2)
+ if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all.names=TRUE))==2)
  {
   assign("GeoXp.open", TRUE, envir = baseenv())
  }

@@ -705,6 +705,23 @@ data(mp.school)
 
 
 cleanEx()
+nameEx("mp.school.ps")
+### * mp.school.ps
+
+flush(stderr()); flush(stdout())
+
+### Name: mp.school.ps
+### Title: Midi-pyrennees school agreggated to the pseudo-canton levels
+### Aliases: mp.school.ps
+### Keywords: datasets
+
+### ** Examples
+
+data(mp.school.ps)
+
+
+
+cleanEx()
 nameEx("mvariocloudmap")
 ### * mvariocloudmap
 

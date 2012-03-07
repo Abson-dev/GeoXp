@@ -51,7 +51,7 @@ corresponds to the number of spatial units selected just before leaving the Tk w
 vector of integer, corresponds to the number of cluster attributed to each spatial unit.
 }
 
-\references{Aragon Yves, Perrin Olivier, Ruiz-Gazen Anne, Thomas-Agnan Christine (2012), \emph{Statistique et Econométrie pour données géoréférencées : modèles et études de cas} \cr \cr
+\references{Thibault Laurent, Anne Ruiz-Gazen, Christine Thomas-Agnan (2012), GeoXp: An R Package for Exploratory Spatial Data Analysis. \emph{Journal of Statistical Software}, 47(2), 1-23. \cr \cr
 
 Murtagh, F (1985). \emph{Multidimensional Clustering Algorithms}. \cr \cr
 

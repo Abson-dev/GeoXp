@@ -4,7 +4,7 @@ col="lightblue3", xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 {
 # Verification of the Spatial Object sp.obj
 class.obj<-class(sp.obj)[1]
-
+spdf<-(class.obj=="SpatialPolygonsDataFrame")
 if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
 if(substr(class.obj,nchar(class.obj)-8,nchar(class.obj))!="DataFrame") stop("sp.obj should contain a data.frame")
 if(!is.numeric(name.var) & is.na(match(as.character(name.var),names(sp.obj)))) stop("name.var is not included in the data.frame of sp.obj")
@@ -23,24 +23,8 @@ listvar<-sp.obj@data
 listnomvar<-names.attr
 
 
-# Is there a Tk window already open ?
-if(interactive())
-{
- if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all.names=TRUE))==2)
- {
-  assign("GeoXp.open", TRUE, envir = baseenv())
- }
- else
- {if(get("GeoXp.open",envir= baseenv()))
-   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
-  else
-  {assign("GeoXp.open", TRUE, envir = baseenv())}
- }
-}
-
-
 # Code which was necessary in the previous version
- if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
+# if(is.null(carte) & class.obj=="SpatialPolygonsDataFrame") carte<-spdf2list(sp.obj)$poly
 
  # for identifying the selected sites
 ifelse(identify, label<-row.names(listvar),label<-"")
@@ -104,6 +88,8 @@ pointfunc<-function()
     dev.set(2)
     title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
     title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
+    if(spdf & nrow(sp.obj)>75 & !buble) 
+       {points(long,lat,pch=16,col='royalblue')}
 
     while(!quit)
     {
@@ -113,14 +99,25 @@ pointfunc<-function()
         if(is.null(loc))
         {
           quit<-TRUE
-        carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
+        carte(long=long, lat=lat,obs=obs,  sp.obj=sp.obj, buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
         label=label,cex.lab=cex.lab, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
         lablong=lablong, lablat=lablat,symbol=pch2, couleurs=col2,method=method,
         classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
          next
         }
 
-        obs<<-selectmap(var1=long,var2=lat,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point")
+       if(!spdf|nrow(sp.obj)>75)
+       { 
+       obs<<-selectmap(var1=long,var2=lat,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point")}
+       else
+       {if(gContains(sp.obj,SpatialPoints(cbind(loc$x,loc$y),proj4string=CRS(proj4string(sp.obj)))))
+        {for (i in 1:nrow(sp.obj))
+          {if(gContains(sp.obj[i,],SpatialPoints(cbind(loc$x,loc$y),proj4string=CRS(proj4string(sp.obj)))))
+           {obs[i]<<-!obs[i]
+            break}  
+          }
+         } 
+       }
 
         # graphiques
 
@@ -134,13 +131,15 @@ pointfunc<-function()
          title(sub = "You have to choose at least two sites to represent the sub-density", cex.sub = 0.8, font.sub = 3,col.sub='red')
         }
 
-        carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
+        carte(long=long, lat=lat,obs=obs,  sp.obj=sp.obj, buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
         label=label,cex.lab=cex.lab, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
         lablong=lablong, lablat=lablat,symbol=pch2, couleurs=col2,method=method,
         classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
         title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
         title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-
+        if(spdf & nrow(sp.obj)>75 & !buble) 
+         {points(long,lat,pch=16,col='royalblue')}
+         
          if ((graphChoice != "") && (varChoice1 != "") && (length(dev.list()) > 2))
           {graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
             obs=obs, num=4, graph=graphChoice, symbol=pch, labvar=c(varChoice1,varChoice2),couleurs=col3)
@@ -167,7 +166,9 @@ polyfunc<-function()
     dev.set(2)
     title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
     title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-
+    if(spdf & nrow(sp.obj)>75 & !buble) 
+       {points(long,lat,pch=16,col='royalblue')}
+       
     while(!quit)
     {
       dev.set(2)
@@ -203,7 +204,7 @@ if (length(polyX)>0)
      title(sub = "You have to choose at least two sites to represent the sub-density", cex.sub = 0.8, font.sub = 3,col.sub='red')
      }
 
-    carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
+    carte(long=long, lat=lat,obs=obs,  sp.obj=sp.obj, buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
     label=label,cex.lab=cex.lab, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
     lablong=lablong, lablat=lablat,symbol=pch2, couleurs=col2,method=method,classe=listvar[,
     which(listnomvar == varChoice1)],labmod=labmod)
@@ -252,7 +253,7 @@ interfunc<-function()
     graphique(var1=var, obs=obs, alpha1=alpha1, num=3, graph=graph,
     Xpoly=polyX2, labvar=labvar, symbol=pch, couleurs=col, kernel=kernel)
 
-    carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
+    carte(long=long, lat=lat,obs=obs,  sp.obj=sp.obj, buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
     label=label,cex.lab=cex.lab, symbol=pch2, couleurs=col2, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
     lablong=lablong, lablat=lablat,method=method,classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
 
@@ -306,7 +307,7 @@ choixvalue <- function()
         graphique(var1=var, obs=obs, alpha1=alpha1,  num=3, graph=graph, Xpoly=polyX2,
         labvar=labvar, symbol=pch, couleurs=col, kernel=kernel)
 
-        carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
+        carte(long=long, lat=lat,obs=obs,  sp.obj=sp.obj, buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
         label=label,cex.lab=cex.lab, symbol=pch2, couleurs=col2, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
         lablong=lablong, lablat=lablat,method=method,classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
 
@@ -359,7 +360,7 @@ cartfunc <- function()
  if (length(carte) != 0)
    {
     ifelse(!nocart,nocart<<-TRUE,nocart<<-FALSE)
-    carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
+    carte(long=long, lat=lat,obs=obs,  sp.obj=sp.obj, buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
     label=label,cex.lab=cex.lab, symbol=pch2, couleurs=col2, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
     lablong=lablong, lablat=lablat,method=method,classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
     }
@@ -391,7 +392,7 @@ graphfunc <- function()
            }
           else
            {
-            res1<-choix.couleur(graphChoice,listvar,listnomvar,varChoice1,legends,col,pch)
+            res1<-choix.couleur(graphChoice,listvar,listnomvar,varChoice1,legends,col,pch, spdf=spdf)
 
             method <<- res1$method
             col2 <<- res1$col2
@@ -404,7 +405,7 @@ graphfunc <- function()
             graphique(var1=listvar[,which(listnomvar == varChoice1)], var2=listvar[,which(listnomvar == varChoice2)],
             obs=obs, num=4, graph=graphChoice, couleurs=col3,symbol=pch, labvar=c(varChoice1,varChoice2));
 
-            carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
+            carte(long=long, lat=lat,obs=obs,  sp.obj=sp.obj, buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
             label=label,cex.lab=cex.lab, symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
             lablong=lablong, lablat=lablat,method=method,classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
             }
@@ -430,7 +431,7 @@ SGfunc<-function()
     graphique(var1=var, obs=obs, alpha1=alpha1,  num=3, graph="Densityplot1", labvar=labvar, symbol=pch,
     couleurs=col,kernel=kernel)
 
-    carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
+    carte(long=long, lat=lat,obs=obs,  sp.obj=sp.obj, buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
     label=label,cex.lab=cex.lab, symbol=pch2, couleurs=col2, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
     lablong=lablong, lablat=lablat,method=method,classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
 
@@ -470,7 +471,7 @@ fnointer<-function()
  if (length(criteria) != 0)
  {
   ifelse(!nointer,nointer<<-TRUE,nointer<<-FALSE)
-  carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
+  carte(long=long, lat=lat,obs=obs,  sp.obj=sp.obj, buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
   label=label,cex.lab=cex.lab, symbol=pch2, couleurs=col2, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
   lablong=lablong, lablat=lablat,method=method,classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
  }
@@ -494,7 +495,7 @@ fbubble<-function()
   z <<- res2$z
   legmap <<- res2$legmap
 
-  carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
+  carte(long=long, lat=lat,obs=obs,  sp.obj=sp.obj, buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
   label=label,cex.lab=cex.lab, symbol=pch2, couleurs=col2, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
   lablong=lablong, lablat=lablat,method=method,classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
 
@@ -503,13 +504,32 @@ fbubble<-function()
 ####################################################
 # Représentation graphique
 ####################################################
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all.names=TRUE))==2)
+ {
+  graphique(var1=var, obs=obs, alpha1=alpha1,  num=3, graph=graph, Xpoly=polyX2,
+  labvar=labvar, symbol=pch, couleurs=col, kernel=kernel)
 
-graphique(var1=var, obs=obs, alpha1=alpha1,  num=3, graph=graph, Xpoly=polyX2,
-labvar=labvar, symbol=pch, couleurs=col, kernel=kernel)
+  carte(long=long, lat=lat,obs=obs,  sp.obj=sp.obj, buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
+  label=label,cex.lab=cex.lab, symbol=pch2, couleurs=col2, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
+  lablong=lablong, lablat=lablat,method=method,classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {graphique(var1=var, obs=obs, alpha1=alpha1,  num=3, graph=graph, Xpoly=polyX2,
+   labvar=labvar, symbol=pch, couleurs=col, kernel=kernel)
 
-carte(long=long, lat=lat,obs=obs,buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
-label=label,cex.lab=cex.lab, symbol=pch2, couleurs=col2, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
-lablong=lablong, lablat=lablat,method=method,classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
+   carte(long=long, lat=lat,obs=obs,  sp.obj=sp.obj, buble=buble,cbuble=z,criteria=criteria,nointer=nointer,
+   label=label,cex.lab=cex.lab, symbol=pch2, couleurs=col2, carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes,
+   lablong=lablong, lablat=lablat,method=method,classe=listvar[,which(listnomvar == varChoice1)],labmod=labmod)
+   assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
 
 ####################################################
 # création de la boite de dialogue

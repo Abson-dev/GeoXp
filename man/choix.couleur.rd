@@ -10,7 +10,7 @@ the case of the use of a factor.
 
 \usage{
 choix.couleur(graphChoice,listvar=NULL,listnomvar=NULL,
-varChoice1=NULL,legends,col,pch)
+varChoice1=NULL,legends,col,pch,spdf=FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -21,6 +21,7 @@ varChoice1=NULL,legends,col,pch)
    \item{legends}{parameters of plot}
    \item{col}{color of plot}
    \item{pch}{symbols}
+   \item{spdf}{a boolean}
 }
 
 \details{This function is not an interactive function.}

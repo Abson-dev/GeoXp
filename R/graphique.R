@@ -114,6 +114,7 @@ else
           
             for (i in 1:nbcol) 
                {
+                  rect(absc[i], 0, absc[i + 1], cpt1[i], col = "yellow")
                   rect(absc[i], 0, absc[i + 1], cpt1[i], density = 4,
                   angle = 45, lwd = 1, col = "red")
                }
@@ -257,7 +258,8 @@ else
              while ((j <= length(r)) && (!quit)) 
              {
               if (nomst[i] == nomsr[j]) 
-                  {                
+                  {rect(g[j] - 0.4, 0, g[j] + 0.4, t.obs[[i]],
+                   col = "yellow")                
                    rect(g[j] - 0.4, 0, g[j] + 0.4, t.obs[[i]],
                    col = "red", density = 4, angle = 45,lwd = 1)
                    quit <- TRUE
@@ -972,7 +974,7 @@ else
     
     if (graph == "Moran") 
     {
-      plot(var1, var2, "n", xlab = labvar[1], ylab = labvar[2])
+       plot(var1, var2, "n", xlab = labvar[1], ylab = labvar[2])
         #,xlim=c(-12,12),ylim=c(-4.5,4.5)
       segments(min(var1), mean(var2), max(var1), mean(var2), col = "black", lty=2)
       segments(mean(var1), min(var2), mean(var1), max(var2), col = "black", lty=2)
@@ -983,13 +985,14 @@ else
         if(!is.null(bin))
         {if(bin) abline(lm(var2 ~ var1)) }
 
+        
         if (length(var1[obs]) != 0) 
         {
          points(var1[obs], var2[obs], col = "red", pch = symbol[obsq[obs]], cex = cbuble[obs])
-         
+          
          if (locmoran) 
          {
-          ilocal <- (var1[obs]/sd(var1)) * (var2[obs]/sd(var1))
+          ilocal <- var3[obs]
           msg <- paste(round(ilocal, 2))
           text(var1[obs] + 0.02, var2[obs] + 0.02, msg, cex = cex.lab,font=3,adj=c(0.75,-0.75));  
          }

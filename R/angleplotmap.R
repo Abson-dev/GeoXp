@@ -21,23 +21,6 @@ var<-sp.obj@data[,name.var]
 if(!(is.integer(var) || is.double(var))) stop("the variable name.var should be a numeric variable")
 
 
-# Is there a Tk window already open ?
-if(interactive())
-{
- if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all.names=TRUE))==2)  # new environment
- {
-  assign("GeoXp.open", TRUE, envir = baseenv())
- }
- else
- {if(get("GeoXp.open",envir= baseenv()))
-   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
-  else
-  {assign("GeoXp.open", TRUE, envir = baseenv())}
- }
-}
-
-
-
 listvar<-sp.obj@data
 listnomvar<-names.attr
 
@@ -333,12 +316,30 @@ fbubble<-function()
 ####################################################
 # Représentation graphique
 ####################################################
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all.names=TRUE))==2)  # new environment
+ {
+  carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, 
+  symbol=pch,carte=carte,nocart=nocart, method="Angleplot",axis=axes,legends=legends)
 
-carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, 
-      symbol=pch,carte=carte,nocart=nocart, method="Angleplot",axis=axes,legends=legends)
+  graphique(var1 = theta, var2 = absvar, obs = obs,num = 3, graph = "Angleplot", labvar = labvar,
+  couleurs=col,symbol = pch, quantiles = quantiles,alpha1 = alpha)
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label,cex.lab=cex.lab, 
+  symbol=pch,carte=carte,nocart=nocart, method="Angleplot",axis=axes,legends=legends)
 
-   graphique(var1 = theta, var2 = absvar, obs = obs,num = 3, graph = "Angleplot", labvar = labvar,
-   couleurs=col,symbol = pch, quantiles = quantiles,alpha1 = alpha)
+  graphique(var1 = theta, var2 = absvar, obs = obs,num = 3, graph = "Angleplot", labvar = labvar,
+  couleurs=col,symbol = pch, quantiles = quantiles,alpha1 = alpha)
+  assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
 
 ####################################################
 # création de la boite de dialogue

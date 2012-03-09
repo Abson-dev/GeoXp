@@ -4,7 +4,7 @@ xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 {
 # Verification of the Spatial Object sp.obj
 class.obj<-class(sp.obj)[1]
-
+spdf<-(class.obj=="SpatialPolygonsDataFrame")
 if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
 
  
@@ -13,20 +13,6 @@ if(substr(class.obj,1,7)!="Spatial") stop("sp.obj may be a Spatial object")
   W<-nb2mat(nb,zero.policy=TRUE)
   if (!inherits(nb, "nb")) stop("Not a neighbours list")
 
-# Is there a Tk window already open ?
-if(interactive())
-{
- if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all.names=TRUE))==2)
- {
-  assign("GeoXp.open", TRUE, envir = baseenv())
- }
- else
- {if(get("GeoXp.open",envir= baseenv()))
-   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
-  else
-  {assign("GeoXp.open", TRUE, envir = baseenv())}
- }
-}
 
 # we propose to refind the same arguments used in first version of GeoXp
 coords<-coordinates(sp.obj)
@@ -43,7 +29,7 @@ listnomvar<-NULL
 # Code which was necessary in the previous version
 object<-nb.obj
 
- if(is.null(carte) & substr(class.obj,1,15)=="SpatialPolygons") carte<-spdf2list(sp.obj)$poly
+# if(is.null(carte) & substr(class.obj,1,15)=="SpatialPolygons") carte<-spdf2list(sp.obj)$poly
 
  # for identifyng the selected sites
 ifelse(identify, label<-row.names(listvar),label<-"")
@@ -101,7 +87,9 @@ pointfunc<-function()
     dev.set(2)
     title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
     title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-        
+    if(spdf & nrow(sp.obj)>75 & !buble) 
+         {points(long,lat,pch=16,col='royalblue')}
+             
     while(!quit)
     {
         dev.set(2)
@@ -109,21 +97,34 @@ pointfunc<-function()
         if (is.null(loc))
         {
             quit<-TRUE
-            carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=pch,
+            carte(long=long, lat=lat, obs=obs,   sp.obj=sp.obj, lablong=lablong, lablat=lablat, label=label, symbol=pch,
             method="Neighbourplot1", W=W,axis=axes,legmap=legmap,legends=legends,buble=buble,criteria=criteria,
             nointer=nointer,cbuble=z,carte=carte,nocart=nocart,couleurs=col2,classe=card(object),cex.lab=cex.lab)
             next
         }
-        obs<<-selectmap(var1=long,var2=lat,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point");
-
+        
+       if(!spdf|nrow(sp.obj)>75)
+       { 
+       obs<<-selectmap(var1=long,var2=lat,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point")}
+       else
+       {if(gContains(sp.obj,SpatialPoints(cbind(loc$x,loc$y),proj4string=CRS(proj4string(sp.obj)))))
+        {for (i in 1:nrow(sp.obj))
+          {if(gContains(sp.obj[i,],SpatialPoints(cbind(loc$x,loc$y),proj4string=CRS(proj4string(sp.obj)))))
+           {obs[i,]<<-!obs[i,]
+            break}  
+          }
+         } 
+       }
         # graphiques
-        carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=pch,
+        carte(long=long, lat=lat, obs=obs,   sp.obj=sp.obj, lablong=lablong, lablat=lablat, label=label, symbol=pch,
         method="Neighbourplot1", W=W,axis=axes,legmap=legmap,legends=legends,buble=buble,criteria=criteria,
         nointer=nointer,cbuble=z,carte=carte,nocart=nocart,couleurs=col2,classe=card(object),cex.lab=cex.lab)
 
         title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
         title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-    
+        if(spdf & nrow(sp.obj)>75 & !buble) 
+         {points(long,lat,pch=16,col='royalblue')}
+         
         graphique(var1=nb, obs=obs, num=3, graph="bar.nb", W=W,
         labvar=labvar, symbol=pch,couleurs=col);
 
@@ -151,7 +152,8 @@ polyfunc<-function()
     dev.set(2)
     title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
     title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
-
+    if(spdf) 
+     {points(long,lat,pch=16,col='royalblue')}
     
     while(!quit)
     {
@@ -160,7 +162,7 @@ polyfunc<-function()
         if(is.null(loc))
         {
            quit<-TRUE
-           carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=pch,
+           carte(long=long, lat=lat, obs=obs,   sp.obj=sp.obj, lablong=lablong, lablat=lablat, label=label, symbol=pch,
            method="Neighbourplot1", W=W,axis=axes,legmap=legmap,legends=legends,buble=buble,criteria=criteria,
            nointer=nointer,cbuble=z,carte=carte,nocart=nocart,couleurs=col2,classe=card(object),cex.lab=cex.lab)
            next
@@ -180,7 +182,7 @@ if (length(polyX)>0)
     obs <<- selectmap(var1=long, var2=lat, obs=obs, Xpoly=polyX, Ypoly=polyY, method="poly")
 
     # graphiques
-    carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label, symbol=pch,
+    carte(long=long, lat=lat, obs=obs,   sp.obj=sp.obj, lablong=lablong, lablat=lablat, label=label, symbol=pch,
     method="Neighbourplot1", W=W,axis=axes,legmap=legmap,legends=legends,buble=buble,criteria=criteria,
     nointer=nointer,cbuble=z,carte=carte,nocart=nocart,couleurs=col2,classe=card(object),cex.lab=cex.lab)
     
@@ -229,7 +231,7 @@ barfunc<-function()
         title("ACTIVE DEVICE", cex.main = 0.8, font.main = 3, col.main='red')
         title(sub = "To stop selection, click on the right button of the mouse and stop (for MAC, ESC)", cex.sub = 0.8, font.sub = 3,col.sub='red')
 
-        carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label,
+        carte(long=long, lat=lat, obs=obs,   sp.obj=sp.obj, lablong=lablong, lablat=lablat, label=label,
         symbol=pch, method="Neighbourplot1", W=W,axis=axes,legmap=legmap,legends=legends,
         buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart,
         couleurs=col2,classe=card(object),cex.lab=cex.lab)
@@ -244,7 +246,7 @@ cartfunc <- function()
 { 
  if (length(carte) != 0)
    { ifelse(!nocart,nocart<<-TRUE,nocart<<-FALSE)
-     carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label,
+     carte(long=long, lat=lat, obs=obs,   sp.obj=sp.obj, lablong=lablong, lablat=lablat, label=label,
      symbol=pch, method="Neighbourplot1", W=W,axis=axes,legmap=legmap,legends=legends,
      buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart,
      couleurs=col2,classe=card(object),cex.lab=cex.lab)
@@ -264,7 +266,7 @@ fnointer<-function()
  if (length(criteria) != 0)
   {  
      ifelse(!nointer,nointer<<-TRUE,nointer<<-FALSE)
-     carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label,
+     carte(long=long, lat=lat, obs=obs,  sp.obj=sp.obj, lablong=lablong, lablat=lablat, label=label,
      symbol=pch, method="Neighbourplot1", W=W,axis=axes,legmap=legmap,legends=legends,
      buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart,
      couleurs=col2,classe=card(object),cex.lab=cex.lab)
@@ -290,7 +292,7 @@ fbubble<-function()
   z <<- res2$z
   legmap <<- res2$legmap
   
-  carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label,
+  carte(long=long, lat=lat, obs=obs,  sp.obj=sp.obj, lablong=lablong, lablat=lablat, label=label,
   symbol=pch, method="Neighbourplot1", W=W,axis=axes,legmap=legmap,legends=legends,
   buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart,
   couleurs=col2,classe=card(object),cex.lab=cex.lab)
@@ -306,7 +308,7 @@ SGfunc<-function()
     obs <<- matrix(FALSE, nrow=length(long), ncol=length(long));
 
     # graphiques
-        carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label,
+        carte(long=long, lat=lat, obs=obs,  sp.obj=sp.obj, lablong=lablong, lablat=lablat, label=label,
         symbol=pch, method="Neighbourplot1", W=W,axis=axes,legmap=legmap,legends=legends,
         buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart,
         couleurs=col2,classe=card(object),cex.lab=cex.lab)
@@ -328,14 +330,35 @@ quitfunc<-function()
 ####################################################
 # Représentation des graphiques
 ####################################################
+# Is there a Tk window already open ?
+if(interactive())
+{
+ if(!exists("GeoXp.open",envir = baseenv())||length(ls(envir=.TkRoot$env, all.names=TRUE))==2)
+ {
+  carte(long=long, lat=lat, obs=obs,  sp.obj=sp.obj, lablong=lablong, lablat=lablat, label=label,
+  symbol=pch, method="Neighbourplot1", W=W,axis=axes,legmap=legmap,legends=legends,
+  buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart,
+  couleurs=col2,classe=card(object),cex.lab=cex.lab)
 
-carte(long=long, lat=lat, obs=obs, lablong=lablong, lablat=lablat, label=label,
-symbol=pch, method="Neighbourplot1", W=W,axis=axes,legmap=legmap,legends=legends,
-buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart,
-couleurs=col2,classe=card(object),cex.lab=cex.lab)
+  graphique(var1=nb, obs=obs, num=3, graph="bar.nb", W=W,labvar=labvar,
+  symbol=pch,couleurs=col)
+  assign("GeoXp.open", TRUE, envir = baseenv())
+ }
+ else
+ {if(get("GeoXp.open",envir= baseenv()))
+   {stop("Warning : a GeoXp function is already open. Please, close Tk window before calling a new GeoXp function to avoid conflict between graphics")}
+  else
+  {carte(long=long, lat=lat, obs=obs,  sp.obj=sp.obj, lablong=lablong, lablat=lablat, label=label,
+  symbol=pch, method="Neighbourplot1", W=W,axis=axes,legmap=legmap,legends=legends,
+  buble=buble,criteria=criteria,nointer=nointer,cbuble=z,carte=carte,nocart=nocart,
+  couleurs=col2,classe=card(object),cex.lab=cex.lab)
 
-graphique(var1=nb, obs=obs, num=3, graph="bar.nb", W=W,labvar=labvar,
-symbol=pch,couleurs=col)
+  graphique(var1=nb, obs=obs, num=3, graph="bar.nb", W=W,labvar=labvar,
+  symbol=pch,couleurs=col)
+
+  assign("GeoXp.open", TRUE, envir = baseenv())}
+ }
+}
 
 ####################################################
 # Boîte de Dialogue

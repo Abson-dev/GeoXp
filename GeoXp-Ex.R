@@ -55,7 +55,7 @@ meuse.spdf = SpatialPointsDataFrame(meuse.sp, meuse)
 data(meuse.riv)
 
 angleplotmap(meuse.spdf,"copper",
-col="green",quantiles=0.9, cex.lab=0.7,
+col="green",quantiles=TRUE, cex.lab=0.7,
 xlab="Concentration in plomb (in ppm)",pch=7,carte=meuse.riv[c(21:65,110:153),])
 
 
@@ -681,3 +681,443 @@ moranplotmap(columbus,"HOVAL",nb2listw(col.gal.nb,style="W"))
 
 # 2. basic binary
 moranplotmap(columbus,"HOVAL",nb2listw(col.gal.nb,style="B"))
+
+# 3. globally standardized
+moranplotmap(columbus,"HOVAL",nb2listw(col.gal.nb,style="C"))
+
+
+
+cleanEx()
+nameEx("mp.school")
+### * mp.school
+
+flush(stderr()); flush(stdout())
+
+### Name: mp.school
+### Title: Midi-pyrennees school
+### Aliases: mp.school
+### Keywords: datasets
+
+### ** Examples
+
+data(mp.school)
+
+
+
+cleanEx()
+nameEx("mp.school.ps")
+### * mp.school.ps
+
+flush(stderr()); flush(stdout())
+
+### Name: mp.school.ps
+### Title: Midi-pyrennees school agreggated to the pseudo-canton levels
+### Aliases: mp.school.ps
+### Keywords: datasets
+
+### ** Examples
+
+data(mp.school.ps)
+
+
+
+cleanEx()
+nameEx("mvariocloudmap")
+### * mvariocloudmap
+
+flush(stderr()); flush(stdout())
+
+### Name: mvariocloudmap
+### Title: Interactive multivariate variocloud and map
+### Aliases: mvariocloudmap
+### Keywords: spatial multivariate
+
+### ** Examples
+
+## data meuse
+data(meuse)
+
+# transformation of explanatory variables
+meuse[,3:7]<-log(1+meuse[,3:7])
+
+# creation of a Spatial Points object
+meuse.sp<-SpatialPoints(cbind(meuse$x,meuse$y))
+
+# creation of a SpatialPointsDataFrame
+meuse.spdf<-SpatialPointsDataFrame(meuse.sp,meuse)
+
+# for the spatial contours
+data(meuse.riv)
+
+# Spatial Weight matrix based on the 7th nearest neighbours
+meuse.knn <- knearneigh(meuse.sp, k=7)
+meuse.nb <- knn2nb(meuse.knn)
+
+# example of use of mvariocloudmap. The statistic are calculated by taking
+# into account variables cadmium,copper,lead,zinc,elev
+mvariocloudmap(meuse.spdf,meuse.nb,c("cadmium","copper","lead","zinc","elev"),
+quantiles=0.95, carte=meuse.riv[-c(1:20,73:98,156:176),],identify=TRUE,
+criteria=(meuse.spdf$lime==1))
+
+
+
+cleanEx()
+nameEx("neighbourmap")
+### * neighbourmap
+
+flush(stderr()); flush(stdout())
+
+### Name: neighbourmap
+### Title: Neighbour plot and map
+### Aliases: neighbourmap
+### Keywords: spatial
+
+### ** Examples
+
+###
+# columbus
+example(columbus)
+
+# example of use of neighbourmap
+neighbourmap(columbus, "CRIME", col.gal.nb,
+criteria=(columbus@data$CRIME>mean(columbus@data$CRIME)))
+
+###
+# data immob
+data(immob)
+
+# change names of individuals
+row.names(immob) <- immob$Nom
+
+# immob is a data.frame object. We have to create
+# a Spatial object, by using first the longitude and latitude
+# to create Spatial Points object ...
+immob.sp = SpatialPoints(cbind(immob$longitude,immob$latitude))
+# ... and then by integrating other variables to create SpatialPointsDataFrame
+immob.spdf = SpatialPointsDataFrame(immob.sp, immob)
+# For more details, see vignette('sp', package="sp")
+
+# optional : we add some contours that don't correspond to the spatial unit
+# but are nice for mapping
+midiP <- readShapePoly(system.file("shapes/region.shp", package="GeoXp")[1])
+cont_midiP<-spdf2list(midiP[-c(22,23),])$poly
+
+# A spatial weight matrix based on triangulation Delaunay
+W.nb<-tri2nb(cbind(immob$longitude,immob$latitude))
+
+# example of use of neighbourmap
+neighbourmap(immob.spdf,"prix.vente", W.nb, identify=TRUE, cex.lab=0.5,
+carte=cont_midiP)
+
+
+
+cleanEx()
+nameEx("nonormmoran")
+### * nonormmoran
+
+flush(stderr()); flush(stdout())
+
+### Name: nonormmoran
+### Title: Detection of spatial autocorrelation
+### Aliases: nonormmoran
+### Keywords: spatial
+
+### ** Examples
+
+###
+# data baltimore
+data(baltimore)
+
+# a spatial weight matrix constructed in the matrix format
+W <- makeneighborsw(cbind(baltimore$X,baltimore$Y),method="neighbor",4)
+
+# when W is not row-normalised ...
+nonormmoran(baltimore$PRICE,cbind(rep(1,nrow(baltimore)),baltimore[,14:15]),W)
+# when W is row_normalised ...
+nonormmoran(baltimore$PRICE,cbind(rep(1,nrow(baltimore)),baltimore[,14:15]),normw(W))
+
+# If we compare to the function lm.morantest
+baltimore.lm<-lm(PRICE~LOTSZ+SQFT,data=baltimore)
+
+lm.morantest(baltimore.lm, mat2listw(W))
+
+
+
+cleanEx()
+nameEx("normw")
+### * normw
+
+flush(stderr()); flush(stdout())
+
+### Name: normw
+### Title: Row-normalize a spatial weight matrix
+### Aliases: normw
+### Keywords: spatial
+
+### ** Examples
+
+###
+# data auckland
+data(auckland)
+x.ext <- auckland$Easting[1:10]
+y.ext <- auckland$Northing[1:10] 
+
+# matrix based on 3 nearest neighbors
+W1<-makeneighborsw(cbind(x.ext,y.ext),method="both",m=3,d=20)
+W2<-normw(W1)
+
+apply(W1[1:10,],1,sum)
+apply(W2[1:10,],1,sum)
+
+
+
+cleanEx()
+nameEx("pcamap")
+### * pcamap
+
+flush(stderr()); flush(stdout())
+
+### Name: pcamap
+### Title: Generalized Principal Component Analysis and map
+### Aliases: pcamap
+### Keywords: spatial multivariate
+
+### ** Examples
+
+###
+# Data Colombus
+example(columbus)
+
+# a basic PCA on 7 variables
+pcamap(columbus,c(6:12), qualproj=TRUE, identify=TRUE)
+
+###
+# data boston
+data(boston)
+
+# SpatialPoints object
+boston.sp<-SpatialPoints(cbind(boston.utm[,1],boston.utm[,2]))
+
+# SpatialPointsDataFrame object
+boston.spdf <- SpatialPointsDataFrame(boston.sp, boston.c)
+
+# a basic PCA on 7 variables
+pcamap(boston.spdf, c(7:8,10,12:15), identify=TRUE, cex.lab=0.5)
+
+# generalized PCA : user have to construct a new metric and a vector
+# of gravity center, by using for exampe covMcd
+cov.boston<-covMcd(boston.c[,c(7:8,10,12:15)],alpha=.75)
+b.center<-cov.boston$center
+b.cov<-cov.boston$cov
+
+# example of use of pcamap
+pcamap(boston.spdf, c(7:8,10,12:15), metric=b.cov, center=b.center,identify=TRUE,
+cex.lab=0.5)
+
+
+
+cleanEx()
+nameEx("plot3dmap")
+### * plot3dmap
+
+flush(stderr()); flush(stdout())
+
+### Name: plot3dmap
+### Title: Interactive Plot3d and map
+### Aliases: plot3dmap
+### Keywords: spatial multivariate
+
+### ** Examples
+
+# data on price indices of real estate in France
+######
+# data on price indices of real estate in France
+data(immob)
+row.names(immob)<-immob$Nom
+
+# immob is a data.frame object. We have to create
+# a Spatial object, by using first the longitude and latitude
+# to create Spatial Points object ...
+immob.sp = SpatialPoints(cbind(immob$longitude,immob$latitude))
+# ... and then by integrating other variables to create SpatialPointsDataFrame
+immob.spdf = SpatialPointsDataFrame(immob.sp, immob)
+# For more details, see vignette('sp', package="sp")
+
+# optional : we add some contours that don't correspond to the spatial unit
+# but are nice for mapping
+midiP <- readShapePoly(system.file("shapes/region.shp", package="GeoXp")[1])
+cont_midiP<-spdf2list(midiP[-c(22,23),])$poly
+
+# an example of plot3dmap
+plot3dmap(immob.spdf, c("prix.vente","prix.location","variation.vente"),
+box=FALSE, carte=cont_midiP, identify=TRUE, cex.lab=0.5,xlab="prix.vente",
+ylab="prix.location", zlab="variation.vente")
+
+
+######
+# data eire
+eire <- readShapePoly(system.file("etc/shapes/eire.shp", package="spdep")[1],
+ID="names", proj4string=CRS("+proj=utm +zone=30 +units=km"))
+
+# an example of use
+plot3dmap(eire, c("A","RETSALE","INCOME"), xlab="A",ylab="RETSALE",zlab="INCOME")
+
+
+
+
+cleanEx()
+nameEx("polyboxplotmap")
+### * polyboxplotmap
+
+flush(stderr()); flush(stdout())
+
+### Name: polyboxplotmap
+### Title: Interactive polyboxplot and map
+### Aliases: polyboxplotmap
+### Keywords: spatial multivariate
+
+### ** Examples
+
+######
+# data eire
+eire <- readShapePoly(system.file("etc/shapes/eire.shp", package="spdep")[1],
+ID="names", proj4string=CRS("+proj=utm +zone=30 +units=km"))
+
+# example of use of polyboxplotmap
+polyboxplotmap(eire,c("pale","POPCHG"), names.arg=c("Outside Pale","Pale"),
+xlab="Appartenance to the region of Pale", col=c("pink","violet"))
+
+
+
+cleanEx()
+nameEx("polylist2list")
+### * polylist2list
+
+flush(stderr()); flush(stdout())
+
+### Name: polylist2list
+### Title: Extract from a polylist object the vertices of the polygons
+### Aliases: polylist2list
+### Keywords: manip
+
+### ** Examples
+
+data(eire)
+eire.contours<-polylist2list(eire.polys.utm)
+
+
+
+cleanEx()
+nameEx("scattermap")
+### * scattermap
+
+flush(stderr()); flush(stdout())
+
+### Name: scattermap
+### Title: Interactive scatterplot and map
+### Aliases: scattermap
+### Keywords: regression spatial multivariate
+
+### ** Examples
+
+######
+# data on price indices of real estate in France
+data(immob)
+row.names(immob)<-immob$Nom
+
+# immob is a data.frame object. We have to create
+# a Spatial object, by using first the longitude and latitude
+# to create Spatial Points object ...
+immob.sp = SpatialPoints(cbind(immob$longitude,immob$latitude))
+# ... and then by integrating other variables to create SpatialPointsDataFrame
+immob.spdf = SpatialPointsDataFrame(immob.sp, immob)
+# For more details, see vignette('sp', package="sp")
+
+# optional : we add some contours that don't correspond to the spatial unit
+# but are nice for mapping
+midiP <- readShapePoly(system.file("shapes/region.shp", package="GeoXp")[1])
+cont_midiP<-spdf2list(midiP[-c(22,23),])$poly
+
+# a example of use
+scattermap(immob.spdf,c("prix.vente","prix.location"),
+carte= cont_midiP, xlab="Average sell price",ylab="Average rent price",
+identify=TRUE, cex.lab=0.6)
+
+
+
+######
+# data eire
+eire <- readShapePoly(system.file("etc/shapes/eire.shp", package="spdep")[1],
+ID="names", proj4string=CRS("+proj=utm +zone=30 +units=km"))
+
+
+# example of use of scattermap
+scattermap(eire, c("ROADACC","OWNCONS"),lin.reg=TRUE,
+xlab="Roads",ylab="Consomation Rate",col="purple")
+
+
+
+cleanEx()
+nameEx("spdf2list")
+### * spdf2list
+
+flush(stderr()); flush(stdout())
+
+### Name: spdf2list
+### Title: Extract from a SpatialPolygonsDataFrame object the middle
+###   coordinates of boundary box and the vertices of the polygons (in the
+###   case where polygons are given)
+### Aliases: spdf2list
+### Keywords: manip
+
+### ** Examples
+
+africa <- readShapePoly(system.file("shapes/Africa.shp", package = "GeoXp")[1])
+africa.contour<-spdf2list(africa)$poly
+
+
+
+cleanEx()
+nameEx("variocloudmap")
+### * variocloudmap
+
+flush(stderr()); flush(stdout())
+
+### Name: variocloudmap
+### Title: Interactive variocloud and map
+### Aliases: variocloudmap
+### Keywords: spatial
+
+### ** Examples
+
+#####
+# Data Meuse
+data(meuse)
+
+# meuse is a data.frame object. We have to create
+# a Spatial object, by using first the longitude and latitude
+# to create Spatial Points object ...
+meuse.sp = SpatialPoints(cbind(meuse$x,meuse$y))
+# ... and then by integrating other variables to create SpatialPointsDataFrame
+meuse.spdf = SpatialPointsDataFrame(meuse.sp, meuse)
+
+# meuse.riv is used for contour plot
+data(meuse.riv)
+
+# example of use of variocloudmap
+variocloudmap(meuse.spdf, "zinc", quantiles=TRUE, bin=seq(0,2000,100),
+xlim=c(0,2000),ylim=c(0,500000),pch=2,carte=meuse.riv[c(21:65,110:153),],
+criteria=(meuse$lime==1))
+
+
+
+### * <FOOTER>
+###
+cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
+grDevices::dev.off()
+###
+### Local variables: ***
+### mode: outline-minor ***
+### outline-regexp: "\\(> \\)?### [*]+" ***
+### End: ***
+quit('no')

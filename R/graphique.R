@@ -348,15 +348,13 @@ else
             lines(xg, reg$coefficients[1] + reg$coefficients[2] * xg)
         }
         
-        if ((length(quantiles)!=0)&&(quantiles!=0)&&(alpha1!=0))
+        if(quantiles)
         {
-            for (i in 1:length(quantiles)) 
-            {
-              fit <- qsreg(as.numeric(var1), as.numeric(var2),
-              lam = alpha1, alpha = quantiles[i])
-              xg <- seq(min(var1), max(var1), length = 100)
-              lines(xg, predict(fit, xg), col = "blue",lwd=1.5)
-            }
+              etendue <- diff(range(var1))
+               fitmax  <- rqss(var2 ~ qss(var1, constraint= "N",lambda=etendue), tau = alpha1, control=sfn.control(warn.mesg=FALSE))    
+            plot.rqss(fitmax,add=TRUE,rug=FALSE,titles="",col='blue') 
+           # Dat.nls <- nlrq(var2 ~ SSlogis(var1, Asym, mid, scal),tau=alpha1)
+           # lines(sort(var1), predict(Dat.nls, newdata=list(var1=sort(var1))),col='blue')
         }
         
         if (length(var1[obs]) != 0) 
@@ -651,8 +649,8 @@ else
     
     if ((graph == "Angleplot")||(graph == "pairwise"))
     {
-      if((length(quantiles)==1)&&(quantiles[1]==0)) quantiles<-NULL
-      ifelse(length(quantiles)>1,color.quant <- colors()[grep("red", colors())],color.quant<-couleurs[1])
+
+      ifelse(quantiles,color.quant <- colors()[grep("red", colors())],color.quant<-couleurs[1])
        
       diag(var1) <- NA
       diag(var2) <- NA
@@ -664,15 +662,14 @@ else
       y <- vect[res$ix, 2]
       z <- seq(1, length(x), by = (length(x)/1000))
       z <- round(z)
-        if (length(quantiles) != 0) 
+      
+
+        if(quantiles) 
         {
-           fitmax <- qsreg(vect[z, 1], vect[z, 2], lam = alpha1,
-           alpha = max(quantiles))
+          fitmax  <- rqss(vect2 ~ qss(vect1, constraint= "N", lambda=diff(range(vect1))), tau = alpha1, control=sfn.control(warn.mesg=FALSE))
         }
 
-      xg <- seq(min(vect[z, 1]), max(vect[z, 1]), length = 100)
-    
-        if (length(quantiles) != 0) 
+        if(quantiles) 
         {
             plot(vect1, vect2, "n", xlab = labvar[1], ylab = labvar[2],
             xlim = c(0, max(vect1)),axes=FALSE)
@@ -680,22 +677,13 @@ else
             {axis(1, c(0,pi/4,pi/2,3*pi/4,pi), c("0",expression(pi/4),expression(pi/2),expression(3*pi/4),expression(pi)))}
             else
             {axis(1)}
-            axis(2)
-            points(vect1[which(vect2 > predict(fitmax, vect1))],
-            vect2[which(vect2 > predict(fitmax, vect1))],
+            axis(2)                             
+            points(vect1[which(vect2> predict(fitmax, newdata=list(vect1=vect1)))],
+            vect2[which(vect2 > predict(fitmax, newdata=list(vect1=vect1)))],
             col = couleurs, pch = 16, cex = 0.8)
             
-            lines(xg, predict(fitmax, xg), col = color.quant[1])
-    
-            if (length(quantiles) > 1) 
-            {
-                for (i in 1:(length(quantiles) - 1)) 
-                {
-                  fit <- qsreg(vect[z, 1], vect[z, 2], lam = alpha1,
-                  alpha = quantiles[i])
-                  lines(xg, predict(fit, xg), col = color.quant[i + 1], lty=i+1)
-                }
-            }
+            #lines(sort(vect1), predict(Dat.nls, newdata=list(variable.x=sort(vect1))),col='blue')
+            plot.rqss(fitmax,add=TRUE,rug=FALSE,titles="")  
         }
         else 
         {
@@ -752,7 +740,7 @@ else
     
     if (graph == "Variocloud") 
     {
-        ifelse(length(quantiles)>1,couleur <- heat.colors(length(quantiles)),couleur<-couleurs[1])
+        ifelse(quantiles,couleur <- heat.colors(length(quantiles)),couleur<-couleurs[1])
 
         msg <- paste("Studied variable : ", labvar[1], sep = "")
         
@@ -779,13 +767,16 @@ else
         z <- seq(1, length(x), by = (length(x)/1000))
         z <- round(z)
     
-        if (length(quantiles) != 0) 
-        {
-            fitmax <- qsreg(vect[z, 1], vect[z, 2], lam = alpha1,
-                alpha = max(quantiles))
-        }
+        vect1 <- vect[,1]
+        vect2 <- vect[,2]
        
         etendue <- max(vect[z, 1]) - min(vect[z, 1])
+                
+        if (quantiles) 
+        {
+            fitmax  <- rqss(vect2 ~ qss(vect1, constraint= "N",lambda=etendue), tau = alpha1, control=sfn.control(warn.mesg=FALSE))                 
+        }
+       
         n <- length(x)
         d <- max(x[2:length(x)] - x[1:(length(x) - 1)])
         xg <- seq(min(vect[z, 1]), max(vect[z, 1]), length = 100)
@@ -794,24 +785,16 @@ else
         
         xg3 <- c(xg2[1],(xg2[1:(length(xg2) - 1)] + xg2[2:length(xg2)])/2)
 
-        if (length(quantiles) != 0) 
+        if(quantiles) 
         {
          plot(vect1, vect2, "n", xlab = "Distance", ylab = "semivariance",
          xlim = xlim, ylim=ylim)
         
-         points(vect1[which(vect2 > predict(fitmax, vect1))],
-         vect2[which(vect2 > predict(fitmax, vect1))], col = couleurs, pch = 16, cex = 0.8)
-        
-         lines(xg, predict(fitmax, xg), col = couleur[1])
-         
-            if (length(quantiles) > 1) 
-            {
-                for (i in 1:(length(quantiles) - 1)) 
-                {
-                  fit <- qsreg(vect[z, 1], vect[z, 2], lam = alpha1, alpha = quantiles[i])
-                  lines(xg, predict(fit, xg), col = couleur[i + 1])
-                }
-            }
+           points(vect1[which(vect2> predict(fitmax, newdata=list(vect1=vect1)))],
+            vect2[which(vect2 > predict(fitmax, newdata=list(vect1=vect1)))],
+            col = couleurs, pch = 16, cex = 0.8)
+                  
+          plot.rqss(fitmax,add=TRUE,rug=FALSE, titles="", col = couleur[1]) 
         }
         else 
         {
@@ -897,22 +880,22 @@ else
                 col = "red")
             if (F[2] > G[2]) 
             {
-                msg <- paste("f = ", round(F[imax - 1], 2))
+                msg <- paste("f = ", abs(round(F[imax - 1], 2)))
                 text(0.15, 0.98, msg, cex = 0.8)
-                msg <- paste("g = ", round(G[imax - 1], 2))
+                msg <- paste("g = ", abs(round(G[imax - 1], 2)))
                 text(0.15, 0.94, msg, cex = 0.8)
-                msg <- paste("expectile = ", round(var1u[which(var1u ==
-                  vsort[imax])], 2))
+                msg <- paste("expectile = ", abs(round(var1u[which(var1u ==
+                  vsort[imax])], 2)))
                 text(0.15, 0.9, msg, cex = 0.8)
             }
             else 
             {
-                msg <- paste("f = ", round(F[imax - 1], 2))
+                msg <- paste("f = ", abs(round(F[imax - 1], 2)))
                 text(0.8, 0.12, msg, cex = 0.8)
-                msg <- paste("g = ", round(G[imax - 1], 2))
+                msg <- paste("g = ", abs(round(G[imax - 1], 2)))
                 text(0.8, 0.08, msg, cex = 0.8)
-                msg <- paste("expectile = ", round(var1u[which(var1u ==
-                  vsort[imax])], 2))
+                msg <- paste("expectile = ", abs(round(var1u[which(var1u ==
+                  vsort[imax])], 2)))
                 text(0.8, 0.04, msg, cex = 0.8)
             }
         }

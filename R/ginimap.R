@@ -57,7 +57,7 @@ if(!(3%in%dev.list())) dev.new()
 
 
 # Paramètres sur Gini
-result <- gini(var)
+result <- gini(-var)
 F <- result$F
 G <- result$G
 GINI <- result$gini
@@ -367,7 +367,7 @@ tkpack(point.but, poly.but, side = "left", expand = "TRUE",
 tkpack(frame1a, expand = "TRUE", fill = "x")
 
 frame1c <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
-msg <- paste("Gini Index : ", round(GINI,4))
+msg <- paste("Gini Index : ", round(abs(GINI),4))
 tkgrid(tklabel(frame1c,text=msg),columnspan=2)
 tkgrid(tklabel(frame1c,text="    "))
 tkpack(frame1c, expand = "TRUE", fill = "x")

@@ -384,7 +384,6 @@ if(interactive())
  carte(long=long, lat=lat,obs=obs, sp.obj=sp.obj, buble=buble,cbuble=z,criteria=criteria,nointer=nointer,  label=label,
  symbol=pch2, couleurs=col2,carte=carte,nocart=nocart,legmap=legmap,legends=legends,axis=axes, labmod=labmod,
  lablong=lablong,lablat=lablat,cex.lab=cex.lab,method=method,classe=listvar[,which(listnomvar == varChoice1)])
-
  graphique(var1=var, obs=obs, num=3, graph="Histogram", nbcol=nbcol,bin=type, labvar=labvar,couleurs=col, symbol=pch)
  assign("GeoXp.open", TRUE, envir = baseenv())
  }

@@ -1,4 +1,4 @@
-`scattermap` <- function(sp.obj, names.var, lin.reg=TRUE, quantiles=NULL,
+`scattermap` <- function(sp.obj, names.var, lin.reg=TRUE, quantiles=TRUE,
 names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8,
 pch=16, col="lightblue3",xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 {
@@ -65,25 +65,30 @@ if(!(3%in%dev.list())) dev.new()
 
 
 # au sujet des quantiles conditionnels    
-if (lin.reg || length(quantiles)!=0)
-{
-    u1 <- sort(var1)
-    u1 <- as.vector(u1)
-    z <- seq(min(u1), max(u1), by = ((max(u1)-min(u1))/1000))
-    z <- round(z)
-    z1 <- z[2:length(z)] - z[1:(length(z) - 1)]
-    h <- mean(z1)
+#if (lin.reg || length(quantiles)!=0)
+#{
+#    u1 <- sort(var1)
+#    u1 <- as.vector(u1)
+#    z <- seq(min(u1), max(u1), by = ((max(u1)-min(u1))/1000))
+#    z <- round(z)
+#    z1 <- z[2:length(z)] - z[1:(length(z) - 1)]
+#    h <- mean(z1)
+#
+#    p <- 1 / (1 + (h^3 / 6))
+#    p1 <- 1 / (1 + (h^3 / 1000)) #60
+#    p2 <- 1 / (1 + (h^3 / 4)) #0.6
+#    alpha <- (1 - p) / p
+#    borne1 <- (1 - p1) / p1
+#    borne2 <- (1 - p2) / p2
+#
+#}
 
-    p <- 1 / (1 + (h^3 / 6))
-    p1 <- 1 / (1 + (h^3 / 1000)) #60
-    p2 <- 1 / (1 + (h^3 / 4)) #0.6
-    alpha <- (1 - p) / p
-    borne1 <- (1 - p1) / p1
-    borne2 <- (1 - p2) / p2
 
-}
+borne1=0.01
+borne2=0.99
+alpha=0.5
 
-names.slide=c("Reg. Smooth. Spline Parameter")
+names.slide=c("Value of alpha-quantile")
 
 ####################################################
 # sélection d'un point
@@ -149,9 +154,7 @@ pointfunc<-function()
             obs<<-selectmap(var1=var1,var2=var2,obs=obs,Xpoly=loc[1], Ypoly=loc[2], method="point")
         }
         
-        #graphiques
-
-      
+        #graphiques     
       graphique(var1=var1, var2=var2, obs=obs, num=3, graph="Scatterplot", labvar=labvar, symbol=pch, couleurs=col,
       opt1=lin.reg, quantiles=quantiles, alpha1=alpha)
       
@@ -557,7 +560,7 @@ autre.but <- tkbutton(frame2d, text="     OK     " , command=graphfunc)
 tkpack(bubble.but,autre.but, side = "left", expand = "TRUE", fill = "x")
 tkpack(frame2d, expand = "TRUE", fill = "x")
 
-if(length(quantiles)!=0)
+if(quantiles)
 {
 frame2e <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
 

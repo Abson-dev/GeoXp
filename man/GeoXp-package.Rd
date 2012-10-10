@@ -23,8 +23,8 @@ some dimension reduction techniques such as PCA.
 \tabular{ll}{
 Package: \tab GeoXp\cr
 Type: \tab Package\cr
-Version: \tab 1.5.6 \cr
-Date: \tab 2012-03-07\cr
+Version: \tab 1.6.1 \cr
+Date: \tab 2012-09-07\cr
 License: \tab GPL Vesion 2 or later \cr
 }
 

@@ -9,7 +9,6 @@ legmap=NULL,legends=list(FALSE,FALSE),labmod="",axis=FALSE)
 ####################################################
 
 dev.set(2)
-
 # for the longitude/latitude data
 x.lim=c(min(long,na.rm=TRUE),max(long,na.rm=TRUE)) 
 y.lim=c(min(lat,na.rm=TRUE),max(lat,na.rm=TRUE))
@@ -120,9 +119,34 @@ else
 # dessin des contours des unités spatiales
 ####################################################
 
-                                                                                      
+                                                                                    
 if(spdf)
 {plot(sp.obj, xlab=lablong, ylab=lablat,  axes=axis)
+   if(nocart)
+   {if(class(carte)!="list")
+    {
+    n <- nrow(carte);
+    abs1 <- carte[1:(n-1),1];
+    ord1 <- carte[1:(n-1),2];
+    abs2 <- carte[2:n,1];
+    ord2 <- carte[2:n,2];
+  #  points(long,lat,"n", xlab=lablong, ylab=lablat,xaxt="n",yaxt="n", bty="n", xlim=c(min(long)-(max(long)-min(long))/10, max(long)+(max(long)-min(long))/10), ylim=c(min(lat)-(max(lat)-min(lat))/10, max(lat)+(max(lat)-min(lat))/10));
+    segments(abs1,ord1,abs2,ord2,col="lightgrey",lwd=1)
+   }
+   else
+   {
+      for (k in 1:kol)
+       {cartek<-carte[[k]]
+        n <- nrow(cartek);
+        abs1 <- cartek[1:(n-1),1];
+        ord1 <- cartek[1:(n-1),2];
+        abs2 <- cartek[2:n,1];
+        ord2 <- cartek[2:n,2];
+       #  points(long,lat,"n", xlab=lablong, ylab=lablat,xaxt="n",yaxt="n", bty="n", xlim=c(min(long)-(max(long)-min(long))/10, max(long)+(max(long)-min(long))/10), ylim=c(min(lat)-(max(lat)-min(lat))/10, max(lat)+(max(lat)-min(lat))/10));
+        segments(abs1,ord1,abs2,ord2,col="lightgrey",lwd=1)
+       }
+    } 
+  }
 }
 else
 {if(nocart)  
@@ -427,31 +451,6 @@ if(length(long[obs])!=0)
 
   if(spdf) 
   {
-   if(nocart)
-   {if(class(carte)!="list")
-    {
-    n <- nrow(carte);
-    abs1 <- carte[1:(n-1),1];
-    ord1 <- carte[1:(n-1),2];
-    abs2 <- carte[2:n,1];
-    ord2 <- carte[2:n,2];
-  #  points(long,lat,"n", xlab=lablong, ylab=lablat,xaxt="n",yaxt="n", bty="n", xlim=c(min(long)-(max(long)-min(long))/10, max(long)+(max(long)-min(long))/10), ylim=c(min(lat)-(max(lat)-min(lat))/10, max(lat)+(max(lat)-min(lat))/10));
-    segments(abs1,ord1,abs2,ord2,col="darkblue",lwd=2)
-   }
-   else
-   {
-      for (k in 1:kol)
-       {cartek<-carte[[k]]
-        n <- nrow(cartek);
-        abs1 <- cartek[1:(n-1),1];
-        ord1 <- cartek[1:(n-1),2];
-        abs2 <- cartek[2:n,1];
-        ord2 <- cartek[2:n,2];
-       #  points(long,lat,"n", xlab=lablong, ylab=lablat,xaxt="n",yaxt="n", bty="n", xlim=c(min(long)-(max(long)-min(long))/10, max(long)+(max(long)-min(long))/10), ylim=c(min(lat)-(max(lat)-min(lat))/10, max(lat)+(max(lat)-min(lat))/10));
-        segments(abs1,ord1,abs2,ord2,col="darkblue",lwd=2)
-       }
-     }
-   }
    if(buble && (length(cbuble)!=0))
    {  points(long,lat,col='lightblue4',pch=16,cex=cbuble)
    }
@@ -462,5 +461,7 @@ if(nointer)
 
 if((length(long[obs])!=0) & ((method == "") || (method == "Cluster")||(method == "Quadrant")) & spdf)
       {text(long[obs], lat[obs], label[obs], col="black", cex=cex.lab, font=3,adj=c(0.2,-0.2))}
+
+
  }
 

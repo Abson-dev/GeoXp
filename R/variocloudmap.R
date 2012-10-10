@@ -1,4 +1,4 @@
-`variocloudmap` <- function(sp.obj, name.var, bin=NULL, quantiles=NULL,
+`variocloudmap` <- function(sp.obj, name.var, bin=NULL, quantiles=TRUE,
 names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8,
 pch=16, col="lightblue3", xlab="", ylab="", axes=FALSE, lablong="", lablat="",
 xlim=NULL, ylim=NULL)
@@ -45,7 +45,7 @@ ifelse(identify, label<-row.names(listvar),label<-"")
   opt2<-1
   
   angle<-0
-  names.slide="Quant. reg. smooth spline para."
+  names.slide="Alpha Quantile Value"
   obs <- matrix(FALSE, nrow = length(long), ncol = length(long))
 
   directionnel<-FALSE
@@ -91,19 +91,22 @@ if((length(listvar)>0)&&(dim(as.matrix(listvar))[2]==1)) listvar<-as.matrix(list
 # choix des bornes des réglettes (inspiré de la documentation de Matlab)
 ####################################################
 
-   v4 <- sort(dist)
-   v4 <- as.vector(v4)
-   z <- seq(1, max(v4), by = (max(v4)/3500))
-   z <- round(z)
-   z1 <- z[2:length(z)] - z[1:(length(z) - 1)]
-   h <- mean(z1)
-   p <- 1/(1 + (h^3/6))
-   p1 <- 1/(1 + (h^3/60))
-   p2 <- 1/(1 + (h^3/0.6))
-   alpha <- (1 - p)/p
-   borne1 <- (1 - p1)/p1
-   borne2 <- (1 - p2)/p2
+#   v4 <- sort(dist)
+#   v4 <- as.vector(v4)
+#   z <- seq(1, max(v4), by = (max(v4)/3500))
+#   z <- round(z)
+#   z1 <- z[2:length(z)] - z[1:(length(z) - 1)]
+#   h <- mean(z1)
+#   p <- 1/(1 + (h^3/6))
+#   p1 <- 1/(1 + (h^3/60))
+#   p2 <- 1/(1 + (h^3/0.6))
+#   alpha <- (1 - p)/p
+#   borne1 <- (1 - p1)/p1
+#   borne2 <- (1 - p2)/p2
 
+borne1=0.01
+borne2=0.99
+alpha=0.5
 ####################################################
 # sélection d'un point sur le variocloud
 ####################################################
@@ -506,7 +509,7 @@ tkpack(angle.but, side = "left", expand = "TRUE", fill = "x")
 tkpack(frame2f, expand = "TRUE", fill = "x")
 
 
-if(length(quantiles)!=0)
+if(quantiles)
 {
 frame1c <- tkframe(tt, relief = "groove", borderwidth = 2, background = "white")
 

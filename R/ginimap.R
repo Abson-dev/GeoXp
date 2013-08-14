@@ -2,6 +2,7 @@
 carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
 xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 {
+envir = as.environment(1)
 # Verification of the Spatial Object sp.obj
 class.obj<-class(sp.obj)[1]
 spdf<-(class.obj=="SpatialPolygonsDataFrame")
@@ -219,7 +220,7 @@ quitfunc2<-function()
     tkdestroy(tt)
     assign("GeoXp.open", FALSE, envir = baseenv())
     print("Results have been saved in last.select object")
-    assign("last.select", which(obs), envir = .GlobalEnv)
+    assign("last.select", which(obs), envir = envir)
 }
 
 

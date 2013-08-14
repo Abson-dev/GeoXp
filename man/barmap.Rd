@@ -6,9 +6,9 @@ The function \code{barmap()} draws a bar plot (vertical bar) of the given factor
 \code{name.var} and a map with sites of coordinates \code{coordinates(sp.obj)}.}
 
 \usage{
-barmap(sp.obj, name.var, type = c("count","percent"),
-names.arg="", names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, 
-col="lightblue3", xlab="", ylab="", axes=FALSE, lablong="", lablat="")
+barmap(sp.obj, name.var, type = c("count","percent"), names.arg="", 
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, 
+pch=16, col="lightblue3", xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 }
 
 %- maybe also 'usage' for other objects documented here.
@@ -54,6 +54,7 @@ Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spa
 \examples{
 ######
 # data eire
+require("maptools")
 eire <- readShapePoly(system.file("etc/shapes/eire.shp", package="spdep")[1],
 ID="names", proj4string=CRS("+proj=utm +zone=30 +units=km"))
 

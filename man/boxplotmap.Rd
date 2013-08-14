@@ -6,8 +6,8 @@ The function \code{boxplotmap()} draws a boxplot of the given variable \code{nam
 and a map with site of coordinates \code{coordinates(sp.obj)}. }
 
 \usage{
-boxplotmap(sp.obj, name.var,
-names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
+boxplotmap(sp.obj, name.var, names.attr=names(sp.obj), criteria=NULL, 
+carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
 xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 
 }
@@ -51,6 +51,7 @@ Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spa
 \examples{
 ######
 # data columbus
+require("maptools")
 example(columbus)
 
 # a basic use of boxplotmap

@@ -63,6 +63,7 @@ Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spa
 \examples{
 ###
 # Data Colombus
+require("maptools")
 example(columbus)
 
 # an example of use

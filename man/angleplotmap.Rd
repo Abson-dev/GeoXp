@@ -8,8 +8,8 @@ at two sites as a function of the angle between vector \eqn{\overrightarrow{s_is
 and the x-axis.
 }
 \usage{
-angleplotmap(sp.obj, name.var, quantiles=TRUE,
-names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
+angleplotmap(sp.obj, name.var, quantiles=TRUE, names.attr=names(sp.obj), 
+criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
 xlab="angle", ylab="absolute magnitude", axes=FALSE, lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
@@ -73,6 +73,7 @@ afcon.spdf = SpatialPointsDataFrame(afcon.sp, afcon)
 
 # optional : we add some contours that don't correspond to the spatial unit
 # but are nice for mapping
+require("maptools")
 africa <- readShapePoly(system.file("shapes/Africa.shp", package = "GeoXp")[1])
 africa.contour<-spdf2list(africa)$poly
 

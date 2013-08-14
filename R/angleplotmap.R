@@ -2,7 +2,7 @@
 names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
 xlab="angle", ylab="absolute magnitude", axes=FALSE, lablong="", lablat="")
 {
-
+envir = as.environment(1)
 # Verification of the Spatial Object sp.obj
 class.obj<-class(sp.obj)[1]
 
@@ -259,7 +259,7 @@ quitfunc2<-function()
     assign("GeoXp.open", FALSE, envir = baseenv())
     print("Results have been saved in last.select object")
     obs[lower.tri(obs)]<-FALSE
-    assign("last.select", which(obs,arr.ind=TRUE), envir = .GlobalEnv)
+    assign("last.select", which(obs,arr.ind=TRUE), envir = envir)
 }
 
 

@@ -9,9 +9,10 @@ projected into the same plane with the quality of representation in order to int
 component axes. The individuals scatterplot interacts with the map.
 }
 \usage{
-pcamap(sp.obj, names.var, direct=c(1,2),weight=rep(1/nrow(sp.obj),length=nrow(sp.obj)),
-metric=diag(length(names.var)), center=NULL, reduce=TRUE, qualproj=FALSE,
-names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
+pcamap(sp.obj, names.var, direct=c(1,2),
+weight=rep(1/nrow(sp.obj),length=nrow(sp.obj)), metric=diag(length(names.var)), 
+center=NULL, reduce=TRUE, qualproj=FALSE, names.attr=names(sp.obj), criteria=NULL, 
+carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
 xlab=paste(direct[1]), ylab=paste(direct[2]), axes=FALSE, lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
@@ -69,6 +70,8 @@ Caussinus H., Fekri M., Hakam S., Ruiz-Gazen A. (2003) , \emph{A monitoring disp
 \examples{
 ###
 # Data Colombus
+require("maptools")
+require("robustbase")
 example(columbus)
 
 # a basic PCA on 7 variables

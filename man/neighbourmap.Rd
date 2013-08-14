@@ -10,8 +10,8 @@ links this scatterplot with a map.
 
 \usage{
 neighbourmap(sp.obj, name.var, nb.obj, lin.reg=TRUE,
-names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
-xlab="", ylab="", axes=FALSE, lablong="", lablat="")
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8,
+pch=16, col="lightblue3", xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -57,6 +57,7 @@ Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spa
 \examples{
 ###
 # columbus
+require("maptools")
 example(columbus)
 
 # example of use of neighbourmap

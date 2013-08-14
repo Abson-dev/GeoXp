@@ -52,6 +52,7 @@ It corresponds to the number of spatial units selected just before leaving the T
 \examples{
 ######
 # data eire
+require("maptools")
 eire <- readShapePoly(system.file("etc/shapes/eire.shp", package="spdep")[1],
 ID="names", proj4string=CRS("+proj=utm +zone=30 +units=km"))
 

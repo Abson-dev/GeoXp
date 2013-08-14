@@ -8,9 +8,10 @@ to a value of \code{names.var[1]} and \code{names.var[2]} and there is interacti
 windows created.}
 
 \usage{
-dblehistomap(sp.obj, names.var, nbcol=c(10,10), type = c("count","percent", "density"),
-names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16,
-col=c("grey","lightblue3"), xlab=c("",""), ylab=c("count","count"), axes=FALSE, lablong="", lablat="")
+dblehistomap(sp.obj, names.var, nbcol=c(10,10), 
+type = c("count","percent", "density"), names.attr=names(sp.obj), criteria=NULL, 
+carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col=c("grey","lightblue3"), 
+xlab=c("",""), ylab=c("count","count"), axes=FALSE, lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -62,6 +63,7 @@ immob.spdf = SpatialPointsDataFrame(immob.sp, immob)
 
 # optional : we add some contours that don't correspond to the spatial unit
 # but are nice for mapping
+require("maptools")
 midiP <- readShapePoly(system.file("shapes/region.shp", package="GeoXp")[1])
 cont_midiP<-spdf2list(midiP[-c(22,23),])$poly
 

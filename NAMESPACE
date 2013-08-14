@@ -1,4 +1,10 @@
-import(quantreg, KernSmooth, mvoutlier, rgeos, rgl, robustbase, spdep, splancs, stats, tcltk)
+import(spdep, stats, tcltk)
+importFrom(rgeos,gContains)
+importFrom(quantreg,rqss,plot.rqss,sfn.control)
+importFrom(rgl,plot3d)
+importFrom(KernSmooth,bkde)
+importFrom(robustbase,covMcd)
+importFrom(splancs,inout)
 export(
 angleplotmap,
 barmap,

@@ -44,6 +44,7 @@ Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spa
 \seealso{\code{\link{polylist2list}}}
 
 \examples{
+require("maptools")
 africa <- readShapePoly(system.file("shapes/Africa.shp", package = "GeoXp")[1])
 africa.contour<-spdf2list(africa)$poly
 }

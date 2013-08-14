@@ -9,9 +9,10 @@ Classification methods come from \code{hclust()} (hierarchical cluster analysis)
 }
 
 \usage{
-clustermap(sp.obj, names.var, clustnum, method=c("kmeans","hclust"),type=NULL, centers=NULL, scale=FALSE,
-names.arg="", names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16,
-col="lightblue3", xlab="Cluster", ylab="Number", axes=FALSE, lablong="", lablat="")
+clustermap(sp.obj, names.var, clustnum, method=c("kmeans","hclust"), type=NULL,
+centers=NULL, scale=FALSE, names.arg="", names.attr=names(sp.obj), criteria=NULL, 
+carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3", 
+xlab="Cluster", ylab="Number", axes=FALSE, lablong="", lablat="")
 }
 
 \arguments{
@@ -71,6 +72,7 @@ then use the function \code{barmap} to visualize the calculated clusters. }
 \examples{
 #####
 # data columbus
+require("maptools")
 example(columbus)
 
 # a basic example using the kmeans method

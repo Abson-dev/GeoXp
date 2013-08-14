@@ -58,6 +58,7 @@ Wand M.P. et Jones M.C. (1995), \emph{Kernel Smoothing}, Chapman \& Hall.}
 
 ######
 # data oldcol
+require("maptools")
 example(columbus)
 
 # columbus is included in the Spatial-Class object

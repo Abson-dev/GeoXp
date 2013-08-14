@@ -91,6 +91,7 @@ moran.test(baltimore.spdf$PRICE,W.listw)
  
 ##
 # data columbus
+require("maptools")
 example(columbus)
 
 # use of moranplotmap with spatial weight matrix col.gal.nb :

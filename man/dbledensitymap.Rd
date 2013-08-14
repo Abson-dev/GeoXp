@@ -84,6 +84,7 @@ criteria=(auckland$Deaths.1977.85>mean(auckland$Deaths.1977.85)))
 
 ######
 # data eire
+require("maptools")
 eire <- readShapePoly(system.file("etc/shapes/eire.shp", package="spdep")[1],
 ID="names", proj4string=CRS("+proj=utm +zone=30 +units=km"))
 

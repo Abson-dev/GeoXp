@@ -2,6 +2,7 @@
 names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
 xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 {
+envir = as.environment(1)
 # Verification of the Spatial Object sp.obj
 class.obj<-class(sp.obj)[1]
 spdf<-(class.obj=="SpatialPolygonsDataFrame")
@@ -387,7 +388,7 @@ quitfunc2<-function()
     }
     else
     {res<-which(obs,arr.ind=TRUE)}
-    assign("last.select", res, envir = .GlobalEnv)
+    assign("last.select", res, envir = envir)
 }
 
 ####################################################

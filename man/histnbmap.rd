@@ -8,9 +8,10 @@ a neighbourhood structure given by a \code{nb} object and calculated by \code{nb
 }
 
 \usage{
-histnbmap(sp.obj, nb.obj, longlat = NULL, nbcol=10, type = c("count","percent", "density"),
-sup=FALSE, criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
-xlab="", ylab="count", axes=FALSE, lablong="", lablat="")
+histnbmap(sp.obj, nb.obj, longlat = NULL, nbcol=10, 
+type = c("count","percent", "density"), sup=FALSE, criteria=NULL, carte=NULL, 
+identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3", xlab="", ylab="count", 
+axes=FALSE, lablong="", lablat="")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -57,6 +58,7 @@ Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spa
 \examples{
 ##
 # data columbus
+require("maptools")
 example(columbus)
 
 # a simple use of histnbmap

@@ -2,6 +2,7 @@
 names.attr=names(sp.obj), carte=NULL, identify=FALSE, cex.lab=0.8, pch=rep(16,3),
 col=c("lightblue3", "black", "red"), xlab="", axes=FALSE)
 {
+envir = as.environment(1)
 # Verification of the Spatial Object sp.obj
 class.obj<-class(sp.obj)[1]
 
@@ -643,7 +644,7 @@ quitfunc2<-function()
     layout(1)
     par(mar=c(5.1,4.1,4.1,2.1))
     print("Results have been saved in last.select object")
-    assign("last.select", which(obs), envir = .GlobalEnv)
+    assign("last.select", which(obs), envir = envir)
 }
 
 ####################################################

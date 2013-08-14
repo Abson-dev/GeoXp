@@ -3,6 +3,7 @@ metric=diag(length(names.var)), center=NULL, reduce=TRUE, qualproj=FALSE,
 names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
 xlab=paste(direct[1]), ylab=paste(direct[2]), axes=FALSE, lablong="", lablat="")
 {
+envir = as.environment(1)
 # Verification of the Spatial Object sp.obj
 class.obj<-class(sp.obj)[1]
 spdf<-(class.obj=="SpatialPolygonsDataFrame")
@@ -429,7 +430,7 @@ quitfunc2<-function()
     assign("GeoXp.open", FALSE, envir = baseenv())
     print("Results have been saved in last.select object")
     res<-list(obs=which(obs),inertia=inertia,casecoord=casecoord,varcoord=varcoord)
-    assign("last.select", res, envir = .GlobalEnv)
+    assign("last.select", res, envir = envir)
 }
 
 ####################################################

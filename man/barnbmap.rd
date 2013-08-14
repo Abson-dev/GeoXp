@@ -69,6 +69,7 @@ barnbmap(immob.sp,immob.nb)
 
 ######
 # Data columbus
+require("maptools")
 example(columbus)
 
 # col.gal.nb is a spatial weight matrix included in spdep package...

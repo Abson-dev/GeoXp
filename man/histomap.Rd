@@ -11,8 +11,8 @@ of \code{name.var} and there is interactivity between the two windows.
 
 \usage{
 histomap(sp.obj, name.var, nbcol=10, type = c("count","percent", "density"),
-names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, pch=16, col="lightblue3",
-xlab="", ylab="", axes=FALSE, lablong="", lablat="")
+names.attr=names(sp.obj), criteria=NULL, carte=NULL, identify=FALSE, cex.lab=0.8, 
+pch=16, col="lightblue3", xlab="", ylab="", axes=FALSE, lablong="", lablat="")
 }
 
 %- maybe also 'usage' for other objects documented here.
@@ -57,6 +57,7 @@ Roger S.Bivand, Edzer J.Pebesma, Virgilio Gomez-Rubio (2009),  \emph{Applied Spa
 
 ######
 # data oldcol
+require("maptools")
 example(columbus)
 
 # columbus is included in the Spatial-Class object
